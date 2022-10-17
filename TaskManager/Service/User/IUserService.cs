@@ -6,4 +6,6 @@ public interface IUserService
 {
     IEnumerable<User> GetAll();
     User GetById(int id);
+
+    User GetByLoginData(UserLoginModel loginModel);
 }

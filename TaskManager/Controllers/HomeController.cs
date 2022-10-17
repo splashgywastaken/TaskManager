@@ -4,7 +4,7 @@ using TaskManager.Service.DbContext;
 namespace TaskManager.Controllers;
 
 [ApiController]
-[Route("[controller]")]
+[Route("homePage")]
 public class HomeController : Controller
 {
     private readonly ApplicationDbContext _context;

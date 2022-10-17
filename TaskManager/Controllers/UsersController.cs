@@ -1,12 +1,13 @@
-﻿using AutoMapper;
-using TaskManager.Service.User;
+﻿namespace TaskManager.Controllers;
 
-namespace TaskManager.Controllers;
+using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
+using Service.User;
 
 using Microsoft.AspNetCore.Mvc;
 
 [ApiController]
-[Route("[controller]")]
+[Route("user")]
 public class UsersController : Controller
 {
     private readonly IUserService _userService;
@@ -21,14 +22,22 @@ public class UsersController : Controller
         _mapper = mapper;
     }
 
-    [HttpGet]
+    [HttpGet("all")]
+    [Authorize]
     public IActionResult GetAll()
     {
         var users = _userService.GetAll();
-        return Ok(users);
+
+        var response = new
+        {
+            message = users.ToString()
+        };
+
+        return Ok(response);
     }
 
     [HttpGet("{id}")]
+    [Authorize]
     public IActionResult GetById(int id)
     {
         var user = _userService.GetById(id);
