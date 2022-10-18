@@ -2,7 +2,7 @@
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using TaskManager.Entities;
-using TaskManager.Service.Achievement;
+using TaskManager.Service.Entities.Achievement;
 
 namespace TaskManager.Controllers;
 

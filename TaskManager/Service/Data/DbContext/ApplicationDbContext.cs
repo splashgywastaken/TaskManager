@@ -1,9 +1,9 @@
-﻿namespace TaskManager.Service.DbContext;
+﻿namespace TaskManager.Service.Data.DbContext;
 
 using Microsoft.EntityFrameworkCore;
-using Entities;
+using TaskManager.Entities;
 
-public class ApplicationDbContext : DbContext
+public class ApplicationDbContext : Microsoft.EntityFrameworkCore.DbContext
 {
     public DbSet<User> Users { get; set; }
     public DbSet<Achievement> Achievements { get; set; }
@@ -17,6 +17,25 @@ public class ApplicationDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        // One-to-many between user and projects setup
+        modelBuilder.Entity<Project>()
+            .HasOne(p => p.User)
+            .WithMany(p => p.Projects)
+            .HasForeignKey(p => p.UserId);
+
+        // One-to-many between projects and task groups setup
+        modelBuilder.Entity<TaskGroup>()
+            .HasOne(p => p.Project)
+            .WithMany(p => p.TaskGroups)
+            .HasForeignKey(p => p.ProjectId);
+
+        // One-to-many between tasks and task groups setup
+        modelBuilder.Entity<Task>()
+            .HasOne(p => p.TaskGroup)
+            .WithMany(p => p.Tasks)
+            .HasForeignKey(p => p.TaskGroupId);
+
+        // Many-to-many between achievements and user setup
         modelBuilder.Entity<User>()
             .HasMany(p => p.Achievements)
             .WithMany(p => p.Users)

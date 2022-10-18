@@ -3,9 +3,9 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using System.Text.Json.Serialization;
-using TaskManager.Service.Achievement;
-using TaskManager.Service.DbContext;
-using TaskManager.Service.User;
+using TaskManager.Service.Data.DbContext;
+using TaskManager.Service.Entities.Achievement;
+using TaskManager.Service.Entities.User;
 
 var builder = WebApplication.CreateBuilder(args);
 

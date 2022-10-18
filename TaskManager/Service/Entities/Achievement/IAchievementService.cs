@@ -1,6 +1,6 @@
-﻿namespace TaskManager.Service.Achievement;
+﻿namespace TaskManager.Service.Entities.Achievement;
 
-using Entities;
+using TaskManager.Entities;
 
 public interface IAchievementService
 {

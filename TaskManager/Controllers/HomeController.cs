@@ -1,7 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using TaskManager.Service.DbContext;
+﻿namespace TaskManager.Controllers;
 
-namespace TaskManager.Controllers;
+using Microsoft.AspNetCore.Mvc;
+using TaskManager.Service.Data.DbContext;
 
 [ApiController]
 [Route("homePage")]

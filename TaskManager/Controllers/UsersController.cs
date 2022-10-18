@@ -1,8 +1,10 @@
 ﻿namespace TaskManager.Controllers;
 
+using System.Text.Json;
+using Entities;
+using TaskManager.Service.Entities.User;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
-using Service.User;
 
 using Microsoft.AspNetCore.Mvc;
 
@@ -36,7 +38,22 @@ public class UsersController : Controller
         return Ok(response);
     }
 
-    [HttpGet("{id}")]
+    [HttpGet("{userId:int}/achievements")]
+    public IActionResult GetUserAchievements(int userId)
+    {
+        var data = _userService.GetUserAchievements(userId).ToList();
+
+        var options = new JsonSerializerOptions
+        {
+            WriteIndented = true
+        };
+
+        var json = JsonSerializer.Serialize<List<Achievement>>(data, options);
+
+        return Ok(json);
+    }
+
+    [HttpGet("{id:int}")]
     [Authorize]
     public IActionResult GetById(int id)
     {

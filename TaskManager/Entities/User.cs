@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Diagnostics.CodeAnalysis;
 using System.Text.Json.Serialization;
 
 namespace TaskManager.Entities;
@@ -26,6 +27,11 @@ public class User
     [Column("user_achievements_score")]
     public int UserAchievementsScore { get; set; }
 
+    // Projects
+    [JsonIgnore]
+    public List<Project> Projects { get; set; }
+
+    // Achievements
     [JsonIgnore]
     public ICollection<Achievement> Achievements { get; set; }
     [JsonIgnore]

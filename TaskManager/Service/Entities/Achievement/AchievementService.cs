@@ -1,8 +1,9 @@
-﻿namespace TaskManager.Service.Achievement;
-
+﻿using TaskManager.Service.Data.DbContext;
 using AutoMapper;
-using DbContext;
-using Entities;
+
+namespace TaskManager.Service.Entities.Achievement;
+
+using TaskManager.Entities;
 
 public class AchievementService : IAchievementService
 {
@@ -23,12 +24,12 @@ public class AchievementService : IAchievementService
         return _context.Achievements;
     }
 
-    public Achievement GetById(int id)
+    public TaskManager.Entities.Achievement GetById(int id)
     {
         return GetAchievement(id);
     }
 
-    private Achievement GetAchievement(int id)
+    private TaskManager.Entities.Achievement GetAchievement(int id)
     {
         var achievement = _context.Achievements.FirstOrDefault(a => a.AchievementId == id);
         if (achievement == null) throw new KeyNotFoundException("Achievement not found");
