@@ -1,5 +1,6 @@
 ﻿using TaskManager.Service.Data.DbContext;
 using AutoMapper;
+using Microsoft.EntityFrameworkCore.Query;
 
 namespace TaskManager.Service.Entities.Achievement;
 
@@ -19,17 +20,24 @@ public class AchievementService : IAchievementService
         _mapper = mapper;
     }
 
-    public IEnumerable<Achievement> GetAll()
+    public IQueryable<Achievement> GetAll()
     {
-        return _context.Achievements;
+        return GetAchievements();
     }
 
-    public TaskManager.Entities.Achievement GetById(int id)
+    public Achievement GetById(int id)
     {
         return GetAchievement(id);
     }
 
-    private TaskManager.Entities.Achievement GetAchievement(int id)
+    private IQueryable<Achievement> GetAchievements()
+    {
+        var result = _context.Achievements.AsQueryable();
+
+        return result;
+    }
+
+    private Achievement GetAchievement(int id)
     {
         var achievement = _context.Achievements.FirstOrDefault(a => a.AchievementId == id);
         if (achievement == null) throw new KeyNotFoundException("Achievement not found");

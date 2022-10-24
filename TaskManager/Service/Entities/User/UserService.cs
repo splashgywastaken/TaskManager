@@ -4,6 +4,8 @@ using TaskManager.Service.User;
 
 namespace TaskManager.Service.Entities.User;
 
+using TaskManager.Entities;
+
 public class UserService : IUserService
 {
     private readonly ApplicationDbContext _context;
@@ -18,27 +20,27 @@ public class UserService : IUserService
         _mapper = mapper;
     }
 
-    public IEnumerable<TaskManager.Entities.User> GetAll()
+    public IEnumerable<User> GetAll()
     {
         return _context.Users;
     }
 
-    public TaskManager.Entities.User GetById(int id)
+    public User GetById(int id)
     {
         return GetUser(id);
     }
 
-    public TaskManager.Entities.User GetByLoginData(UserLoginModel loginModel)
+    public User GetByLoginData(UserLoginModel loginModel)
     {
         return GetUser(loginModel);
     }
 
-    public IEnumerable<TaskManager.Entities.Achievement> GetUserAchievements(int userId)
+    public IEnumerable<Achievement> GetUserAchievements(int userId)
     {
-        return getUserAchievements(userId);
+        return GetAchievementsByUserId(userId);
     }
 
-    private IEnumerable<TaskManager.Entities.Achievement> getUserAchievements(int userId)
+    private IEnumerable<Achievement> GetAchievementsByUserId(int userId)
     {
         var query = _context
             .Users
@@ -50,14 +52,14 @@ public class UserService : IUserService
         return query;
     }
 
-    private TaskManager.Entities.User GetUser(int id)
+    private User GetUser(int id)
     {
         var user = _context.Users.Find(id);
         if (user == null) throw new KeyNotFoundException("User not found");
         return user;
     }
 
-    private TaskManager.Entities.User GetUser(UserLoginModel loginModel)
+    private User GetUser(UserLoginModel loginModel)
     {
         var user = _context.Users.FirstOrDefault(x =>
             x.UserEmail == loginModel.Email 

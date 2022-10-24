@@ -16,7 +16,10 @@
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Controllers\" />
-    <Folder Include="Models\User\" />
+    <Folder Include="Models\Achievement\" />
+    <Folder Include="Models\Tag\" />
+    <Folder Include="Models\Task\" />
+    <Folder Include="Models\Project\" />
     <Folder Include="Views\" />
   </ItemGroup>
 

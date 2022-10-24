@@ -5,6 +5,9 @@ using System.Text;
 using System.Text.Json.Serialization;
 using TaskManager.Service.Data.DbContext;
 using TaskManager.Service.Entities.Achievement;
+using TaskManager.Service.Entities.Project;
+using TaskManager.Service.Entities.Tag;
+using TaskManager.Service.Entities.Task;
 using TaskManager.Service.Entities.User;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -44,6 +47,9 @@ var builder = WebApplication.CreateBuilder(args);
     // Configue DI for application services
     services.AddScoped<IUserService, UserService>();
     services.AddScoped<IAchievementService, AchievementService>();
+    services.AddScoped<ITagService, TagService>();
+    services.AddScoped<ITaskService, TaskService>();
+    services.AddScoped<IProjectService, ProjectService>();
 }
 
 var app = builder.Build();

@@ -10,7 +10,6 @@ public class Task
 {
     [Column("task_id")]
     [Key]
-    [JsonIgnore]
     public int TaskId { get; set; }
 
     [Column("task_name")]
@@ -30,9 +29,12 @@ public class Task
     public bool TaskCompletionStatus { get; set; }
 
     // Many-to-one related properties
-    [JsonIgnore]
     [Column("task_group_id")]
-    public int? TaskGroupId { get; set; }
-    [JsonIgnore]
-    public TaskGroup? TaskGroup { get; set; }
+    public int TaskGroupId { get; set; }
+    
+    public TaskGroup TaskGroup { get; set; }
+
+    // Many-to-many related properties
+    public ICollection<Tag> Tags { get; set; }
+    public List<TasksTags> TaskTags { get; set; }
 }

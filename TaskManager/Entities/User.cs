@@ -28,12 +28,9 @@ public class User
     public int UserAchievementsScore { get; set; }
 
     // Projects
-    [JsonIgnore]
     public List<Project> Projects { get; set; }
 
     // Achievements
-    [JsonIgnore]
-    public ICollection<Achievement> Achievements { get; set; }
-    [JsonIgnore]
-    public List<UsersAchievements> UsersAchievements { get; set; }
+    public ICollection<Achievement>? Achievements { get; set; }
+    public List<UsersAchievements>? UsersAchievements { get; set; }
 }

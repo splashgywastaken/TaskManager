@@ -4,6 +4,7 @@ using TaskManager.Entities;
 
 public interface IAchievementService
 {
-    IEnumerable<Achievement> GetAll();
+    IQueryable<Achievement> GetAll();
     Achievement GetById(int id);
+
 }
