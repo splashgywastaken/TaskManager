@@ -8,7 +8,7 @@ using TaskManager.Entities;
 
 public class TaskService : ITaskService
 {
-    private readonly ApplicationDbContext _context;
+    private readonly TaskManagerDBContext _context;
     private readonly IMapper _mapper;
 
     public IQueryable<Task> GetAllProjectTasks(int projectId)
@@ -37,14 +37,7 @@ public class TaskService : ITaskService
 
     private IQueryable<Tag> GetTags(int taskId)
     {
-        var result = 
-            from tag in _context.Tags
-            join tasksTags in _context.TasksTags 
-                on tag.TagId equals tasksTags.TagId
-            where tasksTags.TaskId == taskId
-                select tag;
-
-        return result;
+        return null;
     }
 
     private Task GetTask(int taskId)

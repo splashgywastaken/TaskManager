@@ -1,30 +1,18 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Diagnostics.CodeAnalysis;
-using System.Text.Json.Serialization;
-
-namespace TaskManager.Entities;
-
-
-[Table("task_group")]
-public class TaskGroup
+﻿namespace TaskManager.Entities
 {
-    [Column("task_group_id")]
-    [Key]
-    public int TaskGroupId { get; set; }
+    public partial class TaskGroup
+    {
+        public TaskGroup()
+        {
+            Tasks = new HashSet<Task>();
+        }
 
-    [Column("task_group_name")]
-    public string TaskGroupName { get; set; }
+        public int TaskGroupId { get; set; }
+        public int? ProjectId { get; set; }
+        public string TaskGroupName { get; set; } = null!;
+        public string? TaskGroupDescription { get; set; }
 
-    [Column("task_group_description")]
-    [AllowNull]
-    public string TaskGroupDescription { get; set; }
-
-    // Many-to-one related property
-    [Column("project_id")]
-    public int ProjectId { get; set; }
-    public Project Project { get; set; }
-
-    // One-to-many related property
-    public List<Task>? Tasks { get; set; }
+        public virtual Project? Project { get; set; }
+        public virtual ICollection<Task> Tasks { get; set; }
+    }
 }

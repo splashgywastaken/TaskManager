@@ -1,11 +1,12 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace TaskManager.Service.User;
+namespace TaskManager.Models.User;
 
 public class UserLoginModel
 {
     [Required]
     [DataType(DataType.EmailAddress)]
+    [RegularExpression(@"(\S{1,})@(\S{1,}).(\S{1,})")]
     [Display(Name = "Email")]
     public string Email { get; set; }
 

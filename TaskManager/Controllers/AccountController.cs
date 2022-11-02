@@ -1,4 +1,6 @@
-﻿namespace TaskManager.Controllers;
+﻿using TaskManager.Models.User;
+
+namespace TaskManager.Controllers;
 
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -6,7 +8,6 @@ using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using TaskManager.Service.Entities.User;
-using Service.User;
 
 [ApiController]
 [Route("user")]

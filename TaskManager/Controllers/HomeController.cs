@@ -7,15 +7,15 @@ using TaskManager.Service.Data.DbContext;
 [Route("homePage")]
 public class HomeController : Controller
 {
-    private readonly ApplicationDbContext _context;
+    private readonly TaskManagerDBContext _context;
 
-    public HomeController(ApplicationDbContext context)
+    public HomeController(TaskManagerDBContext context)
     {
         _context = context;
     }
 
     public IActionResult Index()
     {
-        return new HtmlResult("<h2>Hello, World!</h2>");
+        return Ok("<h2>Hello, World!</h2>");
     }
 }

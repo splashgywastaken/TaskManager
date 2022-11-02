@@ -1,26 +1,18 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Text.Json.Serialization;
-
-namespace TaskManager.Entities;
-
-[Table("achievement")]
-public class Achievement
+﻿namespace TaskManager.Entities
 {
-    [Column("achievement_id")]
-    [Key]
-    public int AchievementId { get; set;}
+    public partial class Achievement
+    {
+        public Achievement()
+        {
+            Users = new HashSet<User>();
+        }
 
-    [Column("achievement_name")]
-    public string AchievementName { get; set;}
+        public int AchievementId { get; set; }
+        public string AchievementName { get; set; } = null!;
+        public string AchievementDescription { get; set; } = null!;
+        public int AchievementPoints { get; set; }
 
-    [Column("achievement_description")]
-    public string AchievementDescription { get; set;}
-
-    [Column("achievement_points")] 
-    public int AchievementPoints { get; set; }
-
-    // Many-to-many related properties
-    public ICollection<User>? Users { get; set; }
-    public List<UsersAchievements>? UsersAchievements { get; set; }
+        public virtual ICollection<User> Users { get; set; }
+        public List<UsersAchievement> UsersAchievements { get; set; }
+    }
 }

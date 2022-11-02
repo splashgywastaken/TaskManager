@@ -8,11 +8,11 @@ using TaskManager.Entities;
 
 public class AchievementService : IAchievementService
 {
-    private readonly ApplicationDbContext _context;
+    private readonly TaskManagerDBContext _context;
     private readonly IMapper _mapper;
 
     public AchievementService(
-        ApplicationDbContext context,
+        TaskManagerDBContext context,
         IMapper mapper
         )
     {

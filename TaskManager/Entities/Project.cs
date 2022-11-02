@@ -1,38 +1,21 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Diagnostics.CodeAnalysis;
-
-namespace TaskManager.Entities;
-
-[Table("project")]
-public class Project
+﻿namespace TaskManager.Entities
 {
-    [Column("project_id")]
-    [Key]
-    public int ProjectId { get; set; }
+    public partial class Project
+    {
+        public Project()
+        {
+            TaskGroups = new HashSet<TaskGroup>();
+        }
 
-    [Column("project_name")]
-    public string ProjectName { get; set; }
+        public int ProjectId { get; set; }
+        public int? UserId { get; set; }
+        public string ProjectName { get; set; } = null!;
+        public string? ProjectDescription { get; set; }
+        public DateTime ProjectStartDate { get; set; }
+        public DateTime ProjectFinishDate { get; set; }
+        public bool? ProjectCompletionStatus { get; set; }
 
-    [Column("project_description")]
-    [AllowNull]
-    public string ProjectDescription { get; set; }
-
-    [Column("project_start_date")]
-    public DateTime ProjectStartDate { get; set; }
-
-    [Column("project_finish_date")]
-    public DateTime ProjectEndDate { get; set; }
-
-    [Column("project_completion_status")]
-    public bool ProjectCompletionStatus { get; set; }
-
-    // Many-to-one property
-    [Column("user_id")]
-    public int UserId { get; set; }
-    
-    public User User { get; set; }
-
-    // One-to-many 
-    public List<TaskGroup> TaskGroups { get; set; }
+        public virtual User? User { get; set; }
+        public virtual ICollection<TaskGroup> TaskGroups { get; set; }
+    }
 }

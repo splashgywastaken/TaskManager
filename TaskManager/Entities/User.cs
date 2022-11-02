@@ -1,36 +1,23 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Diagnostics.CodeAnalysis;
-using System.Text.Json.Serialization;
-
-namespace TaskManager.Entities;
-
-[Table("user")]
-public class User
+﻿namespace TaskManager.Entities
 {
-    [Column("user_id")]
-    [Key]
-    public int Id { get; set; }
-    
-    [Column("user_name")]
-    public string UserName { get; set; }
+    public partial class User
+    {
+        public User()
+        {
+            Projects = new HashSet<Project>();
+            Achievements = new HashSet<Achievement>();
+        }
 
-    [Column("user_email")]
-    public string UserEmail { get; set; }
+        public int UserId { get; set; }
+        public string UserName { get; set; } = null!;
+        public string UserEmail { get; set; } = null!;
+        public string UserPassword { get; set; } = null!;
+        public string UserRole { get; set; } = null!;
+        public int? UserAchievementsScore { get; set; }
 
-    [Column("user_password")]
-    public string UserPassword { get; set; }
+        public virtual ICollection<Project> Projects { get; set; }
 
-    [Column("user_role")]
-    public string UserRole { get; set; }
-
-    [Column("user_achievements_score")]
-    public int UserAchievementsScore { get; set; }
-
-    // Projects
-    public List<Project> Projects { get; set; }
-
-    // Achievements
-    public ICollection<Achievement>? Achievements { get; set; }
-    public List<UsersAchievements>? UsersAchievements { get; set; }
+        public virtual ICollection<Achievement> Achievements { get; set; }
+        public List<UsersAchievement> UsersAchievements { get; set;}
+    }
 }

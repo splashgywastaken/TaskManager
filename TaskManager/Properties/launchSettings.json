@@ -10,7 +10,6 @@
   "profiles": {
     "TaskManager": {
       "commandName": "Project",
-      "launchBrowser": true,
       "launchUrl": "https://localhost:7217",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"

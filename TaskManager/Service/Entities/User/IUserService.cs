@@ -1,12 +1,13 @@
-﻿using TaskManager.Service.User;
+﻿using TaskManager.Models.User;
 
 namespace TaskManager.Service.Entities.User;
 
 using TaskManager.Entities;
 public interface IUserService
 {
-    IEnumerable<User> GetAll();
+    IQueryable<User> GetAll();
     User GetById(int id);
+    User GetWithAchievementsById(int id);
     User GetByLoginData(UserLoginModel loginModel);
-    IEnumerable<Achievement> GetUserAchievements(int userId);
+    IQueryable<Achievement> GetUserAchievements(int userId);
 }

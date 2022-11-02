@@ -1,10 +1,11 @@
-﻿namespace TaskManager.Controllers;
+﻿using TaskManager.Models.User;
+
+namespace TaskManager.Controllers;
 
 using System.Text.Json;
 using Entities;
 using TaskManager.Service.Entities.User;
 using AutoMapper;
-using Microsoft.AspNetCore.Authorization;
 
 using Microsoft.AspNetCore.Mvc;
 
@@ -13,7 +14,7 @@ using Microsoft.AspNetCore.Mvc;
 public class UsersController : Controller
 {
     private readonly IUserService _userService;
-    private IMapper _mapper;
+    private readonly IMapper _mapper;
 
     public UsersController(
         IUserService userService,
@@ -25,39 +26,86 @@ public class UsersController : Controller
     }
 
     [HttpGet("all")]
-    [Authorize]
+    //[Produces("application/json")]
     public IActionResult GetAll()
     {
-        var users = _userService.GetAll();
-
-        var response = new
+        IQueryable<User> users;
+        try
         {
-            message = users.ToString()
-        };
+            users = _userService.GetAll();
+        }
+        catch (KeyNotFoundException exception)
+        {
+            return BadRequest(exception.Message);
+        }
 
-        return Ok(response);
-    }
+        var mappedUsers = new List<UserDataModel>();
 
-    [HttpGet("{userId:int}/achievements")]
-    public IActionResult GetUserAchievements(int userId)
-    {
-        var data = _userService.GetUserAchievements(userId).ToList();
+        foreach (var user in users)
+        {
+            mappedUsers.Add(
+                _mapper.Map<UserDataModel>(user)
+                );
+        }
 
         var options = new JsonSerializerOptions
         {
             WriteIndented = true
         };
 
-        var json = JsonSerializer.Serialize<List<Achievement>>(data, options);
+        var json = JsonSerializer.Serialize(mappedUsers, options);
+
+        return Ok(json);
+    }
+
+    [HttpGet("{userId:int}/achievements")]
+    //[Produces("application/json")]
+    public IActionResult GetUserAchievements(int userId)
+    {
+        User user;
+        try
+        {
+            user = _userService.GetWithAchievementsById(userId);
+        }
+        catch (KeyNotFoundException exception)
+        {
+            return BadRequest(exception.Message);
+        }
+
+        var mappedData = _mapper.Map<UserAchievementsModel>(user);
+
+        var options = new JsonSerializerOptions
+        {
+            WriteIndented = true
+        };
+
+        var json = JsonSerializer.Serialize(mappedData, options);
 
         return Ok(json);
     }
 
     [HttpGet("{id:int}")]
-    [Authorize]
     public IActionResult GetById(int id)
     {
-        var user = _userService.GetById(id);
-        return Ok(user);
+        User user;
+        try
+        {
+            user = _userService.GetById(id);
+        }
+        catch (KeyNotFoundException exception)
+        {
+            return BadRequest(exception.Message);
+        }
+
+        var mappedUser = _mapper.Map<UserDataModel>(user);
+
+        var options = new JsonSerializerOptions
+        {
+            WriteIndented = true
+        };
+
+        var json = JsonSerializer.Serialize(mappedUser, options);
+
+        return Ok(json);
     }
 }

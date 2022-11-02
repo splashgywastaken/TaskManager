@@ -8,7 +8,7 @@ using TaskManager.Entities;
 
 public class TagService : ITagService
 {
-    private readonly ApplicationDbContext _context;
+    private readonly TaskManagerDBContext _context;
     private readonly IMapper _mapper;
 
     public IQueryable<Tag> GetAllTags()

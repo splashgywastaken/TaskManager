@@ -8,7 +8,7 @@ using TaskManager.Entities;
 
 public class ProjectService : IProjectService
 {
-    private readonly ApplicationDbContext _context;
+    private readonly TaskManagerDBContext _context;
     private readonly IMapper _mapper;
 
     public IQueryable<Project> GetProjectsByUserId(int userId)

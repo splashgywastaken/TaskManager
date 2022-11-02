@@ -1,40 +1,22 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Diagnostics.CodeAnalysis;
-using System.Text.Json.Serialization;
-
-namespace TaskManager.Entities;
-
-[Table("task")]
-public class Task
+﻿namespace TaskManager.Entities
 {
-    [Column("task_id")]
-    [Key]
-    public int TaskId { get; set; }
+    public partial class Task
+    {
+        public Task()
+        {
+            Tags = new HashSet<Tag>();
+        }
 
-    [Column("task_name")]
-    public string TaskName { get; set; }
+        public int TaskId { get; set; }
+        public int? TaskGroupId { get; set; }
+        public string TaskName { get; set; } = null!;
+        public string? TaskDescription { get; set; }
+        public DateTime TaskStartDate { get; set; }
+        public DateTime TaskFinishDate { get; set; }
+        public bool TaskCompletionStatus { get; set; }
 
-    [Column("task_description")]
-    [AllowNull]
-    public string TaskDescription { get; set; }
+        public virtual TaskGroup? TaskGroup { get; set; }
 
-    [Column("task_start_date")]
-    public DateTime TaskStartDate { get; set; }
-
-    [Column("task_finish_date")]
-    public DateTime TaskFinishDate { get; set; }
-
-    [Column("task_completion_status")]
-    public bool TaskCompletionStatus { get; set; }
-
-    // Many-to-one related properties
-    [Column("task_group_id")]
-    public int TaskGroupId { get; set; }
-    
-    public TaskGroup TaskGroup { get; set; }
-
-    // Many-to-many related properties
-    public ICollection<Tag> Tags { get; set; }
-    public List<TasksTags> TaskTags { get; set; }
+        public virtual ICollection<Tag> Tags { get; set; }
+    }
 }
