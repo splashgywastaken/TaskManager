@@ -14,6 +14,7 @@ public class HomeController : Controller
         _context = context;
     }
 
+    [HttpGet("index")]
     public IActionResult Index()
     {
         return Ok("<h2>Hello, World!</h2>");

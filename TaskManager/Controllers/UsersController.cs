@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 
 [ApiController]
 [Route("user")]
+[Produces("application/json")]
 public class UsersController : Controller
 {
     private readonly IUserService _userService;
@@ -26,7 +27,6 @@ public class UsersController : Controller
     }
 
     [HttpGet("all")]
-    //[Produces("application/json")]
     public IActionResult GetAll()
     {
         IQueryable<User> users;
@@ -48,18 +48,11 @@ public class UsersController : Controller
                 );
         }
 
-        var options = new JsonSerializerOptions
-        {
-            WriteIndented = true
-        };
-
-        var json = JsonSerializer.Serialize(mappedUsers, options);
-
-        return Ok(json);
+        return Ok(mappedUsers);
     }
 
     [HttpGet("{userId:int}/achievements")]
-    //[Produces("application/json")]
+    [Produces("application/json")]
     public IActionResult GetUserAchievements(int userId)
     {
         User user;
@@ -74,38 +67,43 @@ public class UsersController : Controller
 
         var mappedData = _mapper.Map<UserAchievementsModel>(user);
 
-        var options = new JsonSerializerOptions
-        {
-            WriteIndented = true
-        };
-
-        var json = JsonSerializer.Serialize(mappedData, options);
-
-        return Ok(json);
+        return Ok(mappedData);
     }
 
-    [HttpGet("{id:int}")]
-    public IActionResult GetById(int id)
+    [HttpGet("{userId:int}")]
+    [Produces("application/json")]
+    public IActionResult GetById(int userId)
     {
         User user;
         try
         {
-            user = _userService.GetById(id);
+            user = _userService.GetById(userId);
         }
         catch (KeyNotFoundException exception)
         {
-            return BadRequest(exception.Message);
+            return StatusCode(StatusCodes.Status400BadRequest, exception.Message);
         }
 
         var mappedUser = _mapper.Map<UserDataModel>(user);
 
-        var options = new JsonSerializerOptions
+        return Ok(mappedUser);
+    }
+
+    [HttpGet("{userId:int}/projects")]
+    public IActionResult GetUserProjectsByUserId(int userId)
+    {
+        User user;
+        try
         {
-            WriteIndented = true
-        };
+            user = _userService.GetWithProjectsById(userId);
+        }
+        catch (KeyNotFoundException exception)
+        {
+            return StatusCode(StatusCodes.Status400BadRequest, exception.Message);
+        }
 
-        var json = JsonSerializer.Serialize(mappedUser, options);
+        var mappedUser = _mapper.Map<UserProjectsModel>(user);
 
-        return Ok(json);
+        return Ok(mappedUser);
     }
 }

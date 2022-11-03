@@ -2,12 +2,14 @@
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using TaskManager.Entities;
+using TaskManager.Models.Achievement;
 using TaskManager.Service.Entities.Achievement;
 
 namespace TaskManager.Controllers;
 
 [Controller]
 [Route("achievements")]
+[Produces("application/json")]
 public class AchievementController : Controller
 {
     private readonly IAchievementService _achievementService;
@@ -22,35 +24,25 @@ public class AchievementController : Controller
         _mapper = mapper;
     }
 
-    [HttpGet("")]
+    [HttpGet("all")]
     public IActionResult GetAll()
     {
         var achievements = _achievementService.GetAll();
-
-        var achievementsList = achievements.ToList();
-
-        var options = new JsonSerializerOptions
-        {
-            WriteIndented = true
-        };
         
-        var json = JsonSerializer.Serialize<List<Achievement>>(achievementsList, options);
+        var mappedAchievementList = achievements.ToList().Select(achievement => 
+            _mapper.Map<AchievementModel>(achievement)
+            );
 
-        return Ok(json);
+        return Ok(mappedAchievementList);
     }
 
-    [HttpGet("")]
-    public IActionResult GetById([FromQuery]int id)
+    [HttpGet("{id:int}")]
+    public IActionResult GetById(int id)
     {
         var achievement = _achievementService.GetById(id);
 
-        var options = new JsonSerializerOptions
-        {
-            WriteIndented = true
-        };
+        var mappedAchievement = _mapper.Map<AchievementModel>(achievement);
 
-        var json = JsonSerializer.Serialize<Achievement>(achievement, options);
-
-        return Ok(json);
+        return Ok(mappedAchievement);
     }
 }

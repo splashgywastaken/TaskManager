@@ -53,7 +53,7 @@ namespace TaskManager.Migrations
                     b.ToTable("achievement", (string)null);
                 });
 
-            modelBuilder.Entity("TaskManager.Entities.Project", b =>
+            modelBuilder.Entity("TaskManager.Entities.ProjectDataModel", b =>
                 {
                     b.Property<int>("ProjectId")
                         .HasColumnType("int")
@@ -276,7 +276,7 @@ namespace TaskManager.Migrations
                     b.ToTable("users_achievements", (string)null);
                 });
 
-            modelBuilder.Entity("TaskManager.Entities.Project", b =>
+            modelBuilder.Entity("TaskManager.Entities.ProjectDataModel", b =>
                 {
                     b.HasOne("TaskManager.Entities.User", "User")
                         .WithMany("Projects")
@@ -298,12 +298,12 @@ namespace TaskManager.Migrations
 
             modelBuilder.Entity("TaskManager.Entities.TaskGroup", b =>
                 {
-                    b.HasOne("TaskManager.Entities.Project", "Project")
+                    b.HasOne("TaskManager.Entities.ProjectDataModel", "ProjectDataModel")
                         .WithMany("TaskGroups")
                         .HasForeignKey("ProjectId")
                         .HasConstraintName("FK_TASK_GRO_PROJECT_T_PROJECT");
 
-                    b.Navigation("Project");
+                    b.Navigation("ProjectDataModel");
                 });
 
             modelBuilder.Entity("TaskManager.Entities.TasksTags", b =>
@@ -357,7 +357,7 @@ namespace TaskManager.Migrations
                     b.Navigation("UsersAchievements");
                 });
 
-            modelBuilder.Entity("TaskManager.Entities.Project", b =>
+            modelBuilder.Entity("TaskManager.Entities.ProjectDataModel", b =>
                 {
                     b.Navigation("TaskGroups");
                 });

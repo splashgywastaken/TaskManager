@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
+using Microsoft.VisualBasic.CompilerServices;
 using TaskManager.Models.Achievement;
+using TaskManager.Models.Project;
 using TaskManager.Models.User;
 
 namespace TaskManager.Service.Data.Mapping;
@@ -13,19 +15,24 @@ public class AppMappingProfile : Profile
         // User mapping
         CreateMap<User, UserDataModel>();
         CreateMap<User, UserDataModel>().ReverseMap();
-        CreateMap<User, UserAchievementsModel>()
-            .ForMember(
-                dest => dest.UserAchievements, 
-                opt => opt.MapFrom(src => src.Achievements)
-                );
-        CreateMap<User, UserAchievementsModel>()
-            .ForMember(
-                dest => dest.UserAchievements,
-                opt => opt.MapFrom(src => src.Achievements)
-            ).ReverseMap();
+
+        // User projects mapping
+        CreateMap<User, UserProjectsModel>().ForMember(
+            dest => dest.UserProjects,
+            opt => opt.MapFrom(src => src.Projects)
+        ).ReverseMap();
+
+        // User achievements
+        CreateMap<User, UserAchievementsModel>().ForMember(
+            dest => dest.UserAchievements,
+            opt => opt.MapFrom(src => src.Achievements)
+        ).ReverseMap();
+
+        // Project mapping
+        CreateMap<Project, ProjectDataModel>();
+        CreateMap<Project, ProjectDataModel>().ReverseMap();
 
         // Achievement mapping
-        CreateMap<AchievementModel, Achievement>();
-        CreateMap<AchievementModel, Achievement>().ReverseMap();
+        CreateMap<Achievement, AchievementModel>().ReverseMap();
     }
 }

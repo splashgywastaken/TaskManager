@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using System.Text.Json.Serialization;
+using Microsoft.OpenApi.Models;
 using TaskManager.Service.Data.DbContext;
 using TaskManager.Service.Data.Mapping;
 using TaskManager.Service.Entities.Achievement;
@@ -37,6 +38,8 @@ var builder = WebApplication.CreateBuilder(args);
             };
         });
 
+    ConfigureApplicationServices(services);
+
     // Setting up mapping
     ConfigureMapping(services);
 
@@ -44,10 +47,17 @@ var builder = WebApplication.CreateBuilder(args);
     ConfigureDbContext(services);
 
     // Configue DI for application services
-    ConfigureApplicationServices(services);
+    ConfigureApplicationDataServices(services);
 }
 
 var app = builder.Build();
+
+// Swagger configue
+app.UseSwagger();
+app.UseSwaggerUI(c =>
+{
+    c.SwaggerEndpoint("/swagger/V0.1/swagger.json", "TaskManagerAPI V0.1");
+});
 
 // Configure HTTP request pipeline
 {
@@ -94,6 +104,14 @@ static void ConfigureDbContext(IServiceCollection services)
 }
 
 static void ConfigureApplicationServices(IServiceCollection services)
+{
+    services.AddSwaggerGen(c =>
+    {
+        c.SwaggerDoc("V0.1", new OpenApiInfo {Title = "TaskManagerAPI", Version = "V0.1"});
+    });
+}
+
+static void ConfigureApplicationDataServices(IServiceCollection services)
 {
     services.AddScoped<IUserService, UserService>();
     services.AddScoped<IAchievementService, AchievementService>();

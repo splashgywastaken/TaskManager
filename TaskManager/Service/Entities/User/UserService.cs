@@ -1,4 +1,5 @@
 ﻿using System.Data.Entity;
+using System.Threading.Tasks.Dataflow;
 using AutoMapper;
 using TaskManager.Models.User;
 using TaskManager.Service.Data.DbContext;
@@ -34,6 +35,11 @@ public class UserService : IUserService
     public User GetWithAchievementsById(int id)
     {
         return GetUserWithAchievements(id);
+    }
+
+    public User GetWithProjectsById(int userId)
+    {
+        return GetUserWithProjects(userId);
     }
 
     public User GetByLoginData(UserLoginModel loginModel)
@@ -80,6 +86,25 @@ public class UserService : IUserService
         return resultUser;
     }
 
+    private User GetUserWithProjects(int userId)
+    {
+        var query =
+            from user in _context.Users
+            where user.UserId == userId
+            join projects in _context.Projects
+                on user.UserId equals projects.UserId
+            select new { user, projects };
+
+        if (query == null) throw new KeyNotFoundException("User not founds");
+
+        var resultUser = query.First().user;
+        foreach (var dataRow in query)
+        {
+            resultUser.Projects.Add(dataRow.projects);
+        }
+
+        return resultUser;
+    }
     private User GetUser(UserLoginModel loginModel)
     {
         var user = _context.Users.FirstOrDefault(x =>
