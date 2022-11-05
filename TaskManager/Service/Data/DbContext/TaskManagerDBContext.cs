@@ -25,7 +25,7 @@ namespace TaskManager.Service.Data.DbContext
         public virtual DbSet<Task> Tasks { get; set; } = null!;
         public virtual DbSet<TaskGroup> TaskGroups { get; set; } = null!;
         public virtual DbSet<User> Users { get; set; } = null!;
-        public virtual DbSet<UsersAchievement> UsersAchievement { get; set; } = null!;
+        public virtual DbSet<UsersAchievements> UsersAchievement { get; set; } = null!;
 
         private readonly IConfiguration _configuration;
 
@@ -98,6 +98,21 @@ namespace TaskManager.Service.Data.DbContext
                     .WithMany(p => p.Projects)
                     .HasForeignKey(d => d.ProjectUserId)
                     .HasConstraintName("FK_USER_PROJECTS");
+            });
+
+            modelBuilder.Entity<TasksTags>(entity =>
+            {
+                entity.ToTable("tasks_tags");
+
+                entity.HasKey(p => new { p.TasksTagsTagId, p.TasksTagsTaskId });
+
+                entity.Property(e => e.TasksTagsTagId)
+                    .ValueGeneratedNever()
+                    .HasColumnName("tasks_tags_tag_id");
+
+                entity.Property(e => e.TasksTagsTaskId)
+                    .ValueGeneratedNever()
+                    .HasColumnName("tasks_tags_task_id");
             });
 
             modelBuilder.Entity<Tag>(entity =>
@@ -197,6 +212,21 @@ namespace TaskManager.Service.Data.DbContext
                     .HasConstraintName("FK_PROJECT_TASK_GROUPS");
             });
 
+            modelBuilder.Entity<UsersAchievements>(entity =>
+            {
+                entity.ToTable("users_achievements");
+
+                entity.HasKey(p => new { p.UsersAchievementsUserId, p.UsersAchievementsAchievementId });
+
+                entity.Property(e => e.UsersAchievementsUserId)
+                    .ValueGeneratedNever()
+                    .HasColumnName("users_achievements_user_id");
+
+                entity.Property(e => e.UsersAchievementsAchievementId)
+                    .ValueGeneratedNever()
+                    .HasColumnName("users_achievements_achievement_id");
+            });
+
             modelBuilder.Entity<User>(entity =>
             {
                 entity.ToTable("user");
@@ -230,11 +260,19 @@ namespace TaskManager.Service.Data.DbContext
 
                 entity.HasMany(d => d.UsersAchievementsAchievements)
                     .WithMany(p => p.UsersAchievementsUsers)
-                    .UsingEntity<UsersAchievement>(
+                    .UsingEntity<UsersAchievements>(
                         l =>
-                            l.HasOne<Achievement>().WithMany().HasForeignKey("UsersAchievementsAchievementId").OnDelete(DeleteBehavior.ClientSetNull).HasConstraintName("FK_USERS_AC_USERS_ACH_ACHIEVME"),
+                            l.HasOne<Achievement>()
+                                .WithMany()
+                                .HasForeignKey(p => p.UsersAchievementsAchievementId)
+                                .OnDelete(DeleteBehavior.ClientSetNull)
+                                .HasConstraintName("FK_USERS_ACHIEVEMENTS_ACHIEVEMENT"),
                         r =>
-                            r.HasOne<User>().WithMany().HasForeignKey("UsersAchievementsUserId").OnDelete(DeleteBehavior.ClientSetNull).HasConstraintName("FK_USERS_AC_USERS_ACH_USER")
+                            r.HasOne<User>()
+                                .WithMany()
+                                .HasForeignKey(p => p.UsersAchievementsUserId)
+                                .OnDelete(DeleteBehavior.ClientSetNull)
+                                .HasConstraintName("FK_USERS_ACHIEVEMENTS_USER")
                     );
             });
 

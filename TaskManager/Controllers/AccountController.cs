@@ -24,9 +24,9 @@ public class AccountController : Controller
 
     // auth
     [HttpPost("login")]
-    public IActionResult Login([FromBody] UserLoginModel loginModel)
+    public async Task<IActionResult> Login([FromBody] UserLoginModel loginModel)
     {
-        var user = _userService.GetByLoginData(loginModel);
+        var user = await _userService.GetByLoginData(loginModel);
 
         if (user is null) return Unauthorized(loginModel);
 

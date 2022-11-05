@@ -3,7 +3,6 @@ using TaskManager.Service.Data.DbContext;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Query;
 
 namespace TaskManager.Service.Entities.Achievement;
 

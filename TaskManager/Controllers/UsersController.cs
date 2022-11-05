@@ -27,38 +27,33 @@ public class UsersController : Controller
     }
 
     [HttpGet("all")]
-    public IActionResult GetAll()
+    public async Task<IActionResult> GetAll()
     {
-        IQueryable<User> users;
+        List<User> users;
         try
         {
-            users = _userService.GetAll();
+            users = await _userService.GetAll();
         }
         catch (KeyNotFoundException exception)
         {
             return BadRequest(exception.Message);
         }
 
-        var mappedUsers = new List<UserDataModel>();
-
-        foreach (var user in users)
-        {
-            mappedUsers.Add(
-                _mapper.Map<UserDataModel>(user)
-                );
-        }
+        var mappedUsers = users.Select(user => 
+            _mapper.Map<UserDataModel>(user)
+            ).ToList();
 
         return Ok(mappedUsers);
     }
 
     [HttpGet("{userId:int}/achievements")]
     [Produces("application/json")]
-    public IActionResult GetUserAchievements(int userId)
+    public async Task<IActionResult> GetUserAchievements(int userId)
     {
         User user;
         try
         {
-            user = _userService.GetWithAchievementsById(userId);
+            user = await _userService.GetWithAchievementsById(userId);
         }
         catch (KeyNotFoundException exception)
         {
@@ -72,12 +67,12 @@ public class UsersController : Controller
 
     [HttpGet("{userId:int}")]
     [Produces("application/json")]
-    public IActionResult GetById(int userId)
+    public async Task<IActionResult> GetById(int userId)
     {
         User user;
         try
         {
-            user = _userService.GetById(userId);
+            user = await _userService.GetById(userId);
         }
         catch (KeyNotFoundException exception)
         {
@@ -90,12 +85,12 @@ public class UsersController : Controller
     }
 
     [HttpGet("{userId:int}/projects")]
-    public IActionResult GetUserProjectsByUserId(int userId)
+    public async Task<IActionResult> GetUserProjectsByUserId(int userId)
     {
         User user;
         try
         {
-            user = _userService.GetWithProjectsById(userId);
+            user = await _userService.GetWithProjectsById(userId);
         }
         catch (KeyNotFoundException exception)
         {

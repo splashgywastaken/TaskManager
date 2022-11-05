@@ -1,6 +1,6 @@
 ﻿namespace TaskManager.Entities
 {
-    public class UsersAchievement
+    public class UsersAchievements
     {
         public int UsersAchievementsAchievementId { get; set; }
         public Achievement Achievement { get; set; } = null!;

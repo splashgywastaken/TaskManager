@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace TaskManager.Migrations
 {
-    public partial class InitialCreate : Migration
+    public partial class Initial : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -79,35 +79,35 @@ namespace TaskManager.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "UsersAchievement",
+                name: "users_achievements",
                 columns: table => new
                 {
-                    UsersAchievementsAchievementId = table.Column<int>(type: "int", nullable: false),
-                    UsersAchievementsUserId = table.Column<int>(type: "int", nullable: false),
+                    users_achievements_achievement_id = table.Column<int>(type: "int", nullable: false),
+                    users_achievements_user_id = table.Column<int>(type: "int", nullable: false),
                     AchievementId = table.Column<int>(type: "int", nullable: false),
                     UserId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_UsersAchievement", x => new { x.UsersAchievementsAchievementId, x.UsersAchievementsUserId });
+                    table.PrimaryKey("PK_users_achievements", x => new { x.users_achievements_user_id, x.users_achievements_achievement_id });
                     table.ForeignKey(
-                        name: "FK_USERS_AC_USERS_ACH_ACHIEVME",
-                        column: x => x.UsersAchievementsAchievementId,
+                        name: "FK_USERS_ACHIEVEMENTS_ACHIEVEMENT",
+                        column: x => x.users_achievements_achievement_id,
                         principalTable: "achievement",
                         principalColumn: "achievement_id");
                     table.ForeignKey(
-                        name: "FK_USERS_AC_USERS_ACH_USER",
-                        column: x => x.UsersAchievementsUserId,
-                        principalTable: "user",
-                        principalColumn: "user_id");
-                    table.ForeignKey(
-                        name: "FK_UsersAchievement_achievement_AchievementId",
+                        name: "FK_users_achievements_achievement_AchievementId",
                         column: x => x.AchievementId,
                         principalTable: "achievement",
                         principalColumn: "achievement_id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_UsersAchievement_user_UserId",
+                        name: "FK_USERS_ACHIEVEMENTS_USER",
+                        column: x => x.users_achievements_user_id,
+                        principalTable: "user",
+                        principalColumn: "user_id");
+                    table.ForeignKey(
+                        name: "FK_users_achievements_user_UserId",
                         column: x => x.UserId,
                         principalTable: "user",
                         principalColumn: "user_id",
@@ -158,35 +158,35 @@ namespace TaskManager.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "TasksTags",
+                name: "tasks_tags",
                 columns: table => new
                 {
-                    TasksTagsTaskId = table.Column<int>(type: "int", nullable: false),
-                    TasksTagsTagId = table.Column<int>(type: "int", nullable: false),
+                    tasks_tags_task_id = table.Column<int>(type: "int", nullable: false),
+                    tasks_tags_tag_id = table.Column<int>(type: "int", nullable: false),
                     TaskId = table.Column<int>(type: "int", nullable: false),
                     TagId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_TasksTags", x => new { x.TasksTagsTagId, x.TasksTagsTaskId });
+                    table.PrimaryKey("PK_tasks_tags", x => new { x.tasks_tags_tag_id, x.tasks_tags_task_id });
                     table.ForeignKey(
                         name: "FK_TASKS_TA_TASKS_TAG_TAG",
-                        column: x => x.TasksTagsTagId,
+                        column: x => x.tasks_tags_tag_id,
                         principalTable: "tag",
                         principalColumn: "tag_id");
                     table.ForeignKey(
                         name: "FK_TASKS_TA_TASKS_TAG_TASK",
-                        column: x => x.TasksTagsTaskId,
+                        column: x => x.tasks_tags_task_id,
                         principalTable: "task",
                         principalColumn: "task_id");
                     table.ForeignKey(
-                        name: "FK_TasksTags_tag_TagId",
+                        name: "FK_tasks_tags_tag_TagId",
                         column: x => x.TagId,
                         principalTable: "tag",
                         principalColumn: "tag_id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_TasksTags_task_TaskId",
+                        name: "FK_tasks_tags_task_TaskId",
                         column: x => x.TaskId,
                         principalTable: "task",
                         principalColumn: "task_id",
@@ -209,43 +209,43 @@ namespace TaskManager.Migrations
                 column: "task_group_project_id");
 
             migrationBuilder.CreateIndex(
-                name: "IX_TasksTags_TagId",
-                table: "TasksTags",
+                name: "IX_tasks_tags_TagId",
+                table: "tasks_tags",
                 column: "TagId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_TasksTags_TaskId",
-                table: "TasksTags",
+                name: "IX_tasks_tags_TaskId",
+                table: "tasks_tags",
                 column: "TaskId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_TasksTags_TasksTagsTaskId",
-                table: "TasksTags",
-                column: "TasksTagsTaskId");
+                name: "IX_tasks_tags_tasks_tags_task_id",
+                table: "tasks_tags",
+                column: "tasks_tags_task_id");
 
             migrationBuilder.CreateIndex(
-                name: "IX_UsersAchievement_AchievementId",
-                table: "UsersAchievement",
+                name: "IX_users_achievements_AchievementId",
+                table: "users_achievements",
                 column: "AchievementId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_UsersAchievement_UserId",
-                table: "UsersAchievement",
+                name: "IX_users_achievements_UserId",
+                table: "users_achievements",
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_UsersAchievement_UsersAchievementsUserId",
-                table: "UsersAchievement",
-                column: "UsersAchievementsUserId");
+                name: "IX_users_achievements_users_achievements_achievement_id",
+                table: "users_achievements",
+                column: "users_achievements_achievement_id");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "TasksTags");
+                name: "tasks_tags");
 
             migrationBuilder.DropTable(
-                name: "UsersAchievement");
+                name: "users_achievements");
 
             migrationBuilder.DropTable(
                 name: "tag");

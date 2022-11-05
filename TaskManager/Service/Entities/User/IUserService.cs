@@ -5,10 +5,10 @@ namespace TaskManager.Service.Entities.User;
 using TaskManager.Entities;
 public interface IUserService
 {
-    IQueryable<User> GetAll();
-    User GetById(int id);
-    User GetWithAchievementsById(int id);
-    User GetWithProjectsById(int userId);
-    User GetByLoginData(UserLoginModel loginModel);
-    IQueryable<Achievement> GetUserAchievements(int userId);
+    Task<List<User>> GetAll();
+    Task<User> GetById(int id);
+    Task<User> GetWithAchievementsById(int id);
+    Task<User> GetWithProjectsById(int userId);
+    Task<User> GetByLoginData(UserLoginModel loginModel);
+    Task<List<Achievement>> GetUserAchievements(int userId);
 }

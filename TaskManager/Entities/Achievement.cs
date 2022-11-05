@@ -13,6 +13,6 @@
         public int AchievementPoints { get; set; }
 
         public virtual ICollection<User> UsersAchievementsUsers { get; set; }
-        public List<UsersAchievement> UsersAchievements { get; set; }
+        public List<UsersAchievements> UsersAchievements { get; set; }
     }
 }

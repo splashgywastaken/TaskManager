@@ -1,6 +1,5 @@
-﻿using System.Data.Entity;
-using System.Threading.Tasks.Dataflow;
-using AutoMapper;
+﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 using TaskManager.Models.User;
 using TaskManager.Service.Data.DbContext;
 
@@ -22,63 +21,76 @@ public class UserService : IUserService
         _mapper = mapper;
     }
 
-    public IQueryable<User> GetAll()
+    public async Task<List<User>> GetAll()
     {
-        return _context.Users;
+        return await _context.Users.ToListAsync();
     }
 
-    public User GetById(int id)
+    public async Task<User> GetById(int id)
     {
-        return GetUser(id);
+        return await GetUser(id);
     }
 
-    public User GetWithAchievementsById(int id)
+    public async Task<User> GetWithAchievementsById(int id)
     {
-        return GetUserWithAchievements(id);
+        return await GetUserWithAchievements(id);
     }
 
-    public User GetWithProjectsById(int userId)
+    public async Task<User> GetWithProjectsById(int userId)
     {
-        return GetUserWithProjects(userId);
+        return await GetUserWithProjects(userId);
     }
 
-    public User GetByLoginData(UserLoginModel loginModel)
+    public async Task<User> GetByLoginData(UserLoginModel loginModel)
     {
-        return GetUser(loginModel);
+        return await GetUser(loginModel);
     }
 
-    public IQueryable<Achievement> GetUserAchievements(int userId)
+    public async Task<List<Achievement>> GetUserAchievements(int userId)
     {
-        return GetAchievementsByUserId(userId);
+        return await GetAchievementsByUserId(userId);
     }
 
-    private IQueryable<Achievement> GetAchievementsByUserId(int userId)
+    private async Task<List<Achievement>> GetAchievementsByUserId(int userId)
     {
-        return null;
+        var queryResult =
+            await (
+                from achievement in _context.Achievements
+                join ua in _context.UsersAchievement
+                    on achievement.AchievementId equals ua.UsersAchievementsAchievementId
+                where ua.UsersAchievementsUserId == userId
+                select achievement
+                ).ToListAsync();
+
+        if (queryResult == null) throw new KeyNotFoundException("User not found");
+
+        return queryResult;
     }
 
-    private User GetUser(int id)
+    private async Task<User> GetUser(int id)
     {
-        var user = _context.Users.Find(id);
+        var user = await _context.Users.FindAsync(id);
         if (user == null) throw new KeyNotFoundException("ProjectUser not found");
         return user;
     }
     
-    private User GetUserWithAchievements(int id)
+    private async Task<User> GetUserWithAchievements(int id)
     {
-        var query =
-            from user in _context.Users
-            join ua in _context.UsersAchievement
-                on user.UserId equals ua.UsersAchievementsUserId
-            join achievement in _context.Achievements
-                on ua.UsersAchievementsAchievementId equals achievement.AchievementId
-            where user.UserId == id
-                select new { user, achievement};
+        var queryResult =
+            await (
+                from user in _context.Users
+                join ua in _context.UsersAchievement
+                    on user.UserId equals ua.UsersAchievementsUserId
+                join achievement in _context.Achievements
+                    on ua.UsersAchievementsAchievementId equals achievement.AchievementId
+                where user.UserId == id
+                select new { user, achievement }
+                ).ToListAsync();
 
-        if (query == null) throw new KeyNotFoundException("ProjectUser not found");
+        if (!queryResult.Any()) throw new KeyNotFoundException("ProjectUser not found");
 
-        var resultUser = query.First().user;
-        foreach (var dataRow in query)
+        var resultUser = queryResult.First().user;
+        foreach (var dataRow in queryResult)
         {
             resultUser.UsersAchievementsAchievements.Add(dataRow.achievement);
         }
@@ -86,28 +98,19 @@ public class UserService : IUserService
         return resultUser;
     }
 
-    private User GetUserWithProjects(int userId)
+    private async Task<User> GetUserWithProjects(int userId)
     {
-        var query =
-            from user in _context.Users
-            where user.UserId == userId
-            join projects in _context.Projects
-                on user.UserId equals projects.ProjectUserId
-            select new { user, projects };
+        var queryResult = await _context.Users.Include(p =>
+            p.Projects).Where(p => 
+            p.UserId == userId).ToListAsync();
 
-        if (query == null) throw new KeyNotFoundException("ProjectUser not founds");
+        if (!queryResult.Any()) throw new KeyNotFoundException();
 
-        var resultUser = query.First().user;
-        foreach (var dataRow in query)
-        {
-            resultUser.Projects.Add(dataRow.projects);
-        }
-
-        return resultUser;
+        return queryResult.First();
     }
-    private User GetUser(UserLoginModel loginModel)
+    private async Task<User> GetUser(UserLoginModel loginModel)
     {
-        var user = _context.Users.FirstOrDefault(x =>
+        var user = await _context.Users.FirstOrDefaultAsync(x =>
             x.UserEmail == loginModel.Email 
             && x.UserPassword == loginModel.Password
             );

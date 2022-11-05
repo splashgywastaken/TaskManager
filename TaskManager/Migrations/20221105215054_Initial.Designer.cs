@@ -12,8 +12,8 @@ using TaskManager.Service.Data.DbContext;
 namespace TaskManager.Migrations
 {
     [DbContext(typeof(TaskManagerDBContext))]
-    [Migration("20221105115236_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20221105215054_Initial")]
+    partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -209,10 +209,12 @@ namespace TaskManager.Migrations
             modelBuilder.Entity("TaskManager.Entities.TasksTags", b =>
                 {
                     b.Property<int>("TasksTagsTagId")
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnName("tasks_tags_tag_id");
 
                     b.Property<int>("TasksTagsTaskId")
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnName("tasks_tags_task_id");
 
                     b.Property<int>("TagId")
                         .HasColumnType("int");
@@ -228,7 +230,7 @@ namespace TaskManager.Migrations
 
                     b.HasIndex("TasksTagsTaskId");
 
-                    b.ToTable("TasksTags");
+                    b.ToTable("tasks_tags", (string)null);
                 });
 
             modelBuilder.Entity("TaskManager.Entities.User", b =>
@@ -277,13 +279,15 @@ namespace TaskManager.Migrations
                     b.ToTable("user", (string)null);
                 });
 
-            modelBuilder.Entity("TaskManager.Entities.UsersAchievement", b =>
+            modelBuilder.Entity("TaskManager.Entities.UsersAchievements", b =>
                 {
-                    b.Property<int>("UsersAchievementsAchievementId")
-                        .HasColumnType("int");
-
                     b.Property<int>("UsersAchievementsUserId")
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnName("users_achievements_user_id");
+
+                    b.Property<int>("UsersAchievementsAchievementId")
+                        .HasColumnType("int")
+                        .HasColumnName("users_achievements_achievement_id");
 
                     b.Property<int>("AchievementId")
                         .HasColumnType("int");
@@ -291,15 +295,15 @@ namespace TaskManager.Migrations
                     b.Property<int>("UserId")
                         .HasColumnType("int");
 
-                    b.HasKey("UsersAchievementsAchievementId", "UsersAchievementsUserId");
+                    b.HasKey("UsersAchievementsUserId", "UsersAchievementsAchievementId");
 
                     b.HasIndex("AchievementId");
 
                     b.HasIndex("UserId");
 
-                    b.HasIndex("UsersAchievementsUserId");
+                    b.HasIndex("UsersAchievementsAchievementId");
 
-                    b.ToTable("UsersAchievement");
+                    b.ToTable("users_achievements", (string)null);
                 });
 
             modelBuilder.Entity("TaskManager.Entities.Project", b =>
@@ -363,7 +367,7 @@ namespace TaskManager.Migrations
                     b.Navigation("Task");
                 });
 
-            modelBuilder.Entity("TaskManager.Entities.UsersAchievement", b =>
+            modelBuilder.Entity("TaskManager.Entities.UsersAchievements", b =>
                 {
                     b.HasOne("TaskManager.Entities.Achievement", "Achievement")
                         .WithMany("UsersAchievements")
@@ -381,13 +385,13 @@ namespace TaskManager.Migrations
                         .WithMany()
                         .HasForeignKey("UsersAchievementsAchievementId")
                         .IsRequired()
-                        .HasConstraintName("FK_USERS_AC_USERS_ACH_ACHIEVME");
+                        .HasConstraintName("FK_USERS_ACHIEVEMENTS_ACHIEVEMENT");
 
                     b.HasOne("TaskManager.Entities.User", null)
                         .WithMany()
                         .HasForeignKey("UsersAchievementsUserId")
                         .IsRequired()
-                        .HasConstraintName("FK_USERS_AC_USERS_ACH_USER");
+                        .HasConstraintName("FK_USERS_ACHIEVEMENTS_USER");
 
                     b.Navigation("Achievement");
 
