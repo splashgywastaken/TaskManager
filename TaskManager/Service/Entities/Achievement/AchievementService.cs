@@ -1,6 +1,8 @@
-﻿using System.Data.Entity;
+﻿using System.Data.Entity.Core;
 using TaskManager.Service.Data.DbContext;
 using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query;
 
 namespace TaskManager.Service.Entities.Achievement;
@@ -21,9 +23,9 @@ public class AchievementService : IAchievementService
         _mapper = mapper;
     }
 
-    public IQueryable<Achievement> GetAll()
+    public async Task<List<Achievement>> GetAll()
     {
-        return GetAchievements();
+        return await GetAchievements();
     }
 
     public async Task<Achievement> GetById(int id)
@@ -36,11 +38,26 @@ public class AchievementService : IAchievementService
         return await AddAchievement(achievement);
     }
 
-    private IQueryable<Achievement> GetAchievements()
+    public async Task<StatusCodeResult> UpdateAchievement(int id, Achievement achievement)
     {
-        var result = _context.Achievements.AsQueryable();
+        return await UpdateAchievementById(id, achievement);
+    }
 
-        return result;
+    public async Task<StatusCodeResult> DeleteAchievement(int id)
+    {
+        return await DeleteAchievementById(id);
+    }
+
+    private async Task<List<Achievement>> GetAchievements()
+    {
+        var result = await _context.Achievements.ToListAsync().ConfigureAwait(false);
+
+        if (!result.Any())
+        {
+            throw new ObjectNotFoundException("Achievements list is empty");
+        }
+
+        return result.ToList();
     }
 
     private async Task<Achievement> GetAchievement(int id)
@@ -57,5 +74,47 @@ public class AchievementService : IAchievementService
         await _context.SaveChangesAsync();
 
         return achievement;
-    } 
+    }
+
+    private async Task<StatusCodeResult> UpdateAchievementById(int id, Achievement achievement)
+    {
+        _context.Entry(achievement).State = EntityState.Modified;
+
+        try
+        {
+            await _context.SaveChangesAsync();
+        }
+        catch (DbUpdateConcurrencyException exception)
+        {
+            if (!AchievementExists(id))
+            {
+                return new NotFoundResult();
+            }
+            else
+            {
+                throw;
+            }
+        }
+
+        return new NoContentResult();
+    }
+
+    private bool AchievementExists(int id)
+    {
+        return (_context.Achievements?.Any(p => p.AchievementId == id)).GetValueOrDefault();
+    }
+
+    private async Task<StatusCodeResult> DeleteAchievementById(int id)
+    {
+        var achievement = await _context.Achievements.FindAsync(id);
+        if (achievement == null)
+        {
+            return new NotFoundResult();
+        }
+
+        _context.Achievements.Remove(achievement);
+        await _context.SaveChangesAsync();
+
+        return new NoContentResult();
+    }
 }

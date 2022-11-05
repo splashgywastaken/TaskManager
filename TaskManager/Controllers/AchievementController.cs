@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using System.Data.Entity.Core;
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using TaskManager.Models.Achievement;
 using TaskManager.Service.Entities.Achievement;
@@ -23,15 +24,23 @@ public class AchievementController : Controller
     }
 
     [HttpGet("all")]
-    public IActionResult GetAll()
+    public async Task<IActionResult> GetAll()
     {
-        var achievements = _achievementService.GetAll();
-        
-        var mappedAchievementList = achievements.ToList().Select(achievement => 
-            _mapper.Map<AchievementModel>(achievement)
-            );
+        List<Achievement> achievements;
+        try
+        {
+            achievements = await _achievementService.GetAll();
+        }
+        catch (ObjectNotFoundException exception)
+        {
+            return NotFound(exception.Message);
+        }
 
-        return Ok(mappedAchievementList);
+        var mappedAchievementsList = achievements.Select(achievement =>
+            _mapper.Map<AchievementModel>(achievement)
+            ).ToList();
+
+        return Ok(mappedAchievementsList);
     }
 
     [HttpGet("{id:int}")]
@@ -65,5 +74,40 @@ public class AchievementController : Controller
             new { id = mappedResultAchievement.AchievementId },
             mappedResultAchievement
             );
+    }
+
+    [HttpPut]
+    [Route("{id:int}")]
+    public async Task<IActionResult> PutAchievement(int id, [FromBody] AchievementModel achievement)
+    {
+        if (id != achievement.AchievementId)
+        {
+            return BadRequest();
+        }
+
+        var mappedAchievement = _mapper.Map<Achievement>(achievement);
+
+        var status = await _achievementService.UpdateAchievement(id, mappedAchievement);
+
+        if (status.StatusCode == StatusCodes.Status204NoContent)
+        {
+            return NoContent();
+        } 
+
+        return NotFound();
+    }
+
+    [HttpDelete]
+    [Route("{id:int}")]
+    public async Task<IActionResult> DeleteAchievement(int id)
+    {
+        var result = await _achievementService.DeleteAchievement(id);
+
+        if (result.StatusCode == StatusCodes.Status404NotFound)
+        {
+            return NotFound();
+        }
+
+        return NoContent();
     }
 }
