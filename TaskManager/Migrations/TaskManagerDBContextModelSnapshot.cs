@@ -25,8 +25,11 @@ namespace TaskManager.Migrations
             modelBuilder.Entity("TaskManager.Entities.Achievement", b =>
                 {
                     b.Property<int>("AchievementId")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasColumnName("achievement_id");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("AchievementId"), 1L, 1);
 
                     b.Property<string>("AchievementDescription")
                         .IsRequired()
@@ -54,8 +57,11 @@ namespace TaskManager.Migrations
             modelBuilder.Entity("TaskManager.Entities.Project", b =>
                 {
                     b.Property<int>("ProjectId")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasColumnName("project_id");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ProjectId"), 1L, 1);
 
                     b.Property<bool?>("ProjectCompletionStatus")
                         .HasColumnType("bit")
@@ -82,13 +88,13 @@ namespace TaskManager.Migrations
                         .HasColumnType("datetime")
                         .HasColumnName("project_start_date");
 
-                    b.Property<int?>("UserId")
+                    b.Property<int?>("ProjectUserId")
                         .HasColumnType("int")
-                        .HasColumnName("user_id");
+                        .HasColumnName("project_user_id");
 
                     b.HasKey("ProjectId");
 
-                    b.HasIndex(new[] { "UserId" }, "user_projects_FK");
+                    b.HasIndex(new[] { "ProjectUserId" }, "user_projects_FK");
 
                     b.ToTable("project", (string)null);
                 });
@@ -96,8 +102,11 @@ namespace TaskManager.Migrations
             modelBuilder.Entity("TaskManager.Entities.Tag", b =>
                 {
                     b.Property<int>("TagId")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasColumnName("tag_id");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("TagId"), 1L, 1);
 
                     b.Property<string>("TagDescription")
                         .HasMaxLength(256)
@@ -120,8 +129,11 @@ namespace TaskManager.Migrations
             modelBuilder.Entity("TaskManager.Entities.Task", b =>
                 {
                     b.Property<int>("TaskId")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasColumnName("task_id");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("TaskId"), 1L, 1);
 
                     b.Property<bool>("TaskCompletionStatus")
                         .HasColumnType("bit")
@@ -137,10 +149,6 @@ namespace TaskManager.Migrations
                         .HasColumnType("datetime")
                         .HasColumnName("task_finish_date");
 
-                    b.Property<int?>("TaskGroupId")
-                        .HasColumnType("int")
-                        .HasColumnName("task_group_id");
-
                     b.Property<string>("TaskName")
                         .IsRequired()
                         .HasMaxLength(128)
@@ -152,9 +160,13 @@ namespace TaskManager.Migrations
                         .HasColumnType("datetime")
                         .HasColumnName("task_start_date");
 
+                    b.Property<int?>("TaskTaskGroupId")
+                        .HasColumnType("int")
+                        .HasColumnName("task_task_group_id");
+
                     b.HasKey("TaskId");
 
-                    b.HasIndex(new[] { "TaskGroupId" }, "task_group_tasks_FK");
+                    b.HasIndex(new[] { "TaskTaskGroupId" }, "task_group_tasks_FK");
 
                     b.ToTable("task", (string)null);
                 });
@@ -162,12 +174,11 @@ namespace TaskManager.Migrations
             modelBuilder.Entity("TaskManager.Entities.TaskGroup", b =>
                 {
                     b.Property<int>("TaskGroupId")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasColumnName("task_group_id");
 
-                    b.Property<int?>("ProjectId")
-                        .HasColumnType("int")
-                        .HasColumnName("project_id");
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("TaskGroupId"), 1L, 1);
 
                     b.Property<string>("TaskGroupDescription")
                         .HasMaxLength(256)
@@ -182,24 +193,38 @@ namespace TaskManager.Migrations
                         .HasColumnType("varchar(128)")
                         .HasColumnName("task_group_name");
 
+                    b.Property<int?>("TaskGroupProjectId")
+                        .HasColumnType("int")
+                        .HasColumnName("task_group_project_id");
+
                     b.HasKey("TaskGroupId");
 
-                    b.HasIndex(new[] { "ProjectId" }, "project_task_groups_FK");
+                    b.HasIndex(new[] { "TaskGroupProjectId" }, "project_task_groups_FK");
 
                     b.ToTable("task_group", (string)null);
                 });
 
             modelBuilder.Entity("TaskManager.Entities.TasksTags", b =>
                 {
+                    b.Property<int>("TasksTagsTagId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TasksTagsTaskId")
+                        .HasColumnType("int");
+
                     b.Property<int>("TagId")
                         .HasColumnType("int");
 
                     b.Property<int>("TaskId")
                         .HasColumnType("int");
 
-                    b.HasKey("TagId", "TaskId");
+                    b.HasKey("TasksTagsTagId", "TasksTagsTaskId");
+
+                    b.HasIndex("TagId");
 
                     b.HasIndex("TaskId");
+
+                    b.HasIndex("TasksTagsTaskId");
 
                     b.ToTable("TasksTags");
                 });
@@ -207,8 +232,11 @@ namespace TaskManager.Migrations
             modelBuilder.Entity("TaskManager.Entities.User", b =>
                 {
                     b.Property<int>("UserId")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasColumnName("user_id");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("UserId"), 1L, 1);
 
                     b.Property<int?>("UserAchievementsScore")
                         .HasColumnType("int")
@@ -249,101 +277,115 @@ namespace TaskManager.Migrations
 
             modelBuilder.Entity("TaskManager.Entities.UsersAchievement", b =>
                 {
-                    b.Property<int>("UserId")
-                        .HasColumnType("int")
-                        .HasColumnName("user_id");
+                    b.Property<int>("UsersAchievementsAchievementId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UsersAchievementsUserId")
+                        .HasColumnType("int");
 
                     b.Property<int>("AchievementId")
-                        .HasColumnType("int")
-                        .HasColumnName("achievement_id");
-
-                    b.Property<int>("AchievementId1")
                         .HasColumnType("int");
 
-                    b.Property<int>("UserId1")
+                    b.Property<int>("UserId")
                         .HasColumnType("int");
 
-                    b.HasKey("UserId", "AchievementId");
+                    b.HasKey("UsersAchievementsAchievementId", "UsersAchievementsUserId");
 
                     b.HasIndex("AchievementId");
 
-                    b.HasIndex("AchievementId1");
+                    b.HasIndex("UserId");
 
-                    b.HasIndex("UserId1");
+                    b.HasIndex("UsersAchievementsUserId");
 
-                    b.ToTable("users_achievements", (string)null);
+                    b.ToTable("UsersAchievement");
                 });
 
             modelBuilder.Entity("TaskManager.Entities.Project", b =>
                 {
-                    b.HasOne("TaskManager.Entities.User", "User")
+                    b.HasOne("TaskManager.Entities.User", "ProjectUser")
                         .WithMany("Projects")
-                        .HasForeignKey("UserId")
-                        .HasConstraintName("FK_PROJECT_USER_PROJ_USER");
+                        .HasForeignKey("ProjectUserId")
+                        .HasConstraintName("FK_USER_PROJECTS");
 
-                    b.Navigation("User");
+                    b.Navigation("ProjectUser");
                 });
 
             modelBuilder.Entity("TaskManager.Entities.Task", b =>
                 {
-                    b.HasOne("TaskManager.Entities.TaskGroup", "TaskGroup")
+                    b.HasOne("TaskManager.Entities.TaskGroup", "TaskTaskGroup")
                         .WithMany("Tasks")
-                        .HasForeignKey("TaskGroupId")
-                        .HasConstraintName("FK_TASK_TASK_GROU_TASK_GRO");
+                        .HasForeignKey("TaskTaskGroupId")
+                        .HasConstraintName("FK_TASK_TASK_GROUPS");
 
-                    b.Navigation("TaskGroup");
+                    b.Navigation("TaskTaskGroup");
                 });
 
             modelBuilder.Entity("TaskManager.Entities.TaskGroup", b =>
                 {
-                    b.HasOne("TaskManager.Entities.Project", "Project")
+                    b.HasOne("TaskManager.Entities.Project", "TaskGroupProject")
                         .WithMany("TaskGroups")
-                        .HasForeignKey("ProjectId")
-                        .HasConstraintName("FK_TASK_GRO_PROJECT_T_PROJECT");
+                        .HasForeignKey("TaskGroupProjectId")
+                        .HasConstraintName("FK_PROJECT_TASK_GROUPS");
 
-                    b.Navigation("Project");
+                    b.Navigation("TaskGroupProject");
                 });
 
             modelBuilder.Entity("TaskManager.Entities.TasksTags", b =>
                 {
-                    b.HasOne("TaskManager.Entities.Tag", null)
+                    b.HasOne("TaskManager.Entities.Tag", "Tag")
                         .WithMany()
                         .HasForeignKey("TagId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("TaskManager.Entities.Task", "Task")
+                        .WithMany()
+                        .HasForeignKey("TaskId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("TaskManager.Entities.Tag", null)
+                        .WithMany()
+                        .HasForeignKey("TasksTagsTagId")
                         .IsRequired()
                         .HasConstraintName("FK_TASKS_TA_TASKS_TAG_TAG");
 
                     b.HasOne("TaskManager.Entities.Task", null)
                         .WithMany()
-                        .HasForeignKey("TaskId")
+                        .HasForeignKey("TasksTagsTaskId")
                         .IsRequired()
                         .HasConstraintName("FK_TASKS_TA_TASKS_TAG_TASK");
+
+                    b.Navigation("Tag");
+
+                    b.Navigation("Task");
                 });
 
             modelBuilder.Entity("TaskManager.Entities.UsersAchievement", b =>
                 {
-                    b.HasOne("TaskManager.Entities.Achievement", null)
-                        .WithMany()
-                        .HasForeignKey("AchievementId")
-                        .IsRequired()
-                        .HasConstraintName("FK_USERS_AC_USERS_ACH_ACHIEVME");
-
                     b.HasOne("TaskManager.Entities.Achievement", "Achievement")
                         .WithMany("UsersAchievements")
-                        .HasForeignKey("AchievementId1")
+                        .HasForeignKey("AchievementId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.HasOne("TaskManager.Entities.User", null)
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .IsRequired()
-                        .HasConstraintName("FK_USERS_AC_USERS_ACH_USER");
 
                     b.HasOne("TaskManager.Entities.User", "User")
                         .WithMany("UsersAchievements")
-                        .HasForeignKey("UserId1")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("TaskManager.Entities.Achievement", null)
+                        .WithMany()
+                        .HasForeignKey("UsersAchievementsAchievementId")
+                        .IsRequired()
+                        .HasConstraintName("FK_USERS_AC_USERS_ACH_ACHIEVME");
+
+                    b.HasOne("TaskManager.Entities.User", null)
+                        .WithMany()
+                        .HasForeignKey("UsersAchievementsUserId")
+                        .IsRequired()
+                        .HasConstraintName("FK_USERS_AC_USERS_ACH_USER");
 
                     b.Navigation("Achievement");
 

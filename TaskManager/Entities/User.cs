@@ -5,7 +5,7 @@
         public User()
         {
             Projects = new HashSet<Project>();
-            Achievements = new HashSet<Achievement>();
+            UsersAchievementsAchievements = new HashSet<Achievement>();
         }
 
         public int UserId { get; set; }
@@ -17,7 +17,7 @@
 
         public virtual ICollection<Project> Projects { get; set; }
 
-        public virtual ICollection<Achievement> Achievements { get; set; }
+        public virtual ICollection<Achievement> UsersAchievementsAchievements { get; set; }
         public List<UsersAchievement> UsersAchievements { get; set;}
     }
 }

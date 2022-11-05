@@ -16,6 +16,7 @@
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Controllers\" />
+    <Folder Include="Migrations\" />
     <Folder Include="Models\Achievement\" />
     <Folder Include="Models\Tag\" />
     <Folder Include="Models\Task\" />

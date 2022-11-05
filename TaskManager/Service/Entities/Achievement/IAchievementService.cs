@@ -5,6 +5,6 @@ using TaskManager.Entities;
 public interface IAchievementService
 {
     IQueryable<Achievement> GetAll();
-    Achievement GetById(int id);
-
+    Task<Achievement> GetById(int id);
+    Task<Achievement> PostNew(Achievement achievement);
 }

@@ -29,7 +29,7 @@ public class TaskService : ITaskService
     private IQueryable<Task> GetProjectTasks(int projectId)
     {
         var result = _context.Tasks.Where(
-                p => p.TaskGroup.ProjectId == projectId
+                p => p.TaskTaskGroup.TaskGroupProjectId == projectId
             );
 
         return result;

@@ -24,7 +24,7 @@ public class ProjectService : IProjectService
     private IQueryable<Project> GetProjects(int userId)
     {
         var result = _context.Projects.Where(
-                p => p.UserId == userId
+                p => p.ProjectUserId == userId
             );
 
         return result;
@@ -36,7 +36,7 @@ public class ProjectService : IProjectService
             p => p.ProjectId == projectId
         );
 
-        if (result == null) throw new KeyNotFoundException("Project not found");
+        if (result == null) throw new KeyNotFoundException("TaskGroupProject not found");
 
         return result;
     }

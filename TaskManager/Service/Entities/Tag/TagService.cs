@@ -25,7 +25,7 @@ public class TagService : ITagService
     {
         var result = _context.Tags.AsQueryable();
 
-        if (result == null) throw new ObjectNotFoundException("Tags not found");
+        if (result == null) throw new ObjectNotFoundException("TasksTagsTags not found");
 
         return result;
     }

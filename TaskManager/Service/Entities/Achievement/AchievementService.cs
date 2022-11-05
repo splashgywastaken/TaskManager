@@ -1,4 +1,5 @@
-﻿using TaskManager.Service.Data.DbContext;
+﻿using System.Data.Entity;
+using TaskManager.Service.Data.DbContext;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore.Query;
 
@@ -25,9 +26,14 @@ public class AchievementService : IAchievementService
         return GetAchievements();
     }
 
-    public Achievement GetById(int id)
+    public async Task<Achievement> GetById(int id)
     {
-        return GetAchievement(id);
+        return await GetAchievement(id);
+    }
+
+    public async Task<Achievement> PostNew(Achievement achievement)
+    {
+        return await AddAchievement(achievement);
     }
 
     private IQueryable<Achievement> GetAchievements()
@@ -37,11 +43,19 @@ public class AchievementService : IAchievementService
         return result;
     }
 
-    private Achievement GetAchievement(int id)
+    private async Task<Achievement> GetAchievement(int id)
     {
-        var achievement = _context.Achievements.FirstOrDefault(a => a.AchievementId == id);
+        var achievement = await _context.Achievements.FindAsync(id);
         if (achievement == null) throw new KeyNotFoundException("Achievement not found");
 
         return achievement;
     }
+
+    private async Task<Achievement> AddAchievement(Achievement achievement)
+    {
+        _context.Achievements.Add(achievement);
+        await _context.SaveChangesAsync();
+
+        return achievement;
+    } 
 }

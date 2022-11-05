@@ -27,7 +27,7 @@ namespace TaskManager.Service.Data.DbContext
         public virtual DbSet<User> Users { get; set; } = null!;
         public virtual DbSet<UsersAchievement> UsersAchievement { get; set; } = null!;
 
-        private IConfiguration _configuration;
+        private readonly IConfiguration _configuration;
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -44,7 +44,8 @@ namespace TaskManager.Service.Data.DbContext
                 entity.ToTable("achievement");
 
                 entity.Property(e => e.AchievementId)
-                    .ValueGeneratedNever()
+                    .ValueGeneratedOnAdd()
+                    .UseIdentityColumn(1, 1)
                     .HasColumnName("achievement_id");
 
                 entity.Property(e => e.AchievementDescription)
@@ -64,10 +65,11 @@ namespace TaskManager.Service.Data.DbContext
             {
                 entity.ToTable("project");
 
-                entity.HasIndex(e => e.UserId, "user_projects_FK");
+                entity.HasIndex(e => e.ProjectUserId, "user_projects_FK");
 
                 entity.Property(e => e.ProjectId)
-                    .ValueGeneratedNever()
+                    .ValueGeneratedOnAdd()
+                    .UseIdentityColumn(1, 1)
                     .HasColumnName("project_id");
 
                 entity.Property(e => e.ProjectCompletionStatus).HasColumnName("project_completion_status");
@@ -90,12 +92,12 @@ namespace TaskManager.Service.Data.DbContext
                     .HasColumnType("datetime")
                     .HasColumnName("project_start_date");
 
-                entity.Property(e => e.UserId).HasColumnName("user_id");
+                entity.Property(e => e.ProjectUserId).HasColumnName("project_user_id");
 
-                entity.HasOne(d => d.User)
+                entity.HasOne(d => d.ProjectUser)
                     .WithMany(p => p.Projects)
-                    .HasForeignKey(d => d.UserId)
-                    .HasConstraintName("FK_PROJECT_USER_PROJ_USER");
+                    .HasForeignKey(d => d.ProjectUserId)
+                    .HasConstraintName("FK_USER_PROJECTS");
             });
 
             modelBuilder.Entity<Tag>(entity =>
@@ -103,7 +105,8 @@ namespace TaskManager.Service.Data.DbContext
                 entity.ToTable("tag");
 
                 entity.Property(e => e.TagId)
-                    .ValueGeneratedNever()
+                    .ValueGeneratedOnAdd()
+                    .UseIdentityColumn(1, 1)
                     .HasColumnName("tag_id");
 
                 entity.Property(e => e.TagDescription)
@@ -116,24 +119,25 @@ namespace TaskManager.Service.Data.DbContext
                     .IsUnicode(false)
                     .HasColumnName("tag_name");
 
-                entity.HasMany(d => d.Tasks)
-                    .WithMany(p => p.Tags)
+                entity.HasMany(d => d.TasksTagsTasks)
+                    .WithMany(p => p.TasksTagsTags)
                     .UsingEntity<TasksTags>(
-                        l => 
-                            l.HasOne<Task>().WithMany().HasForeignKey("TaskId").OnDelete(DeleteBehavior.ClientSetNull).HasConstraintName("FK_TASKS_TA_TASKS_TAG_TASK"),
-                        r => 
-                            r.HasOne<Tag>().WithMany().HasForeignKey("TagId").OnDelete(DeleteBehavior.ClientSetNull).HasConstraintName("FK_TASKS_TA_TASKS_TAG_TAG")
-                        );
+                        l =>
+                            l.HasOne<Task>().WithMany().HasForeignKey("TasksTagsTaskId").OnDelete(DeleteBehavior.ClientSetNull).HasConstraintName("FK_TASKS_TA_TASKS_TAG_TASK"),
+                        r =>
+                            r.HasOne<Tag>().WithMany().HasForeignKey("TasksTagsTagId").OnDelete(DeleteBehavior.ClientSetNull).HasConstraintName("FK_TASKS_TA_TASKS_TAG_TAG")
+                    );
             });
 
             modelBuilder.Entity<Task>(entity =>
             {
                 entity.ToTable("task");
 
-                entity.HasIndex(e => e.TaskGroupId, "task_group_tasks_FK");
+                entity.HasIndex(e => e.TaskTaskGroupId, "task_group_tasks_FK");
 
                 entity.Property(e => e.TaskId)
-                    .ValueGeneratedNever()
+                    .ValueGeneratedOnAdd()
+                    .UseIdentityColumn(1, 1)
                     .HasColumnName("task_id");
 
                 entity.Property(e => e.TaskCompletionStatus).HasColumnName("task_completion_status");
@@ -147,8 +151,6 @@ namespace TaskManager.Service.Data.DbContext
                     .HasColumnType("datetime")
                     .HasColumnName("task_finish_date");
 
-                entity.Property(e => e.TaskGroupId).HasColumnName("task_group_id");
-
                 entity.Property(e => e.TaskName)
                     .HasMaxLength(128)
                     .IsUnicode(false)
@@ -158,38 +160,24 @@ namespace TaskManager.Service.Data.DbContext
                     .HasColumnType("datetime")
                     .HasColumnName("task_start_date");
 
-                entity.HasOne(d => d.TaskGroup)
+                entity.Property(e => e.TaskTaskGroupId).HasColumnName("task_task_group_id");
+
+                entity.HasOne(d => d.TaskTaskGroup)
                     .WithMany(p => p.Tasks)
-                    .HasForeignKey(d => d.TaskGroupId)
-                    .HasConstraintName("FK_TASK_TASK_GROU_TASK_GRO");
-            });
-
-            modelBuilder.Entity<UsersAchievement>(entity =>
-            {
-                entity.ToTable("users_achievements");
-
-                entity.HasKey(p => new {p.UserId, p.AchievementId});
-
-                entity.Property(e => e.UserId)
-                    .ValueGeneratedNever()
-                    .HasColumnName("user_id");
-
-                entity.Property(e => e.AchievementId)
-                    .ValueGeneratedNever()
-                    .HasColumnName("achievement_id");
+                    .HasForeignKey(d => d.TaskTaskGroupId)
+                    .HasConstraintName("FK_TASK_TASK_GROUPS");
             });
 
             modelBuilder.Entity<TaskGroup>(entity =>
             {
                 entity.ToTable("task_group");
 
-                entity.HasIndex(e => e.ProjectId, "project_task_groups_FK");
+                entity.HasIndex(e => e.TaskGroupProjectId, "project_task_groups_FK");
 
                 entity.Property(e => e.TaskGroupId)
-                    .ValueGeneratedNever()
+                    .ValueGeneratedOnAdd()
+                    .UseIdentityColumn(1, 1)
                     .HasColumnName("task_group_id");
-
-                entity.Property(e => e.ProjectId).HasColumnName("project_id");
 
                 entity.Property(e => e.TaskGroupDescription)
                     .HasMaxLength(256)
@@ -201,10 +189,12 @@ namespace TaskManager.Service.Data.DbContext
                     .IsUnicode(false)
                     .HasColumnName("task_group_name");
 
-                entity.HasOne(d => d.Project)
+                entity.Property(e => e.TaskGroupProjectId).HasColumnName("task_group_project_id");
+
+                entity.HasOne(d => d.TaskGroupProject)
                     .WithMany(p => p.TaskGroups)
-                    .HasForeignKey(d => d.ProjectId)
-                    .HasConstraintName("FK_TASK_GRO_PROJECT_T_PROJECT");
+                    .HasForeignKey(d => d.TaskGroupProjectId)
+                    .HasConstraintName("FK_PROJECT_TASK_GROUPS");
             });
 
             modelBuilder.Entity<User>(entity =>
@@ -212,7 +202,8 @@ namespace TaskManager.Service.Data.DbContext
                 entity.ToTable("user");
 
                 entity.Property(e => e.UserId)
-                    .ValueGeneratedNever()
+                    .ValueGeneratedOnAdd()
+                    .UseIdentityColumn(1, 1)
                     .HasColumnName("user_id");
 
                 entity.Property(e => e.UserAchievementsScore).HasColumnName("user_achievements_score");
@@ -237,19 +228,18 @@ namespace TaskManager.Service.Data.DbContext
                     .IsUnicode(false)
                     .HasColumnName("user_role");
 
-                entity.HasMany(d => d.Achievements)
-                    .WithMany(p => p.Users)
+                entity.HasMany(d => d.UsersAchievementsAchievements)
+                    .WithMany(p => p.UsersAchievementsUsers)
                     .UsingEntity<UsersAchievement>(
-                        l => 
-                            l.HasOne<Achievement>().WithMany().HasForeignKey("AchievementId").OnDelete(DeleteBehavior.ClientSetNull).HasConstraintName("FK_USERS_AC_USERS_ACH_ACHIEVME"),
-                        r => 
-                            r.HasOne<User>().WithMany().HasForeignKey("UserId").OnDelete(DeleteBehavior.ClientSetNull).HasConstraintName("FK_USERS_AC_USERS_ACH_USER")
-                        );
+                        l =>
+                            l.HasOne<Achievement>().WithMany().HasForeignKey("UsersAchievementsAchievementId").OnDelete(DeleteBehavior.ClientSetNull).HasConstraintName("FK_USERS_AC_USERS_ACH_ACHIEVME"),
+                        r =>
+                            r.HasOne<User>().WithMany().HasForeignKey("UsersAchievementsUserId").OnDelete(DeleteBehavior.ClientSetNull).HasConstraintName("FK_USERS_AC_USERS_ACH_USER")
+                    );
             });
 
             OnModelCreatingPartial(modelBuilder);
         }
-
         partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
     }
 }

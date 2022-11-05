@@ -60,7 +60,7 @@ public class UserService : IUserService
     private User GetUser(int id)
     {
         var user = _context.Users.Find(id);
-        if (user == null) throw new KeyNotFoundException("User not found");
+        if (user == null) throw new KeyNotFoundException("ProjectUser not found");
         return user;
     }
     
@@ -69,18 +69,18 @@ public class UserService : IUserService
         var query =
             from user in _context.Users
             join ua in _context.UsersAchievement
-                on user.UserId equals ua.UserId
+                on user.UserId equals ua.UsersAchievementsUserId
             join achievement in _context.Achievements
-                on ua.AchievementId equals achievement.AchievementId
+                on ua.UsersAchievementsAchievementId equals achievement.AchievementId
             where user.UserId == id
                 select new { user, achievement};
 
-        if (query == null) throw new KeyNotFoundException("User not found");
+        if (query == null) throw new KeyNotFoundException("ProjectUser not found");
 
         var resultUser = query.First().user;
         foreach (var dataRow in query)
         {
-            resultUser.Achievements.Add(dataRow.achievement);
+            resultUser.UsersAchievementsAchievements.Add(dataRow.achievement);
         }
 
         return resultUser;
@@ -92,10 +92,10 @@ public class UserService : IUserService
             from user in _context.Users
             where user.UserId == userId
             join projects in _context.Projects
-                on user.UserId equals projects.UserId
+                on user.UserId equals projects.ProjectUserId
             select new { user, projects };
 
-        if (query == null) throw new KeyNotFoundException("User not founds");
+        if (query == null) throw new KeyNotFoundException("ProjectUser not founds");
 
         var resultUser = query.First().user;
         foreach (var dataRow in query)
@@ -111,7 +111,7 @@ public class UserService : IUserService
             x.UserEmail == loginModel.Email 
             && x.UserPassword == loginModel.Password
             );
-        if (user == null) throw new KeyNotFoundException("User not found");
+        if (user == null) throw new KeyNotFoundException("ProjectUser not found");
         return user;
     }
 }

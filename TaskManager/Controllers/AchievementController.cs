@@ -1,7 +1,5 @@
-﻿using System.Text.Json;
-using AutoMapper;
+﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using TaskManager.Entities;
 using TaskManager.Models.Achievement;
 using TaskManager.Service.Entities.Achievement;
 
@@ -13,7 +11,7 @@ namespace TaskManager.Controllers;
 public class AchievementController : Controller
 {
     private readonly IAchievementService _achievementService;
-    private IMapper _mapper;
+    private readonly IMapper _mapper;
 
     public AchievementController(
         IAchievementService achievementService, 
@@ -37,12 +35,35 @@ public class AchievementController : Controller
     }
 
     [HttpGet("{id:int}")]
-    public IActionResult GetById(int id)
+    public async Task<IActionResult> GetById(int id)
     {
-        var achievement = _achievementService.GetById(id);
+        Achievement achievement;
+        try
+        {
+            achievement = await _achievementService.GetById(id);
+        }
+        catch (KeyNotFoundException exception)
+        {
+            return NotFound(exception.Message);
+        }
 
         var mappedAchievement = _mapper.Map<AchievementModel>(achievement);
 
         return Ok(mappedAchievement);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> PostNewAchievement([FromBody] AchievementModel achievementModel)
+    {
+        var mappedAchievement = _mapper.Map<Achievement>(achievementModel);
+
+        var resultAchievement = await _achievementService.PostNew(mappedAchievement);
+        var mappedResultAchievement = _mapper.Map<AchievementModel>(resultAchievement);
+
+        return CreatedAtAction(
+            nameof(GetById), 
+            new { id = mappedResultAchievement.AchievementId },
+            mappedResultAchievement
+            );
     }
 }

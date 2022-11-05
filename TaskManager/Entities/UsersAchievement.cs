@@ -2,9 +2,9 @@
 {
     public class UsersAchievement
     {
-        public int AchievementId { get; set; }
+        public int UsersAchievementsAchievementId { get; set; }
         public Achievement Achievement { get; set; } = null!;
-        public int UserId { get; set; }
+        public int UsersAchievementsUserId { get; set; }
         public User User { get; set; } = null!;
     }
 }

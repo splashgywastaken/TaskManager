@@ -6,13 +6,13 @@ namespace TaskManager.Entities
     {
         public Tag()
         {
-            Tasks = new HashSet<Task>();
+            TasksTagsTasks = new HashSet<Task>();
         }
 
         public int TagId { get; set; }
         public string TagName { get; set; } = null!;
         public string? TagDescription { get; set; }
 
-        public virtual ICollection<Task> Tasks { get; set; }
+        public virtual ICollection<Task> TasksTagsTasks { get; set; }
     }
 }

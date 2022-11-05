@@ -12,23 +12,23 @@ public class AppMappingProfile : Profile
 {
     public AppMappingProfile()
     {
-        // User mapping
+        // ProjectUser mapping
         CreateMap<User, UserDataModel>();
         CreateMap<User, UserDataModel>().ReverseMap();
 
-        // User projects mapping
+        // ProjectUser projects mapping
         CreateMap<User, UserProjectsModel>().ForMember(
             dest => dest.UserProjects,
             opt => opt.MapFrom(src => src.Projects)
         ).ReverseMap();
 
-        // User achievements
+        // ProjectUser achievements
         CreateMap<User, UserAchievementsModel>().ForMember(
             dest => dest.UserAchievements,
-            opt => opt.MapFrom(src => src.Achievements)
+            opt => opt.MapFrom(src => src.UsersAchievementsAchievements)
         ).ReverseMap();
 
-        // Project mapping
+        // TaskGroupProject mapping
         CreateMap<Project, ProjectDataModel>();
         CreateMap<Project, ProjectDataModel>().ReverseMap();
 
