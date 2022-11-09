@@ -89,10 +89,7 @@ public class AchievementService : IAchievementService
             {
                 return new NotFoundResult();
             }
-            else
-            {
-                throw;
-            }
+            throw;
         }
 
         return new NoContentResult();

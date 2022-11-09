@@ -2,6 +2,7 @@
 using Microsoft.VisualBasic.CompilerServices;
 using TaskManager.Models.Achievement;
 using TaskManager.Models.Project;
+using TaskManager.Models.Tag;
 using TaskManager.Models.User;
 
 namespace TaskManager.Service.Data.Mapping;
@@ -29,8 +30,9 @@ public class AppMappingProfile : Profile
         ).ReverseMap();
 
         // TaskGroupProject mapping
-        CreateMap<Project, ProjectDataModel>();
         CreateMap<Project, ProjectDataModel>().ReverseMap();
+
+        CreateMap<Tag, TagDataModel>().ReverseMap();
 
         // Achievement mapping
         CreateMap<Achievement, AchievementModel>().ReverseMap();
