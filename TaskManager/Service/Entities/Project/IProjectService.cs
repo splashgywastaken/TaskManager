@@ -8,6 +8,7 @@ public interface IProjectService
 {
     Task<IEnumerable<Project>> GetAllProjects();
     Task<IEnumerable<Project>> GetProjectsByUserId(int userId);
+    Task<IEnumerable<Task>> GetAllProjectTasks(int projectId);
     Task<Project> GetProjectById(int projectId);
     Task<StatusCodeResult> UpdateProject(int projectId, Project project);
     Task<StatusCodeResult> DeleteProject(int projectId);

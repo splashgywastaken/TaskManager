@@ -28,6 +28,11 @@ public class ProjectService : IProjectService
         return await GetProjects(userId);
     }
 
+    public async Task<IEnumerable<Task>> GetAllProjectTasks(int projectId)
+    {
+        return await GetAllProjectTasksById(projectId);
+    }
+
     public async Task<Project> GetProjectById(int projectId)
     {
         return await GetProject(projectId);
@@ -61,6 +66,15 @@ public class ProjectService : IProjectService
                 p => p.ProjectUserId == userId
             ).ToListAsync();
 
+        return result;
+    }
+    
+    private async Task<IEnumerable<Task>> GetAllProjectTasksById(int projectId)
+    {
+        var result = await _context.Tasks.Where(p => 
+                    p.TaskTaskGroup!.TaskGroupProjectId == projectId
+            ).ToListAsync();
+        
         return result;
     }
 

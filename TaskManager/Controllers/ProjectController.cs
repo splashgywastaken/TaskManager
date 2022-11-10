@@ -4,7 +4,9 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.VisualBasic.CompilerServices;
 using TaskManager.Models.Project;
+using TaskManager.Models.Task;
 using TaskManager.Service.Entities.Project;
+using Task = TaskManager.Entities.Task;
 
 namespace TaskManager.Controllers;
 
@@ -44,8 +46,29 @@ public class ProjectController : Controller
     }
 
     [HttpGet]
+    [Route("{projectId:int}/tasks")]
+    public async Task<IActionResult> GetAllProjectTasks(int projectId)
+    {
+        IEnumerable<Task> tasks;
+        try
+        {
+            tasks = await _projectService.GetAllProjectTasks(projectId);
+        }
+        catch (ObjectNotFoundException exception)
+        {
+            return NotFound(exception.Data);
+        }
+
+        var mappedTasks = tasks.Select(p =>
+            _mapper.Map<TaskModel>(p)
+        );
+
+        return Ok(mappedTasks);
+    }
+
+    [HttpGet]
     [Route("{id:int}")]
-    public async Task<IActionResult> GetProjectById([FromQuery]int id)
+    public async Task<IActionResult> GetProjectById(int id)
     {
         Project project;
         try
@@ -64,16 +87,16 @@ public class ProjectController : Controller
 
     [HttpPut]
     [Route("{id:int}")]
-    public async Task<IActionResult> PutProject(int projectId, [FromBody] ProjectDataModel project)
+    public async Task<IActionResult> PutProject(int id, [FromBody] ProjectDataModel project)
     {
-        if (projectId != project.ProjectId)
+        if (id != project.ProjectId)
         {
             return BadRequest();
         }
 
         var mappedProject = _mapper.Map<Project>(project);
 
-        var status = await _projectService.UpdateProject(projectId, mappedProject);
+        var status = await _projectService.UpdateProject(id, mappedProject);
 
         if (status.StatusCode == StatusCodes.Status204NoContent)
         {
@@ -85,9 +108,9 @@ public class ProjectController : Controller
 
     [HttpDelete]
     [Route("{id:int}")]
-    public async Task<IActionResult> DeleteProject(int projectId)
+    public async Task<IActionResult> DeleteProject(int id)
     {
-        var result = await _projectService.DeleteProject(projectId);
+        var result = await _projectService.DeleteProject(id);
 
         if (result.StatusCode == StatusCodes.Status404NotFound)
         {

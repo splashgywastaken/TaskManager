@@ -8,9 +8,7 @@ namespace TaskManager.Service.Data.DbContext
 {
     public partial class TaskManagerDBContext : Microsoft.EntityFrameworkCore.DbContext
     {
-        public TaskManagerDBContext()
-        {
-        }
+        public TaskManagerDBContext() { }
 
         public TaskManagerDBContext(IConfiguration configuration, DbContextOptions<TaskManagerDBContext> options)
             : base(options)
@@ -23,6 +21,7 @@ namespace TaskManager.Service.Data.DbContext
         public virtual DbSet<Project> Projects { get; set; } = null!;
         public virtual DbSet<Tag> Tags { get; set; } = null!;
         public virtual DbSet<Task> Tasks { get; set; } = null!;
+        public virtual DbSet<TasksTags> TasksTags { get; set; } = null!;
         public virtual DbSet<TaskGroup> TaskGroups { get; set; } = null!;
         public virtual DbSet<User> Users { get; set; } = null!;
         public virtual DbSet<UsersAchievements> UsersAchievement { get; set; } = null!;
