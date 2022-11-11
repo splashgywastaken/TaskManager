@@ -38,6 +38,11 @@ public class ProjectService : IProjectService
         return await GetProject(projectId);
     }
 
+    public async Task<Project> PostNewUserProject(Project project)
+    {
+        return await AddNewUserProject(project);
+    }
+
     public async Task<StatusCodeResult> UpdateProject(int projectId, Project project)
     {
         return await UpdateProjectById(projectId, project);
@@ -87,6 +92,14 @@ public class ProjectService : IProjectService
         if (result == null) throw new KeyNotFoundException("TaskGroupProject not found");
 
         return result;
+    }
+
+    private async Task<Project> AddNewUserProject(Project project)
+    {
+        _context.Projects.Add(project);
+        await _context.SaveChangesAsync();
+
+        return project;
     }
 
     private async Task<StatusCodeResult> UpdateProjectById(int projectId, Project project)

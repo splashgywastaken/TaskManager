@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
+using TaskManager.Models.Project;
 using TaskManager.Models.User;
 using TaskManager.Service.Data.DbContext;
 
@@ -49,6 +50,19 @@ public class UserService : IUserService
     public async Task<List<Achievement>> GetUserAchievements(int userId)
     {
         return await GetAchievementsByUserId(userId);
+    }
+
+    public async Task<Project> PostNewUserProject(Project project)
+    {
+        return await AddNewUserProject(project);
+    }
+
+    private async Task<Project> AddNewUserProject(Project project)
+    {
+        _context.Projects.Add(project);
+        await _context.SaveChangesAsync();
+
+        return project;
     }
 
     private async Task<List<Achievement>> GetAchievementsByUserId(int userId)

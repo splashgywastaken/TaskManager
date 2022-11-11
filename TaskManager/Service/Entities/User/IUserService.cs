@@ -1,4 +1,5 @@
-﻿using TaskManager.Models.User;
+﻿using TaskManager.Models.Project;
+using TaskManager.Models.User;
 
 namespace TaskManager.Service.Entities.User;
 

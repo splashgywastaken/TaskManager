@@ -5,13 +5,13 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.VisualBasic.CompilerServices;
 using TaskManager.Models.Project;
 using TaskManager.Models.Task;
+using TaskManager.Models.TaskGroup;
 using TaskManager.Service.Entities.Project;
 using Task = TaskManager.Entities.Task;
 
 namespace TaskManager.Controllers;
 
 [ApiController]
-[Route("project")]
 [Produces("application/json")]
 public class ProjectController : Controller
 {
@@ -25,7 +25,7 @@ public class ProjectController : Controller
     }
 
     [HttpGet]
-    [Route("all")]
+    [Route("project/all")]
     public async Task<IActionResult> GetAll()
     {
         List<Project> projects;
@@ -46,7 +46,7 @@ public class ProjectController : Controller
     }
 
     [HttpGet]
-    [Route("{projectId:int}/tasks")]
+    [Route("project/{projectId:int}/tasks")]
     public async Task<IActionResult> GetAllProjectTasks(int projectId)
     {
         IEnumerable<Task> tasks;
@@ -67,7 +67,7 @@ public class ProjectController : Controller
     }
 
     [HttpGet]
-    [Route("{id:int}")]
+    [Route("project/{id:int}")]
     public async Task<IActionResult> GetProjectById(int id)
     {
         Project project;
@@ -85,8 +85,28 @@ public class ProjectController : Controller
         return Ok(mappedProject);
     }
 
+    [HttpPost]
+    [Route("user/{userId:int}/projects")]
+    public async Task<IActionResult> PostNewUserProject(
+        int userId,
+        ProjectDataModel project
+    )
+    {
+        var mappedProject = _mapper.Map<Project>(project);
+        mappedProject.ProjectUserId = userId;
+
+        var resultProject = await _projectService.PostNewUserProject(mappedProject);
+        var mappedResultProject = _mapper.Map<ProjectDataModel>(resultProject);
+
+        return CreatedAtAction(
+            nameof(GetProjectById),
+            new { id = mappedResultProject.ProjectId },
+            mappedResultProject
+            );
+    }
+
     [HttpPut]
-    [Route("{id:int}")]
+    [Route("project/{id:int}")]
     public async Task<IActionResult> PutProject(int id, [FromBody] ProjectDataModel project)
     {
         if (id != project.ProjectId)
@@ -107,7 +127,7 @@ public class ProjectController : Controller
     }
 
     [HttpDelete]
-    [Route("{id:int}")]
+    [Route("project/{id:int}")]
     public async Task<IActionResult> DeleteProject(int id)
     {
         var result = await _projectService.DeleteProject(id);
