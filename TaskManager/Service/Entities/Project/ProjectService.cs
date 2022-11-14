@@ -96,6 +96,8 @@ public class ProjectService : IProjectService
 
     private async Task<Project> AddNewUserProject(Project project)
     {
+        await _context.Users.FindAsync(project.ProjectUserId);
+
         _context.Projects.Add(project);
         await _context.SaveChangesAsync();
 
@@ -110,7 +112,7 @@ public class ProjectService : IProjectService
         {
             await _context.SaveChangesAsync();
         }
-        catch (DbUpdateConcurrencyException exception)
+        catch
         {
             if (!ProjectExists(projectId))
             {

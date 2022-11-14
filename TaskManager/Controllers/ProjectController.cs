@@ -1,8 +1,10 @@
 ﻿using System.Data.Entity.Core;
+using System.Data.Entity.Infrastructure;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.VisualBasic.CompilerServices;
+using TaskManager.Models.CompositeModels;
 using TaskManager.Models.Project;
 using TaskManager.Models.Task;
 using TaskManager.Models.TaskGroup;
@@ -86,16 +88,30 @@ public class ProjectController : Controller
     }
 
     [HttpPost]
-    [Route("user/{userId:int}/projects")]
+    [Route("user/projects")]
     public async Task<IActionResult> PostNewUserProject(
-        int userId,
-        ProjectDataModel project
+        [FromBody] ProjectTaskGroupPostComposite data
     )
     {
-        var mappedProject = _mapper.Map<Project>(project);
-        mappedProject.ProjectUserId = userId;
+        var mappedProject = _mapper.Map<Project>(data.ProjectPostModel);
+        var mappedTaskGroup = _mapper.Map<TaskGroup>(data.TaskGroupProjectPostModel);
+        mappedProject.TaskGroups.Add(mappedTaskGroup);
 
-        var resultProject = await _projectService.PostNewUserProject(mappedProject);
+        Project? resultProject;
+        try
+        {
+            resultProject = await _projectService.PostNewUserProject(mappedProject);
+        }
+        catch (Microsoft.EntityFrameworkCore.DbUpdateException exception)
+        {
+            var message = new
+            {
+                message = "Exception triggered on Db update",
+                exception_message = exception.Message
+            };
+
+            return BadRequest(message);
+        }
         var mappedResultProject = _mapper.Map<ProjectDataModel>(resultProject);
 
         return CreatedAtAction(
@@ -116,7 +132,21 @@ public class ProjectController : Controller
 
         var mappedProject = _mapper.Map<Project>(project);
 
-        var status = await _projectService.UpdateProject(id, mappedProject);
+        StatusCodeResult status;
+        try
+        {
+            status = await _projectService.UpdateProject(id, mappedProject);
+        }
+        catch (DbUpdateConcurrencyException exception)
+        {
+            var message = new
+            {
+                message = "Exception triggered on Db update",
+                exception_message = exception.Message
+            };
+
+            return BadRequest(message);
+        }
 
         if (status.StatusCode == StatusCodes.Status204NoContent)
         {

@@ -33,6 +33,7 @@ public class AppMappingProfile : Profile
 
         // TaskGroupProject mapping
         CreateMap<Project, ProjectDataModel>().ReverseMap();
+        CreateMap<Project, ProjectPostModel>().ReverseMap();
 
         // Tag mapping
         CreateMap<Tag, TagDataModel>().ReverseMap();
@@ -46,5 +47,6 @@ public class AppMappingProfile : Profile
 
         // Task group mapping
         CreateMap<TaskGroup, TaskGroupDataModel>().ReverseMap();
+        CreateMap<TaskGroup, TaskGroupProjectPostModel>().ReverseMap();
     }
 }
