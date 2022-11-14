@@ -3,6 +3,7 @@ using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using TaskManager.Models.Achievement;
 using TaskManager.Service.Entities.Achievement;
+using TaskManager.Service.Enums.Achievement;
 
 namespace TaskManager.Controllers;
 
@@ -24,12 +25,12 @@ public class AchievementController : Controller
     }
 
     [HttpGet("all")]
-    public async Task<IActionResult> GetAll()
+    public async Task<IActionResult> GetAll(AchievementSortState sortState = AchievementSortState.NameDesc)
     {
         List<Achievement> achievements;
         try
         {
-            achievements = await _achievementService.GetAll();
+            achievements = await _achievementService.GetAll(sortState);
         }
         catch (ObjectNotFoundException exception)
         {

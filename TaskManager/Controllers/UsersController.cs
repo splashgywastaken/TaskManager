@@ -1,5 +1,6 @@
 ﻿using TaskManager.Models.Project;
 using TaskManager.Models.User;
+using TaskManager.Service.Enums.Achievement;
 
 namespace TaskManager.Controllers;
 
@@ -49,12 +50,15 @@ public class UsersController : Controller
 
     [HttpGet("{userId:int}/achievements")]
     [Produces("application/json")]
-    public async Task<IActionResult> GetUserAchievements(int userId)
+    public async Task<IActionResult> GetUserAchievements(
+        int userId, 
+        AchievementSortState sortState = AchievementSortState.IdDesc
+        )
     {
         User user;
         try
         {
-            user = await _userService.GetWithAchievementsById(userId);
+            user = await _userService.GetWithAchievementsById(userId, sortState);
         }
         catch (KeyNotFoundException exception)
         {

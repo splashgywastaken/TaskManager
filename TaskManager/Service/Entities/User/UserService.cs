@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using TaskManager.Models.Project;
 using TaskManager.Models.User;
 using TaskManager.Service.Data.DbContext;
+using TaskManager.Service.Enums.Achievement;
 
 namespace TaskManager.Service.Entities.User;
 
@@ -32,9 +33,9 @@ public class UserService : IUserService
         return await GetUser(id);
     }
 
-    public async Task<User> GetWithAchievementsById(int id)
+    public async Task<User> GetWithAchievementsById(int id, AchievementSortState sortState)
     {
-        return await GetUserWithAchievements(id);
+        return await GetUserWithAchievements(id, sortState);
     }
 
     public async Task<User> GetWithProjectsById(int userId)
@@ -88,7 +89,7 @@ public class UserService : IUserService
         return user;
     }
     
-    private async Task<User> GetUserWithAchievements(int id)
+    private async Task<User> GetUserWithAchievements(int id, AchievementSortState sortState)
     {
         var queryResult =
             await (
@@ -108,6 +109,23 @@ public class UserService : IUserService
         {
             resultUser.UsersAchievementsAchievements.Add(dataRow.achievement);
         }
+
+        resultUser.UsersAchievementsAchievements = sortState switch
+        {
+            AchievementSortState.NameAsc =>
+                resultUser.UsersAchievementsAchievements.OrderBy(p => p.AchievementName).ToList(),
+            AchievementSortState.NameDesc =>
+                resultUser.UsersAchievementsAchievements.OrderByDescending(p => p.AchievementName).ToList(),
+            AchievementSortState.IdAsc =>
+                resultUser.UsersAchievementsAchievements.OrderBy(p => p.AchievementId).ToList(),
+            AchievementSortState.IdDesc =>
+                resultUser.UsersAchievementsAchievements.OrderByDescending(p => p.AchievementId).ToList(),
+            AchievementSortState.ScoreAsc =>
+                resultUser.UsersAchievementsAchievements.OrderBy(p => p.AchievementPoints).ToList(),
+            AchievementSortState.ScoreDesc =>
+                resultUser.UsersAchievementsAchievements.OrderByDescending(p => p.AchievementPoints).ToList(),
+            _ => throw new ArgumentOutOfRangeException(nameof(sortState), sortState, null)
+        };
 
         return resultUser;
     }

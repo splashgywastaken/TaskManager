@@ -3,6 +3,7 @@ using TaskManager.Service.Data.DbContext;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using TaskManager.Service.Enums.Achievement;
 
 namespace TaskManager.Service.Entities.Achievement;
 
@@ -22,9 +23,9 @@ public class AchievementService : IAchievementService
         _mapper = mapper;
     }
 
-    public async Task<List<Achievement>> GetAll()
+    public async Task<List<Achievement>> GetAll(AchievementSortState sortState)
     {
-        return await GetAchievements();
+        return await GetAchievements(sortState);
     }
 
     public async Task<Achievement> GetById(int id)
@@ -47,9 +48,26 @@ public class AchievementService : IAchievementService
         return await DeleteAchievementById(id);
     }
 
-    private async Task<List<Achievement>> GetAchievements()
+    private async Task<List<Achievement>> GetAchievements(AchievementSortState sortState)
     {
-        var result = await _context.Achievements.ToListAsync().ConfigureAwait(false);
+        var achievements = sortState switch
+        {
+            AchievementSortState.NameAsc =>
+                _context.Achievements.OrderBy(p => p.AchievementName),
+            AchievementSortState.NameDesc =>
+                _context.Achievements.OrderByDescending(p => p.AchievementName),
+            AchievementSortState.IdAsc => 
+                _context.Achievements.OrderBy(p => p.AchievementId),
+            AchievementSortState.IdDesc =>
+                _context.Achievements.OrderByDescending(p => p.AchievementId),
+            AchievementSortState.ScoreAsc =>
+                _context.Achievements.OrderBy(p => p.AchievementPoints),
+            AchievementSortState.ScoreDesc =>
+                _context.Achievements.OrderByDescending(p => p.AchievementPoints),
+            _ => throw new ArgumentOutOfRangeException(nameof(sortState), sortState, null)
+        };
+
+        var result = await achievements.ToListAsync();
 
         if (!result.Any())
         {
