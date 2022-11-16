@@ -10,7 +10,7 @@ public interface IAchievementService
 {
     Task<List<Achievement>> GetAll(AchievementSortState sortState);
     Task<Achievement> GetById(int id);
-    Task<Achievement> FindByName(string name, SearchType searchType);
+    Task<List<Achievement>> FindByName(string name, SearchType searchType);
     Task<Achievement> PostNew(Achievement achievement);
     Task<StatusCodeResult> UpdateAchievement(int id, Achievement achievement);
     Task<StatusCodeResult> DeleteAchievement(int id);

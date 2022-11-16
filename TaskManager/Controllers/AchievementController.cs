@@ -66,10 +66,10 @@ public class AchievementController : Controller
     [HttpGet("{name}")]
     public async Task<IActionResult> FindByName(string name, SearchType searchType = SearchType.PartialMatch)
     {
-        Achievement achievement;
+        List<Achievement> achievements;
         try
         {
-            achievement = await _achievementService.FindByName(name, searchType);
+            achievements = await _achievementService.FindByName(name, searchType);
         }
         catch (ObjectNotFoundException exception)
         {
@@ -82,9 +82,11 @@ public class AchievementController : Controller
             return NotFound(message);
         }
 
-        var mappedAchievement = _mapper.Map<AchievementModel>(achievement);
+        var mappedAchievements = achievements.Select(p =>
+                _mapper.Map<AchievementModel>(p)
+            );
 
-        return Ok(mappedAchievement);
+        return Ok(mappedAchievements);
     }
 
     [HttpPost]

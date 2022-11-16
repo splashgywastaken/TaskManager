@@ -35,7 +35,7 @@ public class AchievementService : IAchievementService
         return await GetAchievement(id);
     }
 
-    public async Task<Achievement> FindByName(string name, SearchType searchType)
+    public async Task<List<Achievement>> FindByName(string name, SearchType searchType)
     {
         return await GetAchievement(name, searchType);
     }
@@ -100,9 +100,9 @@ public class AchievementService : IAchievementService
     /// <returns>Achievement</returns>
     /// <exception cref="ArgumentOutOfRangeException"></exception>
     /// <exception cref="ObjectNotFoundException"></exception>
-    private async Task<Achievement> GetAchievement(string name, SearchType searchType)
+    private async Task<List<Achievement>> GetAchievement(string name, SearchType searchType)
     {
-        IEnumerable<Achievement> achievements;
+        List<Achievement> achievements;
         var contextAchievements = _context.Achievements;
         {
             achievements = await (searchType switch
@@ -125,7 +125,7 @@ public class AchievementService : IAchievementService
 
         if (!achievements.Any()) throw new ObjectNotFoundException();
 
-        return achievements.First();
+        return achievements;
     }
     private async Task<Achievement> AddAchievement(Achievement achievement)
     {
