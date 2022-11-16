@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using TaskManager.Models.Achievement;
 using TaskManager.Service.Entities.Achievement;
 using TaskManager.Service.Enums.Achievement;
+using TaskManager.Service.Enums.Search;
 
 namespace TaskManager.Controllers;
 
@@ -55,6 +56,30 @@ public class AchievementController : Controller
         catch (KeyNotFoundException exception)
         {
             return NotFound(exception.Message);
+        }
+
+        var mappedAchievement = _mapper.Map<AchievementModel>(achievement);
+
+        return Ok(mappedAchievement);
+    }
+
+    [HttpGet("{name}")]
+    public async Task<IActionResult> FindByName(string name, SearchType searchType = SearchType.PartialMatch)
+    {
+        Achievement achievement;
+        try
+        {
+            achievement = await _achievementService.FindByName(name, searchType);
+        }
+        catch (ObjectNotFoundException exception)
+        {
+            var message = new
+            {
+                message = "Exception triggered on Db update",
+                exception_message = exception.Message
+            };
+
+            return NotFound(message);
         }
 
         var mappedAchievement = _mapper.Map<AchievementModel>(achievement);

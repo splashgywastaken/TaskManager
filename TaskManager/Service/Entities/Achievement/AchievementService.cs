@@ -1,9 +1,11 @@
 ﻿using System.Data.Entity.Core;
+using System.Runtime.InteropServices;
 using TaskManager.Service.Data.DbContext;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TaskManager.Service.Enums.Achievement;
+using TaskManager.Service.Enums.Search;
 
 namespace TaskManager.Service.Entities.Achievement;
 
@@ -31,6 +33,11 @@ public class AchievementService : IAchievementService
     public async Task<Achievement> GetById(int id)
     {
         return await GetAchievement(id);
+    }
+
+    public async Task<Achievement> FindByName(string name, SearchType searchType)
+    {
+        return await GetAchievement(name, searchType);
     }
 
     public async Task<Achievement> PostNew(Achievement achievement)
@@ -85,6 +92,41 @@ public class AchievementService : IAchievementService
         return achievement;
     }
 
+    /// <summary>
+    /// Returns first found achievement that corresponds to arguments
+    /// </summary>
+    /// <param name="name"></param>
+    /// <param name="searchType"></param>
+    /// <returns>Achievement</returns>
+    /// <exception cref="ArgumentOutOfRangeException"></exception>
+    /// <exception cref="ObjectNotFoundException"></exception>
+    private async Task<Achievement> GetAchievement(string name, SearchType searchType)
+    {
+        IEnumerable<Achievement> achievements;
+        var contextAchievements = _context.Achievements;
+        {
+            achievements = await (searchType switch
+            {
+                SearchType.FullMatch => contextAchievements.Where(p =>
+                    string.Equals(p.AchievementName.ToLower(), name.ToLower())
+                ),
+                SearchType.PartialMatch => contextAchievements.Where(p =>
+                    p.AchievementName.ToLower().Contains(name.ToLower())
+                ),
+                SearchType.LetterCaseFullMatch => contextAchievements.Where(p =>
+                    string.Equals(p.AchievementName, name)
+                ),
+                SearchType.LetterCasePartialMatch => contextAchievements.Where(p =>
+                    p.AchievementName.Contains(name)
+                ),
+                _ => throw new ArgumentOutOfRangeException(nameof(searchType), searchType, null)
+            }).ToListAsync();
+        }
+
+        if (!achievements.Any()) throw new ObjectNotFoundException();
+
+        return achievements.First();
+    }
     private async Task<Achievement> AddAchievement(Achievement achievement)
     {
         _context.Achievements.Add(achievement);
