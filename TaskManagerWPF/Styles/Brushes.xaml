@@ -1,0 +1,18 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!--Elements-->
+    <SolidColorBrush x:Key="HeadlineBrush" Color="{DynamicResource HeadlineColor}"/>
+    <SolidColorBrush x:Key="BackgroundBrush" Color="{DynamicResource BackgroundColor}"/>
+    <SolidColorBrush x:Key="ParagraphBrush" Color="{DynamicResource ParagraphColor}"/>
+    <SolidColorBrush x:Key="ButtonBrush" Color="{DynamicResource ButtonColor}"/>
+    <SolidColorBrush x:Key="ButtonTextBrush" Color="{DynamicResource ButtonTextColor}"/>
+
+    <!--Illustration-->
+    <SolidColorBrush x:Key="StrokeBrush" Color="{DynamicResource StrokeColor}"/>
+    <SolidColorBrush x:Key="MainBrush" Color="{DynamicResource MainColor}"/>
+    <SolidColorBrush x:Key="HighlightBrush" Color="{DynamicResource HighlightColor}"/>
+    <SolidColorBrush x:Key="SecondaryBrush" Color="{DynamicResource SecondaryColor}"/>
+    <SolidColorBrush x:Key="TertiaryBrush" Color="{DynamicResource TertiaryColor}"/>
+
+</ResourceDictionary>

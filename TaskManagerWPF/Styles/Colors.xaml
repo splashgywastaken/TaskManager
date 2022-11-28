@@ -1,4 +1,51 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     
+    <!--Elements-->
+
+    <Color x:Key="BackgroundColor">
+        #FFFFFF
+    </Color>
+
+    <Color x:Key="HeadlineColor">
+        #1f1235
+    </Color>
+
+    <Color x:Key="SubHeadlineColor">
+        #1b1425
+    </Color>
+
+    <Color x:Key="ParagraphColor">
+        #1b1325
+    </Color>
+
+    <Color x:Key="ButtonColor">
+        #ff6e6c
+    </Color>
+
+    <Color x:Key="ButtonTextColor">
+        #1f1235
+    </Color>
+
+    <!--Illustration-->
+    <Color x:Key="StrokeColor">
+        #1f1235
+    </Color>
+
+    <Color x:Key="MainColor">
+        #FFFFFF
+    </Color>
+
+    <Color x:Key="HighlightColor">
+        #ff6e6c
+    </Color>
+
+    <Color x:Key="SecondaryColor">
+        #67568c
+    </Color>
+
+    <Color x:Key="TertiaryColor">
+        #fbdd74
+    </Color>
+
 </ResourceDictionary>

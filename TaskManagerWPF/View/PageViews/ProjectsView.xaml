@@ -13,21 +13,29 @@
         <viewModel:ProjectsViewModel/>
     </UserControl.DataContext>
 
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="../../Styles/Fonts.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    
     <Grid>
         <StackPanel
             Orientation="Vertical"
             HorizontalAlignment="Center"
             VerticalAlignment="Center">
-            <iconPacks:PackIconBoxIcons
+            <iconPacks:PackIconMaterial
                 HorizontalAlignment="Center"
-                Foreground="{StaticResource PrimaryDarkBrush}"
-                Width="100" Height="100" Kind="RegularTask"
+                Foreground="{StaticResource StrokeBrush}"
+                Width="100" Height="100" Kind="CalendarCheck"
             />
 
             <TextBlock
-                FontSize="40" FontWeight="Bold"
+                Style="{DynamicResource HighlightedSectionStyle}"
                 VerticalAlignment="Center" HorizontalAlignment="Center"
-                Foreground="{StaticResource PrimaryDarkBrush}"
+                Foreground="{StaticResource HighlightBrush}"
                 Text="{Binding Title}"
             ></TextBlock>
         </StackPanel>
