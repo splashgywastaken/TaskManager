@@ -6,6 +6,7 @@
              xmlns:local="clr-namespace:TaskManagerWPF.View"
              xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
              xmlns:viewModel="clr-namespace:TaskManagerWPF.ViewModel"
+             xmlns:view="clr-namespace:TaskManagerWPF.View.ModelViews"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
 
@@ -38,6 +39,16 @@
                 Foreground="{StaticResource HighlightBrush}"
                 Text="{Binding Title}"
             ></TextBlock>
+
+            <ScrollViewer VerticalScrollBarVisibility="Hidden" HorizontalScrollBarVisibility="Visible">
+                <StackPanel x:Name="ProjectsStackPanel" Orientation="Horizontal" CanVerticallyScroll="True">
+                    <view:SimpleProjectView/>
+                    <view:SimpleProjectView/>
+                    <view:SimpleProjectView/>
+                    <view:SimpleProjectView/>
+                    <view:SimpleProjectView/>
+                </StackPanel>
+            </ScrollViewer>
         </StackPanel>
     </Grid>
 </UserControl>
