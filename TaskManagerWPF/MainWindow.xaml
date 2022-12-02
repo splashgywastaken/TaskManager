@@ -7,7 +7,7 @@
         xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
         xmlns:viewModel="clr-namespace:TaskManagerWPF.ViewModel"
         mc:Ignorable="d"
-        Height="720" Width="1280" Background="{DynamicResource MainBrush}"
+        MinHeight="720" MinWidth="1280" Background="{DynamicResource MainBrush}"
         Title="Task manager desktop" WindowStartupLocation="CenterScreen">
 
     <Window.Resources>
@@ -28,7 +28,7 @@
 
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="8*"/>
+            <ColumnDefinition Width="48"/>
             <ColumnDefinition Width="163*"/>
         </Grid.ColumnDefinitions>
 

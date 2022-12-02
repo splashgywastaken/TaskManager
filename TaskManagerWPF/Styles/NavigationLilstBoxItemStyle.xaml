@@ -2,7 +2,8 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
                     xmlns:system="clr-namespace:System;assembly=System.Runtime"
-                    xmlns:view="clr-namespace:TaskManagerWPF.View">
+                    xmlns:view="clr-namespace:TaskManagerWPF.View"
+                    xmlns:pageViews="clr-namespace:TaskManagerWPF.View.PageViews">
 
     <Style x:Key="NavigationListBoxItemStyle" TargetType="{x:Type ListBoxItem}">
         <Setter Property="Background" Value="Transparent"/>
@@ -87,7 +88,7 @@
         <view:HomeView/>
     </DataTemplate>
     <DataTemplate x:Key="ProjectViewTemplate">
-        <view:ProjectsView/>
+        <pageViews:ProjectsView/>
     </DataTemplate>
     <DataTemplate x:Key="AchievementsViewTemplate">
         <view:AchievementsView/>
