@@ -8,9 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Model\" />
     <Folder Include="Services\" />
-    <Folder Include="Styles\ControlStyles\" />
   </ItemGroup>
 
   <ItemGroup>
