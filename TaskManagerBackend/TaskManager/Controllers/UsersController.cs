@@ -1,6 +1,8 @@
-﻿using TaskManager.Models.Project;
+﻿using Microsoft.AspNetCore.Authorization;
+using TaskManager.Models.Project;
 using TaskManager.Models.User;
 using TaskManager.Service.Enums.Achievement;
+using TaskManager.Service.Validation;
 
 namespace TaskManager.Controllers;
 
@@ -29,6 +31,7 @@ public class UsersController : Controller
     }
 
     [HttpGet("all")]
+    [Authorize(Roles = "admin")]
     public async Task<IActionResult> GetAll()
     {
         List<User> users;
@@ -50,6 +53,7 @@ public class UsersController : Controller
 
     [HttpGet("{userId:int}/achievements")]
     [Produces("application/json")]
+    [Authorize(Roles = "admin, user")]
     public async Task<IActionResult> GetUserAchievements(
         int userId, 
         AchievementSortState sortState = AchievementSortState.IdDesc
@@ -72,6 +76,7 @@ public class UsersController : Controller
 
     [HttpGet("{userId:int}")]
     [Produces("application/json")]
+    [Authorize(Roles = "admin, user")]
     public async Task<IActionResult> GetById(int userId)
     {
         User user;
@@ -90,8 +95,14 @@ public class UsersController : Controller
     }
 
     [HttpGet("{userId:int}/projects")]
+    [Authorize(Roles = "admin, user")]
     public async Task<IActionResult> GetUserProjectsByUserId(int userId)
     {
+        if (!await UserValidation.CheckUserIdentity(HttpContext, userId, _userService))
+        {
+            return Unauthorized();
+        }
+
         User user;
         try
         {

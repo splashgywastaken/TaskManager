@@ -19,6 +19,7 @@
     <Folder Include="Models\Achievement\" />
     <Folder Include="Service\Data\Mapping\" />
     <Folder Include="Service\Enums\Search\" />
+    <Folder Include="Service\Validation\" />
     <Folder Include="Views\" />
   </ItemGroup>
 

@@ -2,6 +2,7 @@
 using System.Data.Entity.Infrastructure;
 using System.Reflection.Metadata;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using Microsoft.IdentityModel.Tokens;
@@ -25,6 +26,7 @@ namespace TaskManager.Controllers
         }
 
         [HttpGet("all")]
+        [Authorize(Roles = "admin, user")]
         public async Task<IActionResult> GetAll()
         {
             List<Tag> tags;
@@ -45,6 +47,7 @@ namespace TaskManager.Controllers
         }
 
         [HttpGet("{id:int}")]
+        [Authorize(Roles = "admin, user")]
         public async Task<IActionResult> GetById(int id)
         {
             Tag tag;
@@ -63,6 +66,7 @@ namespace TaskManager.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "admin, user")]
         public async Task<IActionResult> AddTag([FromBody] TagDataModel tagDataModel)
         {
             var mappedTag = _mapper.Map<Tag>(tagDataModel);
@@ -79,6 +83,7 @@ namespace TaskManager.Controllers
 
         [HttpPut]
         [Route("{id:int}")]
+        [Authorize(Roles = "admin, user")]
         public async Task<IActionResult> PutTag(int id, [FromBody] TagDataModel tagDataModel)
         {
             if (id != tagDataModel.TagId)
@@ -107,6 +112,7 @@ namespace TaskManager.Controllers
 
         [HttpDelete]
         [Route("{id:int}")]
+        [Authorize(Roles = "admin, user")]
         public async Task<IActionResult> DeleteTag(int id)
         {
             var result = await _tagService.DeleteTag(id);

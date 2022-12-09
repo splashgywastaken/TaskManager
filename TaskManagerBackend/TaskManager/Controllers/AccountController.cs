@@ -1,4 +1,7 @@
-﻿using TaskManager.Models.User;
+﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
+using TaskManager.Models.User;
 
 namespace TaskManager.Controllers;
 
@@ -10,6 +13,7 @@ using Microsoft.IdentityModel.Tokens;
 using TaskManager.Service.Entities.User;
 
 [ApiController]
+[AllowAnonymous]
 [Route("user")]
 public class AccountController : Controller
 {
@@ -24,32 +28,38 @@ public class AccountController : Controller
 
     // auth
     [HttpPost("login")]
-    public async Task<IActionResult> Login([FromBody] UserLoginModel loginModel)
+    public async Task<IActionResult> Login(string email, string password)
     {
-        var user = await _userService.GetByLoginData(loginModel);
+        // Получаем данные из формы запроса для авторизации/аутентификации
+        var loginModel = new UserLoginModel(email,password);
 
-        if (user is null) return Unauthorized(loginModel);
-
-        var claims = new List<Claim> { new(ClaimTypes.Name, user.UserEmail) };
-        // Создаём JWT - токен
-        var jwt = new JwtSecurityToken(
-            issuer: AuthOptions.ISUSER,
-            audience: AuthOptions.AUDIENCE,
-            claims: claims,
-            expires: DateTime.UtcNow.Add(TimeSpan.FromMinutes(2)),
-            signingCredentials: new SigningCredentials(
-                AuthOptions.GetSymmetricSecurityKey(),
-                SecurityAlgorithms.HmacSha256
-            )
-        );
-        var encodedJwt = new JwtSecurityTokenHandler().WriteToken(jwt);
-
-        var response = new
+        User user;
+        try
         {
-            access_token = encodedJwt,
-            username = user.UserEmail
-        };
+            user = await _userService.GetByLoginData(loginModel);
+        }
+        catch (KeyNotFoundException)
+        {
+            return Unauthorized(loginModel);
+        }
 
-        return Ok(response);
+        // Создаём клеймы
+        var claims = new List<Claim>
+        {
+            new (ClaimsIdentity.DefaultNameClaimType, user.UserEmail),
+            new (ClaimsIdentity.DefaultRoleClaimType, user.UserRole)
+        };
+        var claimsIdentity = new ClaimsIdentity(claims, "Cookies");
+        var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
+        await HttpContext.SignInAsync(claimsPrincipal);
+
+        return Ok(loginModel);
+    }
+
+    [HttpPost("/logout")]
+    public async Task<IActionResult> Logout()
+    {
+        await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+        return Ok();
     }
 }

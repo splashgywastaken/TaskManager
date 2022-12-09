@@ -1,4 +1,4 @@
-﻿namespace TaskManagerWPF.ViewModel;
+﻿namespace TaskManagerWPF.ViewModel.SimpleViewModels;
 
 public class SimpleProjectViewModel
 {

@@ -7,7 +7,6 @@
              xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
              xmlns:viewModel="clr-namespace:TaskManagerWPF.ViewModel"
              xmlns:view="clr-namespace:TaskManagerWPF.View.ModelViews"
-             xmlns:pageView="clr-namespace:TaskManagerWPF.Pages"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
 
@@ -20,7 +19,7 @@
     </UserControl.Resources>
 
     <Grid>
-        <Frame Source="../../Pages/ProjectBrowserPage.xaml" NavigationUIVisibility="Hidden"/>
+        <Frame Source="/View/Pages/ProjectBrowserPage.xaml" NavigationUIVisibility="Hidden"/>
     </Grid>
     
 </UserControl>

@@ -27,6 +27,7 @@ public class ProjectController : Controller
     }
 
     [HttpGet]
+    [Authorize(Roles = "admin")]
     [Route("project/all")]
     public async Task<IActionResult> GetAll()
     {
@@ -48,6 +49,7 @@ public class ProjectController : Controller
     }
 
     [HttpGet]
+    [Authorize(Roles = "admin, user")]
     [Route("project/{projectId:int}/tasks")]
     public async Task<IActionResult> GetAllProjectTasks(int projectId)
     {
@@ -69,6 +71,7 @@ public class ProjectController : Controller
     }
 
     [HttpGet]
+    [Authorize(Roles = "admin, user")]
     [Route("project/{id:int}")]
     public async Task<IActionResult> GetProjectById(int id)
     {
@@ -88,6 +91,7 @@ public class ProjectController : Controller
     }
 
     [HttpPost]
+    [Authorize(Roles = "admin, user")]
     [Route("user/projects")]
     public async Task<IActionResult> PostNewUserProject(
         [FromBody] ProjectTaskGroupPostComposite data
@@ -122,6 +126,7 @@ public class ProjectController : Controller
     }
 
     [HttpPut]
+    [Authorize(Roles = "admin, user")]
     [Route("project/{id:int}")]
     public async Task<IActionResult> PutProject(int id, [FromBody] ProjectDataModel project)
     {
@@ -157,6 +162,7 @@ public class ProjectController : Controller
     }
 
     [HttpDelete]
+    [Authorize(Roles = "admin, user")]
     [Route("project/{id:int}")]
     public async Task<IActionResult> DeleteProject(int id)
     {

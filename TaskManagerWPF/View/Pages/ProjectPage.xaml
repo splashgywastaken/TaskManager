@@ -1,9 +1,9 @@
-﻿<Page x:Class="TaskManagerWPF.Pages.ProjectPage"
+﻿<Page x:Class="TaskManagerWPF.View.Pages.ProjectPage"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-      xmlns:local="clr-namespace:TaskManagerWPF.Pages"
+      xmlns:local="clr-namespace:TaskManagerWPF.View.Pages"
       xmlns:viewModel="clr-namespace:TaskManagerWPF.ViewModel"
       xmlns:customControl="clr-namespace:TaskManagerWPF.Assets.CustomControl"
       xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
@@ -19,7 +19,7 @@
     <Page.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="../Styles/ControlStyles/Buttons.xaml"/>
+                <ResourceDictionary Source="/Styles/ControlStyles/Buttons.xaml"/>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Page.Resources>
@@ -27,7 +27,7 @@
     <StackPanel ButtonBase.Click="Grid_Click">
         <customControl:NavButton
             Style="{DynamicResource PrettyNavButtonStyle}"
-            NavButtonUri="/Pages/ProjectBrowserPage.xaml"
+            NavButtonUri="View/Pages/ProjectBrowserPage.xaml"
             MaxWidth="200"
             MaxHeight="200"
             VerticalAlignment="Center"

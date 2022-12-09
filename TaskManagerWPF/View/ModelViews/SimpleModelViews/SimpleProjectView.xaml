@@ -7,11 +7,12 @@
              xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
              xmlns:customControl="clr-namespace:TaskManagerWPF.Assets.CustomControl"
              xmlns:viewModel="clr-namespace:TaskManagerWPF.ViewModel"
+             xmlns:simpleViewModels="clr-namespace:TaskManagerWPF.ViewModel.SimpleViewModels"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
 
     <UserControl.DataContext>
-        <viewModel:SimpleProjectViewModel/>
+        <simpleViewModels:SimpleProjectViewModel/>
     </UserControl.DataContext>
 
     <UserControl.Resources>
@@ -19,6 +20,7 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="../../../Styles/Fonts.xaml"/>
                 <ResourceDictionary Source="../../../Styles/Brushes.xaml"/>
+                <ResourceDictionary Source="/Styles/ControlStyles/Borders.xaml"/>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
 
@@ -27,18 +29,12 @@
     <Grid MaxHeight="400" MaxWidth="320">
         <StackPanel>
             <StackPanel.Resources>
-                <Style TargetType="Border">
-                    <Setter Property="BorderBrush" Value="{DynamicResource SecondaryBrush}"/>
-                    <Setter Property="BorderThickness" Value="10"/>
-                    <Setter Property="Margin" Value="10"/>
-                    <Setter Property="CornerRadius" Value="15"/>
-                </Style>
                 <Style TargetType="Rectangle">
                     <Setter Property="Stroke" Value="Black"/>
                     <Setter Property="StrokeThickness" Value="1"/>
                 </Style>
             </StackPanel.Resources>
-            <Border>
+            <Border Style="{DynamicResource PrettyBorderStyle}">
                 <StackPanel Background="{DynamicResource MainBrush}">
                     <TextBlock
                         Margin="6"

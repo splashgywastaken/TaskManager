@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using System.Text.Json.Serialization;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.OpenApi.Models;
 using TaskManager.Service.Data.DbContext;
 using TaskManager.Service.Data.Mapping;
@@ -22,21 +23,13 @@ var builder = WebApplication.CreateBuilder(args);
     var env = builder.Environment;
     
     // Setting up JWT-based authorization and authentication
-    services.AddAuthorization();
-    services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-        .AddJwtBearer(options =>
+    services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+        .AddCookie(options =>
         {
-            options.TokenValidationParameters = new TokenValidationParameters
-            {
-                ValidateIssuer = true,
-                ValidIssuer = AuthOptions.ISUSER,
-                ValidateAudience = true,
-                ValidAudience = AuthOptions.AUDIENCE,
-                ValidateLifetime = true,
-                IssuerSigningKey = AuthOptions.GetSymmetricSecurityKey(),
-                ValidateIssuerSigningKey = true
-            };
+            options.LoginPath = "/user/login";
+            options.LogoutPath = "/user/logout";
         });
+    services.AddAuthorization();
 
     ConfigureApplicationServices(services);
 
@@ -69,7 +62,6 @@ app.UseSwaggerUI(c =>
     );
 
     app.MapControllers();
-    app.Map("/data", [Authorize] (HttpContext context) => $"Hello World!");
 }
 
 // File system

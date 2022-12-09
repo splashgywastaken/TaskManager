@@ -20,6 +20,7 @@
                 <ResourceDictionary Source="../../Styles/Brushes.xaml"/>
                 <ResourceDictionary Source="/Styles/ControlStyles/ListViews.xaml"/>
                 <ResourceDictionary Source="/Styles/ControlStyles/Buttons.xaml"/>
+                <ResourceDictionary Source="/Styles/ControlStyles/Borders.xaml"/>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
 
@@ -28,16 +29,9 @@
     <Grid 
         MaxWidth="320" 
         MaxHeight="480">
-        <Grid.Resources>
-            <Style TargetType="Border">
-                <Setter Property="BorderBrush" Value="{DynamicResource SecondaryBrush}"/>
-                <Setter Property="BorderThickness" Value="10"/>
-                <Setter Property="Margin" Value="10"/>
-                <Setter Property="CornerRadius" Value="15"/>
-            </Style>
-        </Grid.Resources>
 
-        <Border>
+        <Border
+            Style="{DynamicResource PrettyBorderStyle}">
             <Grid
                 Background="{DynamicResource BackgroundBrush}">
                 <Grid.RowDefinitions>

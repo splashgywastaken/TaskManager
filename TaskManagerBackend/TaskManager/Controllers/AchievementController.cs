@@ -1,5 +1,6 @@
 ﻿using System.Data.Entity.Core;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TaskManager.Models.Achievement;
 using TaskManager.Service.Entities.Achievement;
@@ -26,6 +27,7 @@ public class AchievementController : Controller
     }
 
     [HttpGet("all")]
+    [Authorize(Roles = "admin, user")]
     public async Task<IActionResult> GetAll(AchievementSortState sortState = AchievementSortState.NameDesc)
     {
         List<Achievement> achievements;
@@ -46,6 +48,7 @@ public class AchievementController : Controller
     }
 
     [HttpGet("{id:int}")]
+    [Authorize(Roles = "admin, user")]
     public async Task<IActionResult> GetById(int id)
     {
         Achievement achievement;
@@ -64,6 +67,7 @@ public class AchievementController : Controller
     }
 
     [HttpGet("{name}")]
+    [Authorize(Roles = "admin, user")]
     public async Task<IActionResult> FindByName(string name, SearchType searchType = SearchType.PartialMatch)
     {
         List<Achievement> achievements;
@@ -90,6 +94,7 @@ public class AchievementController : Controller
     }
 
     [HttpPost]
+    [Authorize(Roles = "admin")]
     public async Task<IActionResult> PostNewAchievement([FromBody] AchievementModel achievementModel)
     {
         var mappedAchievement = _mapper.Map<Achievement>(achievementModel);
@@ -105,6 +110,7 @@ public class AchievementController : Controller
     }
 
     [HttpPut]
+    [Authorize(Roles = "admin")]
     [Route("{id:int}")]
     public async Task<IActionResult> PutAchievement(int id, [FromBody] AchievementModel achievement)
     {
@@ -126,6 +132,7 @@ public class AchievementController : Controller
     }
 
     [HttpDelete]
+    [Authorize(Roles = "admin, user")]
     [Route("{id:int}")]
     public async Task<IActionResult> DeleteAchievement(int id)
     {

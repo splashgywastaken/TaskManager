@@ -1,5 +1,6 @@
 ﻿using System.Data.Entity.Core;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TaskManager.Models.Tag;
 using TaskManager.Models.Task;
@@ -23,6 +24,7 @@ public class TaskController : Controller
 
     [HttpGet]
     [Route("{id:int}/tags")]
+    [Authorize(Roles = "admin, user")]
     public async Task<IActionResult> GetAllTaskTags(int taskId)
     {
         IEnumerable<Tag> tags;
@@ -44,6 +46,7 @@ public class TaskController : Controller
 
     [HttpGet]
     [Route("{id:int}")]
+    [Authorize(Roles = "admin, user")]
     public async Task<IActionResult> GetTask(int id)
     {
         Task task;
@@ -63,6 +66,7 @@ public class TaskController : Controller
 
     [HttpPut]
     [Route("{id:int}")]
+    [Authorize(Roles = "admin, user")]
     public async Task<IActionResult> UpdateTask(int id, [FromBody] TaskModel task)
     {
         if (id != task.TaskId)
