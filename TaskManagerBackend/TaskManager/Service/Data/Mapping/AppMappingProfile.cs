@@ -16,7 +16,8 @@ public class AppMappingProfile : Profile
     public AppMappingProfile()
     {
         // ProjectUser mapping
-        CreateMap<User, UserDataModel>();
+        CreateMap<User, UserLoginModel>().ReverseMap();
+        CreateMap<User, UserRegistrationModel>().ReverseMap();
         CreateMap<User, UserDataModel>().ReverseMap();
 
         // ProjectUser projects mapping

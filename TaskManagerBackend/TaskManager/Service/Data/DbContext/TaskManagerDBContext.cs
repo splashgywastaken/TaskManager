@@ -14,7 +14,6 @@ namespace TaskManager.Service.Data.DbContext
             : base(options)
         {
             _configuration = configuration;
-
         }
 
         public virtual DbSet<Achievement> Achievements { get; set; } = null!;

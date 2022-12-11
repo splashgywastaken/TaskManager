@@ -10,11 +10,11 @@ namespace TaskManager.Models.Task
 
         [JsonPropertyName("task_name")]
         [JsonPropertyOrder(1)]
-        public string TaskName { get; set; }
+        public string TaskName { get; set; } = null!;
 
         [JsonPropertyName("task_description")]
         [JsonPropertyOrder(2)]
-        public string TaskDesription { get; set; }
+        public string TaskDescription { get; set; } = null!;
 
         [JsonPropertyName("task_completion_status")]
         [JsonPropertyOrder(3)]

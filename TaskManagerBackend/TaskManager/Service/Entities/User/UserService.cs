@@ -1,9 +1,11 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TaskManager.Models.Project;
 using TaskManager.Models.User;
 using TaskManager.Service.Data.DbContext;
 using TaskManager.Service.Enums.Achievement;
+using TaskManager.Service.Exception.CRUD;
 
 namespace TaskManager.Service.Entities.User;
 
@@ -56,6 +58,30 @@ public class UserService : IUserService
     public async Task<Project> PostNewUserProject(Project project)
     {
         return await AddNewUserProject(project);
+    }
+
+    public async Task<User> PostUser(UserRegistrationModel registrationModel)
+    {
+        return await AddNewUser(registrationModel);
+    }
+
+    public async Task<StatusCodeResult> DeleteUser(int userId)
+    {
+        return await DeleteUserById(userId);
+    }
+
+    private async Task<StatusCodeResult> DeleteUserById(int userId)
+    {
+        var user = await _context.Users.FindAsync(userId);
+        if (user == null)
+        {
+            return new NotFoundResult();
+        }
+
+        _context.Users.Remove(user);
+        await _context.SaveChangesAsync();
+
+        return new NoContentResult();
     }
 
     private async Task<Project> AddNewUserProject(Project project)
@@ -148,5 +174,23 @@ public class UserService : IUserService
             );
         if (user == null) throw new KeyNotFoundException("ProjectUser not found");
         return user;
+    }
+
+    private async Task<User> AddNewUser(UserRegistrationModel registrationModel)
+    {
+        var emailIsNotUnique = await _context.Users.AnyAsync(p => p.UserEmail == registrationModel.UserEmail);
+        if (emailIsNotUnique)
+        {
+            throw new EmailIsNotUniqueException();
+        }
+
+        var newUser = _mapper.Map<User>(registrationModel);
+        newUser.UserRole = "user";
+        newUser.UserAchievementsScore = 0;
+
+        newUser = _context.Users.Add(newUser).Entity;
+        await _context.SaveChangesAsync();
+
+        return newUser;
     }
 }

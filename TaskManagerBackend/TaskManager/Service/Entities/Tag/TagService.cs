@@ -84,7 +84,7 @@ public class TagService : ITagService
         {
             await _context.SaveChangesAsync();
         }
-        catch (DbUpdateConcurrencyException exception)
+        catch (DbUpdateConcurrencyException)
         {
             if (!TagExists(id))
             {

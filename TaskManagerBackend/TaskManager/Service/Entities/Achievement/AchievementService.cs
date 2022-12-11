@@ -143,7 +143,7 @@ public class AchievementService : IAchievementService
         {
             await _context.SaveChangesAsync();
         }
-        catch (DbUpdateConcurrencyException exception)
+        catch (DbUpdateConcurrencyException)
         {
             if (!AchievementExists(id))
             {

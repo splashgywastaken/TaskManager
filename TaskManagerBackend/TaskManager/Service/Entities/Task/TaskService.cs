@@ -57,7 +57,7 @@ public class TaskService : ITaskService
         {
             await _context.SaveChangesAsync();
         }
-        catch (DbUpdateConcurrencyException exception)
+        catch (DbUpdateConcurrencyException)
         {
             if (!TaskExists(taskId))
             {

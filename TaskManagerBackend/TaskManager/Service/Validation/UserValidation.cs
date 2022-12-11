@@ -29,4 +29,15 @@ public static class UserValidation
 
         return user.UserEmail == emailInContext;
     }
+
+    /// <summary>
+    /// Return role for user held in context
+    /// </summary>
+    /// <param name="context"></param>
+    /// <returns></returns>
+    public static string? GetUserRole(HttpContext context)
+    {
+        var roleInContext = context.User.Claims.ToList().Find(p => p.Type == ClaimsIdentity.DefaultRoleClaimType)?.Value;
+        return roleInContext;
+    }
 }

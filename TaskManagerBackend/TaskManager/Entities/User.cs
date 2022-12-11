@@ -18,6 +18,6 @@
         public virtual ICollection<Project> Projects { get; set; }
 
         public virtual ICollection<Achievement> UsersAchievementsAchievements { get; set; }
-        public List<UsersAchievements> UsersAchievements { get; set;}
+        public List<UsersAchievements> UsersAchievements { get; set; } = null!;
     }
 }

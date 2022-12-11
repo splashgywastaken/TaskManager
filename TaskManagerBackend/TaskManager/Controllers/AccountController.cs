@@ -1,7 +1,11 @@
-﻿using Microsoft.AspNetCore.Authentication;
+﻿using System.Data.Entity.Core;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Server.IIS.Core;
 using TaskManager.Models.User;
+using TaskManager.Service.Exception.CRUD;
+using TaskManager.Service.Validation;
 
 namespace TaskManager.Controllers;
 
@@ -56,10 +60,99 @@ public class AccountController : Controller
         return Ok(loginModel);
     }
 
-    [HttpPost("/logout")]
+    [HttpGet("{userId:int}")]
+    [Produces("application/json")]
+    [Authorize(Roles = "admin, user")]
+    public async Task<IActionResult> GetById(int userId)
+    {
+        User user;
+        try
+        {
+            user = await _userService.GetById(userId);
+        }
+        catch (KeyNotFoundException exception)
+        {
+            return StatusCode(StatusCodes.Status400BadRequest, exception.Message);
+        }
+
+        var mappedUser = _mapper.Map<UserDataModel>(user);
+
+        return Ok(mappedUser);
+    }
+
+    [HttpPost("register")]
+    public async Task<IActionResult> Register([FromBody]UserRegistrationModel registrationModel)
+    {
+        User user;
+        try
+        {
+            user = await _userService.PostUser(registrationModel);
+        }
+        catch (EmailIsNotUniqueException exception)
+        {
+            var message = new
+            {
+                message = "Email is not unique",
+                exception_message = exception.Message
+            };
+
+            return BadRequest(message);
+        }
+        catch (Microsoft.EntityFrameworkCore.DbUpdateException exception)
+        {
+            var message = new
+            {
+                message = "Exception triggered on Db update",
+                exception_message = exception.Message
+            };
+
+            return BadRequest(message);
+        }
+
+        return CreatedAtAction(
+            nameof(GetById),
+            new { userId = user.UserId},
+            user
+        );
+    }
+
+    [HttpPost("logout")]
+    [Authorize(Roles = "admin, user")]
     public async Task<IActionResult> Logout()
     {
         await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
         return Ok();
+    }
+
+    [HttpDelete("delete")]
+    [Authorize(Roles = "admin, user")]
+    public async Task<IActionResult> Delete(int userId)
+    {
+        User user;
+        try
+        {
+            user = await _userService.GetById(userId);
+        }
+        catch (KeyNotFoundException)
+        {
+            return BadRequest();
+        }
+
+        var userIdCorrespondsUserIdInContext = false;
+        try
+        {
+            userIdCorrespondsUserIdInContext =
+                await UserValidation.CheckUserIdentity(HttpContext, userId, _userService);
+        }
+        catch (ObjectNotFoundException) { }
+
+        var userRole = UserValidation.GetUserRole(HttpContext);
+
+        if (!(userRole == "admin" || userIdCorrespondsUserIdInContext))
+        {
+            return new UnauthorizedResult();
+        }
+
+        return await _userService.DeleteUser(userId);
     }
 }

@@ -7,11 +7,11 @@ public class UserAchievementsModel
 {
     [JsonPropertyName("user_name")]
     [JsonPropertyOrder(0)]
-    public string UserName { get; set; }
+    public string UserName { get; set; } = null!;
 
     [JsonPropertyName("user_email")]
     [JsonPropertyOrder(1)]
-    public string UserEmail { get; set; }
+    public string UserEmail { get; set; } = null!;
 
     [JsonPropertyName("user_achievements_score")]
     [JsonPropertyOrder(2)]
@@ -19,5 +19,5 @@ public class UserAchievementsModel
 
     [JsonPropertyName("user_achievements")]
     [JsonPropertyOrder(3)]
-    public ICollection<AchievementModel> UserAchievements { get; set; }
+    public ICollection<AchievementModel> UserAchievements { get; set; } = null!;
 }

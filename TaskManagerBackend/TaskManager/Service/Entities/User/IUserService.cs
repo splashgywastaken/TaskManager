@@ -1,4 +1,5 @@
 ﻿using System.Globalization;
+using Microsoft.AspNetCore.Mvc;
 using TaskManager.Models.Project;
 using TaskManager.Models.User;
 using TaskManager.Service.Enums.Achievement;
@@ -14,4 +15,6 @@ public interface IUserService
     Task<User> GetWithProjectsById(int userId);
     Task<User> GetByLoginData(UserLoginModel loginModel);
     Task<List<Achievement>> GetUserAchievements(int userId);
+    Task<User> PostUser(UserRegistrationModel registrationModel);
+    Task<StatusCodeResult> DeleteUser(int userId);
 }

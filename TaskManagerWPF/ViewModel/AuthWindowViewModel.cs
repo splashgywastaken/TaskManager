@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Security;
 using System.Windows.Input;
 using TaskManagerWPF.ViewModel.Base;
@@ -8,9 +10,9 @@ namespace TaskManagerWPF.ViewModel
     public class AuthWindowViewModel : ViewModelBase
     {
         // Fields
-        private string _username;
+        private string _username = null!;
         private SecureString? _password;
-        private string _errorMessage;
+        private string _errorMessage = null!;
         private bool _isViewVisible = true;
 
         // Properties
@@ -56,7 +58,7 @@ namespace TaskManagerWPF.ViewModel
 
         // Commands
         public ICommand LoginCommand { get; }
-        public ICommand ShowPasswordCommand { get; }
+        public ICommand ShowPasswordCommand { get; } = null!;
 
         public AuthWindowViewModel()
         {
@@ -76,7 +78,7 @@ namespace TaskManagerWPF.ViewModel
 
         private void ExecuteLoginCommand(object obj)
         {
-            // Implement how login will work here
+            
         }
     }
 }

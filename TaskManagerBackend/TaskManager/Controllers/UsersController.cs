@@ -74,26 +74,6 @@ public class UsersController : Controller
         return Ok(mappedData);
     }
 
-    [HttpGet("{userId:int}")]
-    [Produces("application/json")]
-    [Authorize(Roles = "admin, user")]
-    public async Task<IActionResult> GetById(int userId)
-    {
-        User user;
-        try
-        {
-            user = await _userService.GetById(userId);
-        }
-        catch (KeyNotFoundException exception)
-        {
-            return StatusCode(StatusCodes.Status400BadRequest, exception.Message);
-        }
-
-        var mappedUser = _mapper.Map<UserDataModel>(user);
-
-        return Ok(mappedUser);
-    }
-
     [HttpGet("{userId:int}/projects")]
     [Authorize(Roles = "admin, user")]
     public async Task<IActionResult> GetUserProjectsByUserId(int userId)
