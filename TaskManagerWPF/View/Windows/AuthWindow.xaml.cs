@@ -29,11 +29,6 @@ namespace TaskManagerWPF.View.Windows
             WindowState = WindowState.Minimized;
         }
 
-        private void ButtonLogin_OnClick(object sender, RoutedEventArgs e)
-        {
-
-        }
-
         private void AuthWindow_OnMouseDown(object sender, MouseButtonEventArgs e)
         {
             if (e.LeftButton == MouseButtonState.Pressed)
@@ -45,6 +40,16 @@ namespace TaskManagerWPF.View.Windows
         private void ButtonClose_OnClick(object sender, RoutedEventArgs e)
         {
             Application.Current.Shutdown();
+        }
+
+        private void ToggleButton_OnChecked(object sender, RoutedEventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void ToggleButton_OnUnchecked(object sender, RoutedEventArgs e)
+        {
+            throw new NotImplementedException();
         }
     }
 }

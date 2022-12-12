@@ -1,9 +1,17 @@
 ﻿using System;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Security;
+using System.Text;
+using System.Threading;
 using System.Windows.Input;
+using Newtonsoft.Json;
+using TaskManagerWPF.Model.User;
+using TaskManagerWPF.Services.DataAccess;
+using TaskManagerWPF.Services.Misc;
 using TaskManagerWPF.ViewModel.Base;
+using static System.Net.WebRequestMethods;
 
 namespace TaskManagerWPF.ViewModel
 {
@@ -14,6 +22,7 @@ namespace TaskManagerWPF.ViewModel
         private SecureString? _password;
         private string _errorMessage = null!;
         private bool _isViewVisible = true;
+        private bool _isLoggingIn = false;
 
         // Properties
         public string Username
@@ -56,9 +65,19 @@ namespace TaskManagerWPF.ViewModel
             }
         }
 
+        public bool IsLoggingIn
+        {
+            get => _isLoggingIn;
+            set
+            {
+                _isLoggingIn = value;
+                OnPropertyChanged();
+            }
+        }
+
         // Commands
-        public ICommand LoginCommand { get; }
-        public ICommand ShowPasswordCommand { get; } = null!;
+        public ICommand LoginCommand { get; set; }
+        public ICommand ShowPasswordCommand { get; set; } = null!;
 
         public AuthWindowViewModel()
         {
@@ -76,9 +95,36 @@ namespace TaskManagerWPF.ViewModel
             return validData;
         }
 
-        private void ExecuteLoginCommand(object obj)
+        private async void ExecuteLoginCommand(object obj)
         {
-            
+            IsLoggingIn = true;
+            var userDataAccess = App.AppHost!.Services.GetService(typeof(UserDataAccess)) as UserDataAccess;
+
+            // Getting httpClient to do requests on 
+            using var httpClient = App.AppHost.Services.GetService(typeof(HttpClient)) as HttpClient;
+            // Preparing data
+            var password = SecureStringTools.SecureStringToString(Password!);
+            var userLoginData = new UserLoginModel(Username, password);
+            var json = JsonConvert.SerializeObject(userLoginData);
+            var data = new StringContent(json, Encoding.UTF8, "application/json");
+            // Doing a request
+            var url = "https://localhost:7217/user/login";
+            var response = await httpClient!.PostAsync(url, data);
+
+            if (response.IsSuccessStatusCode)
+            {
+                ErrorMessage = "Logged in";
+                url = "https://localhost:7217/user/";
+                var responseString = await response.Content.ReadAsStringAsync();
+                userDataAccess!.UserDataModel = JsonConvert.DeserializeObject<UserDataModel>(responseString)!;
+                IsLoggingIn= false;
+                IsViewVisible = false;
+            }
+            else if (response.StatusCode == HttpStatusCode.Unauthorized)
+            {
+                ErrorMessage = "* incorrect email or password";
+                IsLoggingIn = false;
+            }
         }
     }
 }

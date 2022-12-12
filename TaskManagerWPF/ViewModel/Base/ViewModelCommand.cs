@@ -26,12 +26,12 @@ namespace TaskManagerWPF.ViewModel.Base
 
         public bool CanExecute(object? parameter)
         {
-            return _canExecuteAction == null ? true : _canExecuteAction(parameter);
+            return _canExecuteAction == null || _canExecuteAction(parameter!);
         }
 
         public void Execute(object? parameter)
         {
-            if (parameter != null) _executeAction(parameter);
+            _executeAction(parameter!);
         }
 
         public event EventHandler? CanExecuteChanged

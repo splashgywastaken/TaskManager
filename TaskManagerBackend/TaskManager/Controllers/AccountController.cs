@@ -32,11 +32,8 @@ public class AccountController : Controller
 
     // auth
     [HttpPost("login")]
-    public async Task<IActionResult> Login(string email, string password)
+    public async Task<IActionResult> Login([FromBody] UserLoginModel loginModel)
     {
-        // Получаем данные из формы запроса для авторизации/аутентификации
-        var loginModel = new UserLoginModel(email,password);
-
         User user;
         try
         {
@@ -57,7 +54,9 @@ public class AccountController : Controller
         var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
         await HttpContext.SignInAsync(claimsPrincipal);
 
-        return Ok(loginModel);
+        // Возвращаем данные о пользователе
+        var userData = _mapper.Map<UserDataModel>(user);
+        return Ok(userData);
     }
 
     [HttpGet("{userId:int}")]

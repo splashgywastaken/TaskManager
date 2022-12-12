@@ -7,6 +7,7 @@
         xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
         xmlns:viewModel="clr-namespace:TaskManagerWPF.ViewModel"
         xmlns:customControl="clr-namespace:TaskManagerWPF.Assets.CustomControl"
+        xmlns:fa="http://schemas.fontawesome.io/icons/"
         mc:Ignorable="d" Height="600" Width="480"
         WindowStyle="None"
         ResizeMode="NoResize"
@@ -175,18 +176,19 @@
                     </TextBox.Background>
                 </TextBox>
 
+                
                 <TextBlock Text="Password"
-                           Foreground="{DynamicResource ButtonTextBrush}"
-                           FontSize="12"
-                           FontWeight="Medium"
-                           FontFamily="Montserrat"
-                           Margin="0,15,0,0"/>
+                       Foreground="{DynamicResource ButtonTextBrush}"
+                       FontSize="12"
+                       FontWeight="Medium"
+                       FontFamily="Montserrat"
+                       Margin="0,15,0,0"/>
 
                 <customControl:BindablePasswordBox
-                    Height="28"
-                    Margin="-8, 5, 0, 0"
-                    Password="{ Binding Password, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged }"/>
-
+                Height="28"
+                Margin="-8, 5, 0, 0"
+                Password="{ Binding Password, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged }"/>
+            
                 <TextBlock Text="{Binding ErrorMessage}"
                            Foreground="{DynamicResource HighlightBrush}"
                            FontSize="12"
@@ -195,13 +197,35 @@
                            Margin="0,15,0,0"
                            TextWrapping="Wrap"/>
 
+                <Grid>
+                    <Grid.Style>
+                        <Style TargetType="Grid">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsLoggingIn}" Value="True">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding IsLoggingIn}" Value="False">
+                                    <Setter Property="Visibility" Value="Hidden"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Grid.Style>
+                    <fa:ImageAwesome 
+                        Icon="Spinner" 
+                        Spin="True" 
+                        Foreground="{StaticResource HighlightBrush}"
+                        SpinDuration="4"
+                        Width="32"
+                        Height="32"/>
+                </Grid>
+
                 <Button x:Name="ButtonLogin"
                         BorderThickness="0"
                         Content="login"
                         FontSize="12"
                         FontFamily="Montserrat"
                         Cursor="Hand"                           
-                        Margin="0,50,0,0"
+                        Margin="0,25,0,0"
                         Command="{Binding LoginCommand}">
                     <Button.Style>
                         <Style TargetType="Button">
