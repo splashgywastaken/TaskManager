@@ -13,8 +13,11 @@ namespace TaskManagerWPF.ViewModel
 {
     public class HomeViewModel : ViewModelBase
     {
-        private string _title = "Home page";
+        // Private fields
         private UserDataAccess _userDataAccessService;
+
+        // Property related fields
+        private string _title = "Home page";
         private bool _isUserDataLoaded;
 
         public HomeViewModel()

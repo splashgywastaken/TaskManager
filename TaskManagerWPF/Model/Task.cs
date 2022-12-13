@@ -14,6 +14,6 @@ namespace TaskManagerWPF.Model
         public bool TaskCompletionStatus { get; set; }
         public DateTime TaskStartDate { get; set; }
         public DateTime TaskFinisDate { get; set; }
-        public List<Tag> TaskTags { get; set; }
+        public List<Tag> TaskTags { get; set; } = null!;
     }
 }

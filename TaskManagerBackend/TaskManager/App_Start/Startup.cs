@@ -50,6 +50,7 @@ app.UseSwagger();
 app.UseSwaggerUI(c =>
 {
     c.SwaggerEndpoint("/swagger/V0.1/swagger.json", "TaskManagerAPI V0.1");
+    c.RoutePrefix = "";
 });
 
 // Configure HTTP request pipeline

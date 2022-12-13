@@ -6,10 +6,13 @@ using System.Security;
 using System.Text;
 using System.Threading;
 using System.Windows.Input;
+using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using TaskManagerWPF.Model.User;
 using TaskManagerWPF.Services.DataAccess;
 using TaskManagerWPF.Services.Misc;
+using TaskManagerWPF.Services.Web;
+using TaskManagerWPF.View.Windows;
 using TaskManagerWPF.ViewModel.Base;
 using static System.Net.WebRequestMethods;
 
@@ -17,6 +20,8 @@ namespace TaskManagerWPF.ViewModel
 {
     public class AuthWindowViewModel : ViewModelBase
     {
+        // Data fields
+
         // Fields
         private string _username = null!;
         private SecureString? _password;
@@ -77,11 +82,22 @@ namespace TaskManagerWPF.ViewModel
 
         // Commands
         public ICommand LoginCommand { get; set; }
+        public ICommand SignUpCommand { get; set; }
         public ICommand ShowPasswordCommand { get; set; } = null!;
 
         public AuthWindowViewModel()
         {
             LoginCommand = new ViewModelCommand(ExecuteLoginCommand, CanExecuteLoginCommand);
+            SignUpCommand = new ViewModelCommand(ExecuteSignUpCommand, CanExecuteSignUpCommand);
+        }
+
+        private bool CanExecuteSignUpCommand(object obj)
+        {
+            return true;
+        }
+
+        private void ExecuteSignUpCommand(object obj)
+        {
         }
 
         private bool CanExecuteLoginCommand(object obj)
@@ -98,26 +114,21 @@ namespace TaskManagerWPF.ViewModel
         private async void ExecuteLoginCommand(object obj)
         {
             IsLoggingIn = true;
-            var userDataAccess = App.AppHost!.Services.GetService(typeof(UserDataAccess)) as UserDataAccess;
+            var userDataAccess = App.AppHost!.Services.GetRequiredService<UserDataAccess>();
 
             // Getting httpClient to do requests on 
-            using var httpClient = App.AppHost.Services.GetService(typeof(HttpClient)) as HttpClient;
+            var httpClientService = App.AppHost.Services.GetRequiredService<HttpClientService>();
             // Preparing data
             var password = SecureStringTools.SecureStringToString(Password!);
             var userLoginData = new UserLoginModel(Username, password);
-            var json = JsonConvert.SerializeObject(userLoginData);
-            var data = new StringContent(json, Encoding.UTF8, "application/json");
+            var route = "/user/login";
             // Doing a request
-            var url = "https://localhost:7217/user/login";
-            var response = await httpClient!.PostAsync(url, data);
+            var response = await httpClientService.PostAsync(userLoginData, route);
 
             if (response.IsSuccessStatusCode)
             {
-                ErrorMessage = "Logged in";
-                url = "https://localhost:7217/user/";
-                var responseString = await response.Content.ReadAsStringAsync();
-                userDataAccess!.UserDataModel = JsonConvert.DeserializeObject<UserDataModel>(responseString)!;
-                IsLoggingIn= false;
+                userDataAccess!.UserDataModel = await HttpClientService.DeserializeResponse<UserDataModel>(response);
+                IsLoggingIn = false;
                 IsViewVisible = false;
             }
             else if (response.StatusCode == HttpStatusCode.Unauthorized)

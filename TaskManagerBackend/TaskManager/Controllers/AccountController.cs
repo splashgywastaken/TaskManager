@@ -30,7 +30,13 @@ public class AccountController : Controller
         _mapper = mapper;
     }
 
-    // auth
+    /// <summary>
+    /// Main auth method
+    /// </summary>
+    /// <param name="loginModel"></param>
+    /// <returns>
+    /// If login is successfull then returns current user data, else return Unauthorized code status
+    /// </returns>
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] UserLoginModel loginModel)
     {

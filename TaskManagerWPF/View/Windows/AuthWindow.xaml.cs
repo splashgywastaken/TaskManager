@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,6 +12,8 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using Microsoft.Extensions.DependencyInjection;
+using TaskManagerWPF.ViewModel;
 
 namespace TaskManagerWPF.View.Windows
 {
@@ -42,6 +45,8 @@ namespace TaskManagerWPF.View.Windows
             Application.Current.Shutdown();
         }
 
+        protected override void OnClosing(CancelEventArgs e) { }
+
         private void ToggleButton_OnChecked(object sender, RoutedEventArgs e)
         {
             throw new NotImplementedException();
@@ -50,6 +55,13 @@ namespace TaskManagerWPF.View.Windows
         private void ToggleButton_OnUnchecked(object sender, RoutedEventArgs e)
         {
             throw new NotImplementedException();
+        }
+
+        private void ButtonSignUp_OnClick(object sender, RoutedEventArgs e)
+        {
+            var signUpWindow = App.AppHost!.Services.GetRequiredService<SignUpWindow>();
+            ((signUpWindow.DataContext as SignUpWindowViewModel)!).ParentViewModel = DataContext as AuthWindowViewModel;
+            signUpWindow.Show();
         }
     }
 }

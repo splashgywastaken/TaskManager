@@ -1,4 +1,4 @@
-﻿<Window x:Class="TaskManagerWPF.View.MainWindow"
+﻿<Window x:Class="TaskManagerWPF.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -7,37 +7,189 @@
         xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
         xmlns:viewModel="clr-namespace:TaskManagerWPF.ViewModel"
         mc:Ignorable="d"
-        MinHeight="720" MinWidth="1280" Background="{DynamicResource MainBrush}"
-        Title="Task manager desktop" WindowStartupLocation="CenterScreen">
+        MinHeight="720" MinWidth="1280" 
+        WindowStyle="None"
+        Background="Transparent"
+        AllowsTransparency="True"
+        Title="Task manager desktop"
+        WindowStartupLocation="CenterScreen"
+        MouseDown="MainWindow_OnMouseDown">
+
+    <Window.DataContext>
+        <viewModel:MainWindowViewModel/>
+    </Window.DataContext>
 
     <Window.Resources>
-        <Style x:Key="NavigationContentStyle" TargetType="ContentControl">
-            <Setter Property="ContentTemplate" Value="{StaticResource HomeViewTemplate}"/>
-            <Style.Triggers>
-                <DataTrigger Binding="{Binding ElementName=NavigationMenuListBox, Path=SelectedItem}"
+        <ResourceDictionary>
+            <Style x:Key="NavigationContentStyle" TargetType="ContentControl">
+                <Setter Property="ContentTemplate" Value="{StaticResource HomeViewTemplate}"/>
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding ElementName=NavigationMenuListBox, Path=SelectedItem}"
                              Value="Projects">
-                    <Setter Property="ContentTemplate" Value="{StaticResource ProjectViewTemplate}"/>
-                </DataTrigger>
-                <DataTrigger Binding="{Binding ElementName=NavigationMenuListBox, Path=SelectedItem}"
+                        <Setter Property="ContentTemplate" Value="{StaticResource ProjectViewTemplate}"/>
+                    </DataTrigger>
+                    <DataTrigger Binding="{Binding ElementName=NavigationMenuListBox, Path=SelectedItem}"
                              Value="Achievements">
-                    <Setter Property="ContentTemplate" Value="{StaticResource AchievementsViewTemplate}"/>
-                </DataTrigger>
-            </Style.Triggers>
-        </Style>
+                        <Setter Property="ContentTemplate" Value="{StaticResource AchievementsViewTemplate}"/>
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+            <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="View/../Styles/Brushes.xaml"/>
+                <ResourceDictionary Source="View/../Styles/ControlStyles/Borders.xaml"/>
+                <ResourceDictionary Source="View/../Styles/ControlStyles/Buttons.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
     </Window.Resources>
 
-    <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="48"/>
-            <ColumnDefinition Width="163*"/>
-        </Grid.ColumnDefinitions>
+    <Window.Visibility>
+        <Binding
+            Path="IsViewVisible"
+            Mode="TwoWay"
+            Converter="{StaticResource BooleanToVisibilityConverter}"/>
+    </Window.Visibility>
 
-        <ListBox x:Name="NavigationMenuListBox" 
-                 Style="{DynamicResource NavigationListBoxStyle}"
-                 ItemContainerStyle="{DynamicResource NavigationListBoxItemStyle}"
-                 ItemTemplate="{DynamicResource NavigationDataTemplate}"
-                 ItemsSource="{DynamicResource NavigationMenuItems}"/>
+    <Border Style="{DynamicResource PrettyBorderStyle}"
+            Background="White">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="30"/>
+                <RowDefinition/>
+            </Grid.RowDefinitions >
 
-        <ContentControl Grid.Column="1" Style="{StaticResource NavigationContentStyle}"/>
-    </Grid>
+            <Grid Grid.Row="0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition Width="25"/>
+                    <ColumnDefinition Width="25"/>
+                    <ColumnDefinition Width="5"/>
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Text="Task manager"
+                           Foreground="{DynamicResource ButtonTextBrush}"
+                           FontSize="10"
+                           FontFamily="Montserrat"
+                           Grid.Column="0"
+                           VerticalAlignment="Center"
+                           Margin="10, 0,0,0"/>
+
+                <Button
+                    x:Name="ButtonMinimize"
+                    Content="-"
+                    FontSize="16"
+                    FontFamily="Montserrat"
+                    Cursor="Hand"
+                    Click="ButtonMinimize_OnClick"
+                    Grid.Column="1">
+                    <Button.Style>
+                        <Style TargetType="Button">
+                            <Setter Property="Background" Value="{StaticResource ButtonBrush}"/>
+                            <Style.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Background" Value="{StaticResource TertiaryBrush}"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                    <Button.Template>
+                        <ControlTemplate TargetType="Button">
+                            <Border Width="18" Height="18"
+                                    CornerRadius="9"
+                                    Background="{TemplateBinding Background}">
+                                <ContentPresenter VerticalAlignment="Center"
+                                                  HorizontalAlignment="Center"/>
+                            </Border>
+                        </ControlTemplate>
+                    </Button.Template>
+                </Button>
+
+                <Button
+                    x:Name="ButtonClose"
+                    Content="X"
+                    FontSize="16"
+                    FontFamily="Montserrat"
+                    Cursor="Hand"
+                    Click="ButtonClose_OnClick"
+                    Grid.Column="2">
+                    <Button.Style>
+                        <Style TargetType="Button">
+                            <Setter Property="Background" Value="{StaticResource ButtonBrush}"/>
+                            <Style.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Background" Value="{StaticResource TertiaryBrush}"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                    <Button.Template>
+                        <ControlTemplate TargetType="Button">
+                            <Border Width="18" Height="18"
+                                    CornerRadius="9"
+                                    Background="{TemplateBinding Background}">
+                                <ContentPresenter VerticalAlignment="Center"
+                                                  HorizontalAlignment="Center"/>
+                            </Border>
+                        </ControlTemplate>
+                    </Button.Template>
+                </Button>
+            </Grid>
+
+            <Grid Grid.Row="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="48"/>
+                    <ColumnDefinition Width="163*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition Height="48"/>
+                </Grid.RowDefinitions>
+
+                <ListBox 
+            x:Name="NavigationMenuListBox" 
+            Grid.Column="0"
+            Grid.Row="0"
+            Style="{DynamicResource NavigationListBoxStyle}"
+            ItemContainerStyle="{DynamicResource NavigationListBoxItemStyle}"
+            ItemTemplate="{DynamicResource NavigationDataTemplate}"
+            ItemsSource="{DynamicResource NavigationMenuItems}"/>
+                <ContentControl 
+            Grid.Column="1" 
+            Grid.Row="0" 
+            Style="{StaticResource NavigationContentStyle}"/>
+                <Button 
+                    BorderThickness="0"
+                    Grid.Row="1"
+                    Content="Logout"
+                    Grid.Column="0"
+                    Cursor="Hand"
+                    FontFamily="Montserrat"
+                    FontSize="12"
+                    VerticalAlignment="Center"
+                    HorizontalAlignment="Center"
+                    Command="{Binding LogoutCommand}">
+                    <Button.Style>
+                        <Style TargetType="Button">
+                            <Setter Property="Background" Value="{StaticResource ButtonBrush}"/>
+                            <Style.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Background" Value="{StaticResource TertiaryBrush}"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                    <Button.Template>
+                        <ControlTemplate TargetType="Button">
+                            <Border Width="48" Height="48"
+                                    CornerRadius="20"
+                                    Background="{TemplateBinding Background}">
+                                <ContentPresenter VerticalAlignment="Center"
+                                                  HorizontalAlignment="Center"/>
+                            </Border>
+                        </ControlTemplate>
+                    </Button.Template>
+                </Button>
+            </Grid>
+        </Grid>
+    </Border>
 </Window>

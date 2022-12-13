@@ -25,7 +25,7 @@ namespace TaskManager.Service.Data.DbContext
         public virtual DbSet<User> Users { get; set; } = null!;
         public virtual DbSet<UsersAchievements> UsersAchievement { get; set; } = null!;
 
-        private readonly IConfiguration _configuration;
+        private readonly IConfiguration? _configuration;
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

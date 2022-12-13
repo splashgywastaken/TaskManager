@@ -5,8 +5,10 @@ using System.Windows;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using TaskManagerWPF.Services.DataAccess;
+using TaskManagerWPF.Services.Web;
 using TaskManagerWPF.View;
 using TaskManagerWPF.View.Windows;
+using TaskManagerWPF.ViewModel;
 
 namespace TaskManagerWPF
 {
@@ -23,8 +25,15 @@ namespace TaskManagerWPF
                 .ConfigureServices((hostContext, services) =>
                 {
                     services.AddSingleton<AuthWindow>();
+                    services.AddSingleton<MainWindow>();
+                    services.AddSingleton<SignUpWindow>();
                     services.AddSingleton<UserDataAccess>();
-                    services.AddTransient<HttpClient>();
+                    services.AddTransient(_ =>
+                    {
+                        const string domainUrl = "https://localhost:7217";
+
+                        return new HttpClientService(domainUrl);
+                    });
                 }).Build();
         }
 
@@ -32,14 +41,22 @@ namespace TaskManagerWPF
         {
             await AppHost!.StartAsync();
 
-            var startupForm = AppHost.Services.GetRequiredService<AuthWindow>();
-            startupForm.Show();
-            startupForm.IsVisibleChanged += (s, e) =>
+            //var authWindow = AppHost.Services.GetRequiredService<AuthWindow>();
+            //var mainWindow = AppHost.Services.GetRequiredService<MainWindow>();
+            var authWindow = new AuthWindow();
+            authWindow.Show();
+
+            // TODO: Think about how to make this right
+
+            authWindow.IsVisibleChanged += (s, e) =>
             {
-                if (startupForm is {IsVisible: false, IsLoaded: true})
+                if (authWindow is {IsVisible: false, IsLoaded: true})
                 {
                     var mainWindow = new MainWindow();
+                    var mainWindowViewModel = new MainWindowViewModel(authWindow);
+                    mainWindow.DataContext = mainWindowViewModel;
                     mainWindow.Show();
+                    authWindow.Hide();
                 }
             };
 
@@ -48,6 +65,9 @@ namespace TaskManagerWPF
 
         protected override async void OnExit(ExitEventArgs e)
         {
+            var httpClient = AppHost!.Services.GetRequiredService<HttpClientService>();
+            await httpClient.PostAsync("/user/logout");
+
             await AppHost!.StopAsync();
 
             base.OnExit(e);
