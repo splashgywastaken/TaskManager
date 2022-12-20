@@ -53,8 +53,13 @@ namespace TaskManagerWPF.ViewModel
 
         private async void ExecuteLogoutCommand(object obj)
         {
+            Logout();
+        }
+
+        public async void Logout()
+        {
             var httpClient = App.AppHost!.Services.GetRequiredService<HttpClientService>();
-            var route = "/user/logout";
+            const string route = "/user/logout";
             var response = await httpClient!.PostAsync(route);
             IsViewVisible = false;
             AuthWindow?.Show();

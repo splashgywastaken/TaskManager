@@ -21,7 +21,6 @@
     <Folder Include="Service\Enums\Search\" />
     <Folder Include="Service\Validation\" />
     <Folder Include="Views\" />
-    <Folder Include="wwwroot\" />
   </ItemGroup>
 
   <ItemGroup>

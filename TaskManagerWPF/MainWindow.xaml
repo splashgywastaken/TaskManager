@@ -111,6 +111,7 @@
                     FontFamily="Montserrat"
                     Cursor="Hand"
                     Click="ButtonClose_OnClick"
+                    Command="{Binding LogoutCommand}"
                     Grid.Column="2">
                     <Button.Style>
                         <Style TargetType="Button">
@@ -146,17 +147,17 @@
                 </Grid.RowDefinitions>
 
                 <ListBox 
-            x:Name="NavigationMenuListBox" 
-            Grid.Column="0"
-            Grid.Row="0"
-            Style="{DynamicResource NavigationListBoxStyle}"
-            ItemContainerStyle="{DynamicResource NavigationListBoxItemStyle}"
-            ItemTemplate="{DynamicResource NavigationDataTemplate}"
-            ItemsSource="{DynamicResource NavigationMenuItems}"/>
-                <ContentControl 
-            Grid.Column="1" 
-            Grid.Row="0" 
-            Style="{StaticResource NavigationContentStyle}"/>
+                    x:Name="NavigationMenuListBox" 
+                    Grid.Column="0"
+                    Grid.Row="0"
+                    Style="{DynamicResource NavigationListBoxStyle}"
+                    ItemContainerStyle="{DynamicResource NavigationListBoxItemStyle}"
+                    ItemTemplate="{DynamicResource NavigationDataTemplate}"
+                    ItemsSource="{DynamicResource NavigationMenuItems}"/>
+                        <ContentControl 
+                            Grid.Column="1" 
+                            Grid.Row="0" 
+                            Style="{StaticResource NavigationContentStyle}"/>
                 <Button 
                     BorderThickness="0"
                     Grid.Row="1"

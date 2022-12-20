@@ -3,6 +3,8 @@ using TaskManager.Service.Data.DbContext;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using TaskManager.Models.Project;
+
 namespace TaskManager.Service.Entities.Project;
 
 using TaskManager.Entities;
@@ -26,6 +28,29 @@ public class ProjectService : IProjectService
     public async Task<IEnumerable<Project>> GetProjectsByUserId(int userId)
     {
         return await GetProjects(userId);
+    }
+
+    public async Task<Project> GetProjectWithAll(int projectId)
+    {
+        return await GetProjectWithAllById(projectId);
+    }
+
+    private async Task<Project> GetProjectWithAllById(int projectId)
+    {
+        if (!ProjectExists(projectId))
+        {
+            throw new ObjectNotFoundException("No object with this Id was found");
+        }
+
+        var result = await _context.Projects
+            .Where(p => p.ProjectId == projectId)
+            .Include(tg => tg.TaskGroups)
+            .ThenInclude(t => t.Tasks)
+            .FirstOrDefaultAsync();
+
+        if (result == null) throw new KeyNotFoundException("Project was not founds");
+
+        return result;
     }
 
     public async Task<IEnumerable<Task>> GetAllProjectTasks(int projectId)

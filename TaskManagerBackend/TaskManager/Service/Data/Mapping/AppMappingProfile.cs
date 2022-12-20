@@ -35,19 +35,29 @@ public class AppMappingProfile : Profile
         // TaskGroupProject mapping
         CreateMap<Project, ProjectDataModel>().ReverseMap();
         CreateMap<Project, ProjectPostModel>().ReverseMap();
+        CreateMap<Project, ProjectResponseModel>()
+            .ForMember(
+                dest => dest.ProjectTaskGroups, opt => opt.MapFrom(src => src.TaskGroups))
+            .ReverseMap();
 
         // Tag mapping
         CreateMap<Tag, TagDataModel>().ReverseMap();
 
-        // Task mapping
-        CreateMap<Task, TaskModel>();
-        CreateMap<Task, TaskModel>().ReverseMap();
-
-        // Achievement mapping
-        CreateMap<Achievement, AchievementModel>().ReverseMap();
-
         // Task group mapping
         CreateMap<TaskGroup, TaskGroupDataModel>().ReverseMap();
         CreateMap<TaskGroup, TaskGroupProjectPostModel>().ReverseMap();
+        CreateMap<TaskGroup, TaskGroupResponseModel>()
+            .ForMember(
+                dest => dest.TaskGroupTasks, 
+                opt => opt.MapFrom(src => src.Tasks))
+            .ReverseMap();
+
+        // Task mapping
+        CreateMap<Task, TaskModel>();
+        CreateMap<Task, TaskModel>().ReverseMap();
+        CreateMap<Task, TaskResponseModel>().ReverseMap();
+
+        // Achievement mapping
+        CreateMap<Achievement, AchievementModel>().ReverseMap();
     }
 }

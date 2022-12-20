@@ -85,13 +85,13 @@
     </x:Array>
 
     <DataTemplate x:Key="HomeViewTemplate">
-        <view:HomeView/>
+        <view:HomeView x:Name="HomeView"/>
     </DataTemplate>
     <DataTemplate x:Key="ProjectViewTemplate">
-        <pageViews:ProjectsView/>
+        <pageViews:ProjectsView x:Name="ProjectsView"/>
     </DataTemplate>
     <DataTemplate x:Key="AchievementsViewTemplate">
-        <view:AchievementsView/>
+        <view:AchievementsView x:Name="AchievementsView"/>
     </DataTemplate>
 
 </ResourceDictionary>

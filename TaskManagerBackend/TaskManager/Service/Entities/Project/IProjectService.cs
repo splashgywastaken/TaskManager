@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using TaskManager.Models.Project;
 
 namespace TaskManager.Service.Entities.Project;
 
@@ -9,6 +10,7 @@ public interface IProjectService
     Task<IEnumerable<Project>> GetAllProjects();
     Task<IEnumerable<Project>> GetProjectsByUserId(int userId);
     Task<IEnumerable<Task>> GetAllProjectTasks(int projectId);
+    Task<Project> GetProjectWithAll(int projectId);
     Task<Project> GetProjectById(int projectId);
     Task<Project> PostNewUserProject(Project project);
     Task<StatusCodeResult> UpdateProject(int projectId, Project project);

@@ -20,21 +20,110 @@
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="/Styles/ControlStyles/Buttons.xaml"/>
+                <ResourceDictionary Source="/Styles/Fonts.xaml"/>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Page.Resources>
 
-    <StackPanel ButtonBase.Click="Grid_Click">
-        <customControl:NavButton
-            Style="{DynamicResource PrettyNavButtonStyle}"
-            NavButtonUri="View/Pages/ProjectBrowserPage.xaml"
-            MaxWidth="200"
-            MaxHeight="200"
-            VerticalAlignment="Center"
-            HorizontalAlignment="Left">
-            <iconPacks:PackIconMaterial Kind="ArrowLeft" />
-        </customControl:NavButton>
-        <TextBlock Text="{Binding ProjectName}"/>
-        <TextBlock Text="{Binding ProjectDescription}" TextWrapping="Wrap"></TextBlock>
-    </StackPanel>
+    <Grid ButtonBase.Click="Grid_Click">
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="2*"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="2*"/>
+            <RowDefinition Height="10*"/>
+        </Grid.RowDefinitions>
+
+        <WrapPanel
+            x:Name="ButtonsPanel"
+            Grid.Row="0">
+            <customControl:NavButton 
+                x:Name="OpenProjectButton"
+                Grid.Column="0"
+                Margin="6"
+                NavButtonUri="View/Pages/ProjectBrowserPage.xaml">
+                <Button.Style>
+                    <Style TargetType="Button">
+                        <Setter Property="Background" Value="{StaticResource ButtonBrush}"/>
+                        <Style.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="{StaticResource TertiaryBrush}"/>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+                <Button.Template>
+                    <ControlTemplate TargetType="Button">
+                        <Border Width="40" Height="40"
+                            CornerRadius="8"
+                            Background="{TemplateBinding Background}">
+                            <ContentPresenter VerticalAlignment="Center"
+                                              HorizontalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Button.Template>
+
+                <iconPacks:PackIconMaterial Kind="ArrowLeft" />
+            </customControl:NavButton>
+
+            <Button Content="Edit project"
+                    Margin="2"/>
+
+            <Button Content="Delete project"
+                    Margin="2"/> 
+        </WrapPanel>
+
+        <TextBlock 
+            Grid.Row="1"
+            Style="{DynamicResource HeaderTextFontStyle}"
+            Text="{Binding ProjectName}"/>
+        <ScrollViewer
+            Grid.Row="2">
+            <TextBlock 
+            Style="{DynamicResource MainTextFontStyle}"
+            Text="{Binding ProjectDescription}"
+            TextWrapping="Wrap"
+            Height="60"
+            />
+        </ScrollViewer>
+
+        <Grid
+            x:Name="TaskGroupGrid"
+            DataContext="{Binding ProjectTaskGroupsViewModel }"
+            Grid.Row="3">
+            <ListView
+                x:Name="TaskGroupListView"
+                ItemsSource="{Binding TaskGroups}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Grid>
+
+                            <Grid.RowDefinitions>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                            </Grid.RowDefinitions>
+
+                            <TextBlock 
+                                Grid.Row="0"
+                                Text="{Binding TaskGroupName}"/>
+                            <TextBlock
+                                Grid.Row="1"
+                                Text="{Binding TaskGroupDescription}"/>
+                            <Grid 
+                                Grid.Row="2"
+                                x:Name="TaskGrid"
+                                DataContext="{Binding TaskList}">
+                                <ListView
+                                    x:Name="TaskListView"
+                                    ItemsSource="{Binding }">
+
+                                </ListView>
+                            </Grid>
+                        </Grid>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ListView>
+        </Grid>
+    </Grid>
 </Page>

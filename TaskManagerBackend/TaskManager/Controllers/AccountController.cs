@@ -1,7 +1,9 @@
 ﻿using System.Data.Entity.Core;
+using System.Security.Principal;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Server.IIS.Core;
 using TaskManager.Models.User;
 using TaskManager.Service.Exception.CRUD;
@@ -53,16 +55,70 @@ public class AccountController : Controller
         // Создаём клеймы
         var claims = new List<Claim>
         {
-            new (ClaimsIdentity.DefaultNameClaimType, user.UserEmail),
-            new (ClaimsIdentity.DefaultRoleClaimType, user.UserRole)
+            new ("UserId", user.UserId.ToString(), ClaimValueTypes.String),
+            new (ClaimTypes.NameIdentifier, user.UserEmail, ClaimValueTypes.String),
+            new (ClaimTypes.Name, user.UserName, ClaimValueTypes.String),
+            new (ClaimTypes.Role, user.UserRole, ClaimValueTypes.String)
         };
-        var claimsIdentity = new ClaimsIdentity(claims, "Cookies");
-        var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
-        await HttpContext.SignInAsync(claimsPrincipal);
+
+        var userIdentity = new ClaimsIdentity(CookieAuthenticationDefaults.AuthenticationScheme);
+        userIdentity.AddClaims(claims);
+
+        var principal = new ClaimsPrincipal(userIdentity);
+        var authProperties = new AuthenticationProperties
+        {
+            ExpiresUtc = DateTimeOffset.Now.AddHours(12)
+        };
+
+        await HttpContext.SignInAsync(
+            CookieAuthenticationDefaults.AuthenticationScheme, 
+            principal,
+            authProperties
+            );
+
+        SetPrincipalAndIdentity(principal);
+
+        //var principal = new ClaimsPrincipal(userIdentity);
+        //var authProperties = new AuthenticationProperties
+        //{
+        //    ExpiresUtc = DateTimeOffset.Now.AddDays(1),
+        //    IsPersistent = true,
+        //    AllowRefresh = true
+        //};
+
+        //try
+        //{
+        //    await HttpContext.SignInAsync(
+        //        CookieAuthenticationDefaults.AuthenticationScheme,
+        //        new ClaimsPrincipal(principal),
+        //        authProperties
+        //    );
+        //}
+        //catch (Exception e)
+        //{
+        //    Console.WriteLine(e);
+        //    throw;
+        //}
+
+        if (!HttpContext.User.Identity!.IsAuthenticated)
+        {
+            var message = new
+            {
+                message = "unauthorized",
+                login_model = loginModel
+            };
+            return Unauthorized(message);
+        }
 
         // Возвращаем данные о пользователе
         var userData = _mapper.Map<UserDataModel>(user);
         return Ok(userData);
+    }
+
+    private void SetPrincipalAndIdentity(IPrincipal principal)
+    {
+        Thread.CurrentPrincipal = principal;
+        HttpContext.User = (ClaimsPrincipal) principal;
     }
 
     [HttpGet("{userId:int}")]
@@ -129,14 +185,14 @@ public class AccountController : Controller
         return Ok();
     }
 
-    [HttpDelete("delete")]
+    [HttpDelete("{id:int}")]
     [Authorize(Roles = "admin, user")]
-    public async Task<IActionResult> Delete(int userId)
+    public async Task<IActionResult> Delete(int id)
     {
         User user;
         try
         {
-            user = await _userService.GetById(userId);
+            user = await _userService.GetById(id);
         }
         catch (KeyNotFoundException)
         {
@@ -147,7 +203,7 @@ public class AccountController : Controller
         try
         {
             userIdCorrespondsUserIdInContext =
-                await UserValidation.CheckUserIdentity(HttpContext, userId, _userService);
+                await UserValidation.CheckUserIdentity(HttpContext, id, _userService);
         }
         catch (ObjectNotFoundException) { }
 
@@ -158,6 +214,6 @@ public class AccountController : Controller
             return new UnauthorizedResult();
         }
 
-        return await _userService.DeleteUser(userId);
+        return await _userService.DeleteUser(id);
     }
 }

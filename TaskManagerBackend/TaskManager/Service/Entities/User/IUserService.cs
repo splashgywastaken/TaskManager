@@ -16,5 +16,6 @@ public interface IUserService
     Task<User> GetByLoginData(UserLoginModel loginModel);
     Task<List<Achievement>> GetUserAchievements(int userId);
     Task<User> PostUser(UserRegistrationModel registrationModel);
+    Task<StatusCodeResult> UpdateUser(int userId, User user);
     Task<StatusCodeResult> DeleteUser(int userId);
 }

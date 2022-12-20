@@ -28,9 +28,11 @@ namespace TaskManagerWPF
                     services.AddSingleton<MainWindow>();
                     services.AddSingleton<SignUpWindow>();
                     services.AddSingleton<UserDataAccess>();
+                    services.AddSingleton<ViewDataService>();
                     services.AddTransient(_ =>
                     {
                         const string domainUrl = "https://localhost:7217";
+                        //const string domainUrl = "https://localhost:44371";
 
                         return new HttpClientService(domainUrl);
                     });

@@ -49,6 +49,33 @@ public class ProjectController : Controller
     }
 
     [HttpGet]
+    // TODO: fix after you fix auth
+    //[Authorize(Roles = "admin, user")]
+    [Route("project/{projectId:int}/all")]
+    public async Task<IActionResult> GetProjectWithAll(int projectId)
+    {
+        Project? project = null;
+        try
+        {
+            project = await _projectService.GetProjectWithAll(projectId);
+        }
+        catch (ObjectNotFoundException exception)
+        {
+            var message = new
+            {
+                exception_message = exception.Message,
+                project_id = projectId
+            };
+
+            return BadRequest(message);
+        }
+
+        var mappedProject = _mapper.Map<Project, ProjectResponseModel>(project);
+
+        return Ok(mappedProject);
+    }
+
+    [HttpGet]
     [Authorize(Roles = "admin, user")]
     [Route("project/{projectId:int}/tasks")]
     public async Task<IActionResult> GetAllProjectTasks(int projectId)

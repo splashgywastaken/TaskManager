@@ -1,6 +1,12 @@
-﻿using System.Windows;
+﻿using System;
+using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Input;
+using System.Windows.Navigation;
 using TaskManagerWPF.Assets.CustomControl;
+using TaskManagerWPF.Services.Misc;
+using TaskManagerWPF.ViewModel;
 
 namespace TaskManagerWPF.View.Pages
 {
@@ -14,11 +20,12 @@ namespace TaskManagerWPF.View.Pages
             InitializeComponent();
         }
 
-        private void Grid_Click(object sender, RoutedEventArgs e)
+        private void OpenProjectButton_OnClick(object sender, RoutedEventArgs e)
         {
-            var clickedButton = e.OriginalSource as NavButton;
+            if (sender is not NavButton {Name: "OpenProjectButton"} clickedButton) return;
 
-            NavigationService?.Navigate(clickedButton?.NavButtonUri);
+            var projectId = (int)clickedButton.CommandParameter;
+            NavigationService!.Navigate(new ProjectPage(projectId));
         }
     }
 }

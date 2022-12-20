@@ -15,7 +15,7 @@ public static class UserValidation
     /// <returns>Returns result of userId == userId(which is held by user in context)</returns>
     public static async Task<bool> CheckUserIdentity(HttpContext context, int userId, IUserService userService)
     {
-        var emailInContext = context.User.FindFirstValue("email");
+        var emailInContext = context.User.FindFirst(ClaimTypes.NameIdentifier);
         if (emailInContext == null)
         {
             throw new ObjectNotFoundException("claim not found");
@@ -27,7 +27,7 @@ public static class UserValidation
             throw new ObjectNotFoundException("user not found");
         }
 
-        return user.UserEmail == emailInContext;
+        return user.UserEmail == emailInContext.Value;
     }
 
     /// <summary>

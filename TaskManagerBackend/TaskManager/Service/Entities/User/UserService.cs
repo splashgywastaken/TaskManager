@@ -65,6 +65,37 @@ public class UserService : IUserService
         return await AddNewUser(registrationModel);
     }
 
+    public async Task<StatusCodeResult> UpdateUser(int userId, User user)
+    {
+        return await UpdateUserById(userId, user);
+    }
+
+    private async Task<StatusCodeResult> UpdateUserById(int userId, User user)
+    {
+        _context.Entry(user).State = EntityState.Modified;
+
+        try
+        {
+            await _context.SaveChangesAsync();
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            if (!UserExists(userId))
+            {
+                return new NotFoundResult();
+            }
+
+            throw;
+        }
+
+        return new NoContentResult();
+    }
+
+    private bool UserExists(int id)
+    {
+        return (_context.Users?.Any(p => p.UserId == id)).GetValueOrDefault();
+    }
+
     public async Task<StatusCodeResult> DeleteUser(int userId)
     {
         return await DeleteUserById(userId);

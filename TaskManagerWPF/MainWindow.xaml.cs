@@ -2,7 +2,11 @@
 using System.ComponentModel;
 using System.Windows;
 using System.Windows.Input;
+using Microsoft.Extensions.DependencyInjection;
+using TaskManagerWPF.Services.DataAccess;
+using TaskManagerWPF.View;
 using TaskManagerWPF.View.Windows;
+using TaskManagerWPF.ViewModel;
 
 namespace TaskManagerWPF
 {
@@ -11,6 +15,8 @@ namespace TaskManagerWPF
         public MainWindow()
         {
             InitializeComponent();
+            var viewDataService = App.AppHost!.Services.GetRequiredService<ViewDataService>();
+            viewDataService.AddView(DataContext, "MainViewModel");
         }
 
         private void ButtonClose_OnClick(object sender, RoutedEventArgs e)
@@ -20,7 +26,7 @@ namespace TaskManagerWPF
 
         protected override void OnClosing(CancelEventArgs e)
         {
-            Application.Current.Shutdown();
+            base.OnClosing(e);
         }
 
         private void ButtonMinimize_OnClick(object sender, RoutedEventArgs e)

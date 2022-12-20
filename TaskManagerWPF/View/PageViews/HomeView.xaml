@@ -16,15 +16,18 @@
 
     <UserControl.Resources>
         <ResourceDictionary>
+            <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="../../Styles/Fonts.xaml" />
+                <ResourceDictionary Source="../../Styles/Brushes.xaml"/>
+                <ResourceDictionary Source="../../Styles/ControlStyles/TextBoxes.xaml"/>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
 
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition/>
         </Grid.RowDefinitions>
 
@@ -48,19 +51,15 @@
             />
         </StackPanel>
         <StackPanel
+            HorizontalAlignment="Center"
+            VerticalAlignment="Center"
             Grid.Row="1">
-            <TextBlock
-                Style="{DynamicResource HighlightedSectionStyle}"
-                VerticalAlignment="Top" HorizontalAlignment="Center"
-                Foreground="{DynamicResource HighlightBrush}"
-                Text="User info"
-            />
-            <Grid>
+            <Grid x:Name="LoadingGrid">
                 <Grid.Style>
                     <Style TargetType="Grid">
                         <Style.Triggers>
                             <DataTrigger Binding="{Binding IsUserDataLoaded}" Value="True">
-                                <Setter Property="Visibility" Value="Hidden"/>
+                                <Setter Property="Visibility" Value="Collapsed"/>
                             </DataTrigger>
                             <DataTrigger Binding="{Binding IsUserDataLoaded}" Value="False">
                                 <Setter Property="Visibility" Value="Visible"/>
@@ -75,6 +74,213 @@
                     SpinDuration="4"
                     Width="32"
                     Height="32"/>
+            </Grid>
+            <Grid x:Name="UserDataGrid">
+                <Grid.Style>
+                    <Style TargetType="Grid">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding IsUserDataLoaded}" Value="False">
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding IsUserDataLoaded}" Value="True">
+                                <Setter Property="Visibility" Value="Visible"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Grid.Style>
+
+                <StackPanel>
+
+                    <StackPanel.Resources>
+                        <ResourceDictionary>
+                            
+                        </ResourceDictionary>
+                    </StackPanel.Resources>
+
+                    <!--Manage styles-->
+
+                    <TextBlock
+                        Text="Username"
+                        Style="{DynamicResource MainTextFontStyle}"
+                        Margin="0, 15,0,0"/>
+
+                    <TextBlock 
+                        Text="{Binding UserName}"
+                        Style="{DynamicResource DataTextStyle}"
+                        Margin="0, 5,0,0"/>
+
+                    <TextBlock
+                        Text="User email"
+                        Style="{DynamicResource MainTextFontStyle}"
+                        Margin="0, 15,0,0"/>
+
+                    <TextBlock 
+                        Text="{Binding UserEmail}"
+                        Style="{DynamicResource DataTextStyle}"
+                        Margin="0, 5,0,0"/>
+
+                    <TextBlock
+                        Text="User achievements score"
+                        Style="{DynamicResource MainTextFontStyle}"
+                        Margin="0, 15,0,0"/>
+
+                    <TextBlock 
+                        Text="{Binding UserAchievementsScore}"
+                        Style="{DynamicResource DataTextStyle}"
+                        Margin="0, 5,0,0"/>
+
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+
+                        <Button x:Name="EditButton"
+                                Grid.Column="0"
+                                Margin="6"
+                                Command="{Binding EditCommand}">
+                            <Button.Style>
+                                <Style TargetType="Button">
+                                    <Setter Property="Background" Value="{StaticResource ButtonBrush}"/>
+                                    <Style.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter Property="Background" Value="{StaticResource TertiaryBrush}"/>
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
+                            <Button.Template>
+                                <ControlTemplate TargetType="Button">
+                                    <Border Width="40" Height="40"
+                                            CornerRadius="8"
+                                            Background="{TemplateBinding Background}">
+                                        <ContentPresenter VerticalAlignment="Center"
+                                                          HorizontalAlignment="Center"/>
+                                    </Border>
+                                </ControlTemplate>
+                            </Button.Template>
+
+                            <iconPacks:PackIconMaterial Kind="PencilOutline" />
+                        </Button>
+
+                        <Grid
+                            Margin="6"
+                            Column="1"
+                            x:Name="DeleteButtonGrid">
+                            <Grid.Visibility>
+                                <Binding
+                                    Path="IsDeleteButtonVisible"
+                                    Mode="TwoWay"
+                                    Converter="{StaticResource BooleanToVisibilityConverter}"/>
+                            </Grid.Visibility>
+                            <Button x:Name="DeleteButton"
+                                    Command ="{Binding DeleteCommand}">
+                                <Button.Style>
+                                    <Style TargetType="Button">
+                                        <Setter Property="Background" Value="{StaticResource ButtonBrush}"/>
+                                        <Style.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter Property="Background" Value="{StaticResource TertiaryBrush}"/>
+                                            </Trigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                                <Button.Template>
+                                    <ControlTemplate TargetType="Button">
+                                        <Border Width="40" Height="40"
+                                                CornerRadius="8"
+                                                Background="{TemplateBinding Background}">
+                                            <ContentPresenter VerticalAlignment="Center"
+                                                              HorizontalAlignment="Center"/>
+                                        </Border>
+                                    </ControlTemplate>
+                                </Button.Template>
+
+                                <iconPacks:PackIconMaterial Kind="DeleteOutline"/>
+                            </Button>
+                        </Grid>
+                        <Grid
+                            Margin="6"
+                            Column="1">
+
+                            <Grid.Visibility>
+                                <Binding
+                                    Path="IsAcceptCancelButtonsVisible"
+                                    Mode="TwoWay"
+                                    Converter="{StaticResource BooleanToVisibilityConverter}"/>
+                            </Grid.Visibility>
+
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition/>
+                                </Grid.ColumnDefinitions>
+
+                                <Button x:Name="AcceptDeleteButton"
+                                        Margin="2"
+                                        Grid.Column="0"
+                                        Command="{Binding AcceptDeleteCommand}">
+                                    <Button.Style>
+                                        <Style TargetType="Button">
+                                            <Setter Property="Background" Value="{StaticResource ButtonBrush}"/>
+                                            <Style.Triggers>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter Property="Background" Value="{StaticResource TertiaryBrush}"/>
+                                                </Trigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Button.Style>
+                                    <Button.Template>
+                                        <ControlTemplate TargetType="Button">
+                                            <Border 
+                                                Height="24"
+                                                Width="24"
+                                                    CornerRadius="8"
+                                                    Background="{TemplateBinding Background}">
+                                                <ContentPresenter VerticalAlignment="Center"
+                                                                  HorizontalAlignment="Center"/>
+                                            </Border>
+                                        </ControlTemplate>
+                                    </Button.Template>
+
+                                    <iconPacks:PackIconMaterial Kind="CheckOutline" />
+
+                                </Button>
+                                <Button x:Name="CancelButton"
+                                        Margin="2"
+                                        Grid.Column="1"
+                                        Command="{Binding CancelDeleteCommand}">
+                                    <Button.Style>
+                                        <Style TargetType="Button">
+                                            <Setter Property="Background" Value="{StaticResource ButtonBrush}"/>
+                                            <Style.Triggers>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter Property="Background" Value="{StaticResource TertiaryBrush}"/>
+                                                </Trigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Button.Style>
+                                    <Button.Template>
+                                        <ControlTemplate TargetType="Button">
+                                            <Border 
+                                                Height="24"
+                                                Width="24"
+                                                CornerRadius="8"
+                                                Background="{TemplateBinding Background}">
+                                                <ContentPresenter VerticalAlignment="Center"
+                                                                  HorizontalAlignment="Center"/>
+                                            </Border>
+                                        </ControlTemplate>
+                                    </Button.Template>
+
+                                    <iconPacks:PackIconMaterial Kind="CloseOutline" />
+
+                                </Button>
+                            </Grid>
+                        </Grid>
+                    </Grid>
+                </StackPanel>
+
             </Grid>
         </StackPanel>
     </Grid>

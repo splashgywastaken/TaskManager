@@ -1,6 +1,7 @@
 ﻿<UserControl x:Class="TaskManagerWPF.Assets.CustomControl.CustomViewDataButtonsGrid"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:TaskManagerWPF.Assets.CustomControl"
@@ -48,13 +49,21 @@
             <ColumnDefinition/>
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
-        <Button 
+        <local:NavButton
+            x:Name="FirstButton"
             Style="{DynamicResource PrettyButtonStyle}"
             Grid.Column="0"
-            Content="{Binding FirstButtonContent, ElementName=Root}"/>
+            NavButtonContent="{Binding FirstButtonContent, ElementName=Root}"
+            Click="FirstButton_OnClick"
+            NavButtonUri="../../View/Pages/ProjectPage.xaml"
+            Command="{Binding Path=FirstButtonCommand, ElementName=Root}"
+            CommandParameter="{Binding FirstButtonCommandParameter, ElementName=Root}">
+        </local:NavButton>
         <Button 
             Style="{DynamicResource PrettyButtonStyle}"
             Grid.Column="1"
-            Content="{Binding SecondButtonContent, ElementName=Root}"/>
+            Content="{Binding SecondButtonContent, ElementName=Root}"
+            Command="{Binding SecondButtonCommand, ElementName=Root}"
+            CommandParameter="{Binding SecondButtonCommandParameter, ElementName=Root}"/>
     </Grid>
 </UserControl>

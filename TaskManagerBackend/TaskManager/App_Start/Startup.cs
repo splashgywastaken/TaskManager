@@ -6,6 +6,8 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.CookiePolicy;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.OpenApi.Models;
 using TaskManager.Service.Data.DbContext;
 using TaskManager.Service.Data.Mapping;
@@ -22,16 +24,7 @@ var builder = WebApplication.CreateBuilder(args);
     var services = builder.Services;
     var env = builder.Environment;
     
-    // Setting up JWT-based authorization and authentication
-    services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-        .AddCookie(options =>
-        {
-            options.LoginPath = "/user/login";
-            options.LogoutPath = "/user/logout";
-        });
-    services.AddAuthorization();
-
-    ConfigureApplicationServices(services);
+    ConfigureApplicationServices(services, env);
 
     // Setting up mapping
     ConfigureMapping(services);
@@ -55,14 +48,15 @@ app.UseSwaggerUI(c =>
 
 // Configure HTTP request pipeline
 {
-    //
-    app.UseCors(x => x
-        .AllowAnyOrigin()
-        .AllowAnyMethod()
-        .AllowAnyHeader()
-    );
-
     app.MapControllers();
+    app.UseCors();
+
+    // Index page endpoint
+    app.Map("/adminPanel", async (context) =>
+    {
+        context.Response.ContentType = "text/html; charset=utf-8";
+        await context.Response.SendFileAsync("wwwroot/adminPanel.html");
+    });
 }
 
 // File system
@@ -73,6 +67,7 @@ app.UseDefaultFiles(
     });
 app.UseStaticFiles();
 
+app.UseCookiePolicy();
 app.UseAuthentication();
 app.UseAuthorization();
 
@@ -86,7 +81,6 @@ static void ConfigureMapping(IServiceCollection services)
 static void ConfigureDbContext(IServiceCollection services)
 {
     services.AddDbContext<TaskManagerDBContext>();
-    services.AddCors();
     services.AddControllers().AddJsonOptions(x =>
     {
         x.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
@@ -96,8 +90,42 @@ static void ConfigureDbContext(IServiceCollection services)
     services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 }
 
-static void ConfigureApplicationServices(IServiceCollection services)
+static void ConfigureApplicationServices(IServiceCollection services, IWebHostEnvironment env)
 {
+    // Setting up Cookie-based authorization and authentication
+    services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+        .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
+        {
+            options.Cookie.HttpOnly = false;
+            options.Cookie.SecurePolicy = env.IsDevelopment() ? CookieSecurePolicy.None : CookieSecurePolicy.Always;
+            options.Cookie.Name = CookieAuthenticationDefaults.AuthenticationScheme;
+            options.LoginPath = "/user/login";
+            options.LogoutPath = "/user/logout";
+        });
+
+    var cookieOptions = new CookiePolicyOptions
+    {
+    };
+
+    services.Configure<CookiePolicyOptions>(options =>
+    {
+        options.Secure = CookieSecurePolicy.SameAsRequest;
+        options.HttpOnly = HttpOnlyPolicy.None;
+        options.CheckConsentNeeded = (context) => false;
+    });
+    services.AddAuthorization();
+
+    services.AddCors(options =>
+    {
+        options.AddDefaultPolicy(builder =>
+        {
+            builder
+                .AllowAnyOrigin()
+                .AllowAnyHeader()
+                .AllowAnyMethod();
+        });
+    });
+
     services.AddSwaggerGen(c =>
     {
         c.SwaggerDoc("V0.1", new OpenApiInfo {Title = "TaskManagerAPI", Version = "V0.1"});
@@ -111,13 +139,4 @@ static void ConfigureApplicationDataServices(IServiceCollection services)
     services.AddScoped<ITagService, TagService>();
     services.AddScoped<ITaskService, TaskService>();
     services.AddScoped<IProjectService, ProjectService>();
-}
-
-public static class AuthOptions
-{
-    public const string ISUSER = "MyAuthServer";
-    public const string AUDIENCE = "MyAuthClient"; // потребитель токена
-    const string KEY = "mysupersecret_secretkey!123";   // ключ для шифрации
-    public static SymmetricSecurityKey GetSymmetricSecurityKey() =>
-        new SymmetricSecurityKey(Encoding.UTF8.GetBytes(KEY));
 }
