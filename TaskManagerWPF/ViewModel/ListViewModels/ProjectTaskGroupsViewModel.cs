@@ -2,6 +2,7 @@
 using System.Collections.ObjectModel;
 using Microsoft.Extensions.Options;
 using TaskManagerWPF.Model;
+using TaskManagerWPF.Model.Project;
 using TaskManagerWPF.ViewModel.Base;
 
 namespace TaskManagerWPF.ViewModel.ListViewModels;
@@ -16,8 +17,12 @@ public class ProjectTaskGroupsViewModel : ViewModelBase
         set => SetField(ref _taskGroups, value);
     }
 
-    public ProjectTaskGroupsViewModel(IEnumerable<TaskGroupViewModel> taskGroups)
+    public ProjectTaskGroupsViewModel(IEnumerable<TaskGroupWithAllData> taskGroups)
     {
-        _taskGroups = new ObservableCollection<TaskGroupViewModel>(taskGroups);
+        TaskGroups = new ObservableCollection<TaskGroupViewModel>();
+        foreach (var taskGroup in taskGroups)
+        {
+            TaskGroups.Add(new TaskGroupViewModel(taskGroup));
+        }
     }
 }

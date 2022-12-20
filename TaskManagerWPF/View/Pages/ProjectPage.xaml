@@ -18,28 +18,39 @@
 
     <Page.Resources>
         <ResourceDictionary>
+            <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="/Styles/ControlStyles/Buttons.xaml"/>
                 <ResourceDictionary Source="/Styles/Fonts.xaml"/>
+                <ResourceDictionary Source="/Styles/ControlStyles/Buttons.xaml"/>
+                <ResourceDictionary Source="../../Styles/ControlStyles/Borders.xaml"/>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Page.Resources>
 
-    <Grid ButtonBase.Click="Grid_Click">
+    <Grid>
 
         <Grid.RowDefinitions>
             <RowDefinition Height="2*"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="2*"/>
+            <RowDefinition Height="3*"/>
             <RowDefinition Height="10*"/>
         </Grid.RowDefinitions>
 
-        <WrapPanel
+        <Grid
             x:Name="ButtonsPanel"
             Grid.Row="0">
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="12*"/>
+            </Grid.ColumnDefinitions>
+
             <customControl:NavButton 
-                x:Name="OpenProjectButton"
                 Grid.Column="0"
+                x:Name="BackToProjectBrowserButton"
+                Click="BackToProjectBrowserButton_Click"
                 Margin="6"
                 NavButtonUri="View/Pages/ProjectBrowserPage.xaml">
                 <Button.Style>
@@ -66,63 +77,834 @@
                 <iconPacks:PackIconMaterial Kind="ArrowLeft" />
             </customControl:NavButton>
 
-            <Button Content="Edit project"
-                    Margin="2"/>
+            <!--Edit button elements-->
+            <Grid
+                Grid.Column="1"
+                Margin="6"
+                x:Name="EditButtonGrid"
+                Visibility="{Binding IsEditButtonVisible,
+                    Mode=TwoWay, 
+                    Converter={StaticResource BooleanToVisibilityConverter}}">
+                <Button x:Name="EditButton"
+                    Command=
+                    "{Binding EditCommand}">
+                    <Button.Style>
+                        <Style TargetType="Button">
+                            <Setter Property="Background" Value="{StaticResource ButtonBrush}"/>
+                            <Style.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Background" Value="{StaticResource TertiaryBrush}"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                    <Button.Template>
+                        <ControlTemplate TargetType="Button">
+                            <Border Width="40" Height="40"
+                                CornerRadius="8"
+                                Background="{TemplateBinding Background}">
+                                <ContentPresenter VerticalAlignment="Center"
+                                                  HorizontalAlignment="Center"/>
+                            </Border>
+                        </ControlTemplate>
+                    </Button.Template>
 
-            <Button Content="Delete project"
-                    Margin="2"/> 
-        </WrapPanel>
+                    <iconPacks:PackIconMaterial Kind="PencilOutline"/>
+                </Button>
+            </Grid>
+            <Grid
+                Grid.Column="1"
+                Visibility=
+                "{Binding AreAcceptCancelEditButtonsVisible,
+                    Mode=TwoWay, 
+                    Converter={StaticResource BooleanToVisibilityConverter}}"
+                Margin="6">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <Button x:Name="AcceptEditButton"
+                            Margin="2"
+                            Grid.Column="0"
+                            Command="{Binding AcceptEditCommand}">
+                        <Button.Style>
+                            <Style TargetType="Button">
+                                <Setter Property="Background" Value="{StaticResource ButtonBrush}"/>
+                                <Style.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Background" Value="{StaticResource TertiaryBrush}"/>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                        <Button.Template>
+                            <ControlTemplate TargetType="Button">
+                                <Border 
+                                    Height="24"
+                                    Width="24"
+                                    CornerRadius="8"
+                                    Background="{TemplateBinding Background}">
+                                    <ContentPresenter VerticalAlignment="Center"
+                                                                  HorizontalAlignment="Center"/>
+                                </Border>
+                            </ControlTemplate>
+                        </Button.Template>
 
-        <TextBlock 
-            Grid.Row="1"
-            Style="{DynamicResource HeaderTextFontStyle}"
-            Text="{Binding ProjectName}"/>
-        <ScrollViewer
-            Grid.Row="2">
-            <TextBlock 
-            Style="{DynamicResource MainTextFontStyle}"
-            Text="{Binding ProjectDescription}"
-            TextWrapping="Wrap"
-            Height="60"
-            />
-        </ScrollViewer>
+                        <iconPacks:PackIconMaterial Kind="CheckOutline" />
+
+                    </Button>
+                    <Button x:Name="CancelEditButton"
+                        Margin="2"
+                        Grid.Column="1"
+                        Command="{Binding CancelEditCommand}">
+                        <Button.Style>
+                            <Style TargetType="Button">
+                                <Setter Property="Background" Value="{StaticResource ButtonBrush}"/>
+                                <Style.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Background" Value="{StaticResource TertiaryBrush}"/>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                        <Button.Template>
+                            <ControlTemplate TargetType="Button">
+                                <Border 
+                                    Height="24"
+                                    Width="24"
+                                    CornerRadius="8"
+                                    Background="{TemplateBinding Background}">
+                                    <ContentPresenter VerticalAlignment="Center"
+                                                      HorizontalAlignment="Center"/>
+                                </Border>
+                            </ControlTemplate>
+                        </Button.Template>
+
+                        <iconPacks:PackIconMaterial Kind="CloseOutline" />
+
+                    </Button>
+                </Grid>
+            </Grid>
+            <!--End of edit button elements-->
+
+            <!--Delete button elements-->
+            <Grid
+                Grid.Column="2"
+                Margin="6"
+                x:Name="DeleteButtonGrid"
+                Visibility="{Binding IsDeleteButtonVisible,
+                    Mode=TwoWay, 
+                    Converter={StaticResource BooleanToVisibilityConverter}}">
+                <Button x:Name="DeleteButton"
+                    Command=
+                    "{Binding DeleteCommand}">
+                    <Button.Style>
+                        <Style TargetType="Button">
+                            <Setter Property="Background" Value="{StaticResource ButtonBrush}"/>
+                            <Style.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Background" Value="{StaticResource TertiaryBrush}"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                    <Button.Template>
+                        <ControlTemplate TargetType="Button">
+                            <Border Width="40" Height="40"
+                                CornerRadius="8"
+                                Background="{TemplateBinding Background}">
+                                <ContentPresenter VerticalAlignment="Center"
+                                                  HorizontalAlignment="Center"/>
+                            </Border>
+                        </ControlTemplate>
+                    </Button.Template>
+
+                    <iconPacks:PackIconMaterial Kind="DeleteOutline"/>
+                </Button>
+            </Grid>
+            <Grid
+                Grid.Column="2"
+                Visibility=
+                "{Binding AreAcceptCancelDeleteButtonsVisible,
+                    Mode=TwoWay, 
+                    Converter={StaticResource BooleanToVisibilityConverter}}"
+                Margin="6">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <Button x:Name="AcceptDeleteButton"
+                            Margin="2"
+                            Grid.Column="0"
+                            Command="{Binding AcceptDeleteCommand}">
+                        <Button.Style>
+                            <Style TargetType="Button">
+                                <Setter Property="Background" Value="{StaticResource ButtonBrush}"/>
+                                <Style.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Background" Value="{StaticResource TertiaryBrush}"/>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                        <Button.Template>
+                            <ControlTemplate TargetType="Button">
+                                <Border 
+                                    Height="24"
+                                    Width="24"
+                                    CornerRadius="8"
+                                    Background="{TemplateBinding Background}">
+                                    <ContentPresenter VerticalAlignment="Center"
+                                                                  HorizontalAlignment="Center"/>
+                                </Border>
+                            </ControlTemplate>
+                        </Button.Template>
+
+                        <iconPacks:PackIconMaterial Kind="CheckOutline" />
+
+                    </Button>
+                    <Button x:Name="CancelDeleteButton"
+                        Margin="2"
+                        Grid.Column="1"
+                        Command="{Binding CancelDeleteCommand}">
+                        <Button.Style>
+                            <Style TargetType="Button">
+                                <Setter Property="Background" Value="{StaticResource ButtonBrush}"/>
+                                <Style.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Background" Value="{StaticResource TertiaryBrush}"/>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                        <Button.Template>
+                            <ControlTemplate TargetType="Button">
+                                <Border 
+                                    Height="24"
+                                    Width="24"
+                                    CornerRadius="8"
+                                    Background="{TemplateBinding Background}">
+                                    <ContentPresenter VerticalAlignment="Center"
+                                                      HorizontalAlignment="Center"/>
+                                </Border>
+                            </ControlTemplate>
+                        </Button.Template>
+
+                        <iconPacks:PackIconMaterial Kind="CloseOutline" />
+
+                    </Button>
+                </Grid>
+            </Grid>
+            <!--End of delete button elements-->
+        </Grid>
+
+        <!--Project name and other data-->
+        <Border
+            Padding="6"
+            Style="{DynamicResource PrettyBorderStyle}"
+            Grid.Row="1">
+            <Grid
+                Background="Transparent">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="2*"/>
+                </Grid.RowDefinitions>
+
+                <TextBlock
+                    Grid.Row="0" 
+                    Background="Transparent"
+                    Style="{DynamicResource HeaderTextFontStyle}"
+                    Text="{Binding ProjectName}"
+                    Foreground="{DynamicResource HighlightBrush}"/>
+                <ScrollViewer
+                    Grid.Row="1">
+                    <TextBlock 
+                        Background="Transparent"
+                        Style="{DynamicResource MainTextFontStyle}"
+                        Text="{Binding ProjectDescription}"
+                        TextWrapping="Wrap"
+                        Height="60"/>
+                </ScrollViewer>
+            </Grid>
+        </Border>
 
         <Grid
             x:Name="TaskGroupGrid"
             DataContext="{Binding ProjectTaskGroupsViewModel }"
-            Grid.Row="3">
+            Grid.Row="2">
             <ListView
                 x:Name="TaskGroupListView"
-                ItemsSource="{Binding TaskGroups}">
+                ItemsSource="{Binding TaskGroups}" d:ItemsSource="{d:SampleData ItemCount=5}">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
-                        <Grid>
+                        <Border
+                            Padding="6"
+                            Style="{DynamicResource PrettyBorderStyle}">
+                            <Grid x:Name="TaskListGrid"
+                                  Width="380">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="3*"/>
+                                    <RowDefinition Height="5*"/>
+                                    <RowDefinition Height="7*"/>
+                                </Grid.RowDefinitions>
+                                <Grid
+                                    Grid.Row="0">
 
-                            <Grid.RowDefinitions>
-                                <RowDefinition/>
-                                <RowDefinition/>
-                                <RowDefinition/>
-                            </Grid.RowDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="3*"/>
+                                    </Grid.RowDefinitions>
 
-                            <TextBlock 
-                                Grid.Row="0"
-                                Text="{Binding TaskGroupName}"/>
-                            <TextBlock
+                                    <TextBlock 
+                                        Grid.Row="0"
+                                        Style="{DynamicResource HeaderTextFontStyle}"
+                                        Text="{Binding TaskGroupName}"
+                                        Foreground="{DynamicResource SecondaryBrush}"
+                                        TextWrapping="Wrap"
+                                        Height="Auto"/>
+
+                                    <!--Edit and delete buttons-->
+                                    <Grid 
+                                        Grid.Row="1">
+
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="2*"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="2*"/>
+                                        </Grid.ColumnDefinitions>
+
+                                        <!--Edit button elements-->
+                                        <Grid
+                                            Grid.Column="1"
+                                            Margin="6"
+                                            x:Name="EditButtonGrid"
+                                            Visibility="{Binding IsEditButtonVisible,
+                                                Mode=TwoWay, 
+                                                Converter={StaticResource BooleanToVisibilityConverter}}">
+                                            <Button x:Name="EditButton"
+                                                Command=
+                                                "{Binding EditCommand}">
+                                                <Button.Style>
+                                                    <Style TargetType="Button">
+                                                        <Setter Property="Background" Value="{StaticResource ButtonBrush}"/>
+                                                        <Style.Triggers>
+                                                            <Trigger Property="IsMouseOver" Value="True">
+                                                                <Setter Property="Background" Value="{StaticResource TertiaryBrush}"/>
+                                                            </Trigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </Button.Style>
+                                                <Button.Template>
+                                                    <ControlTemplate TargetType="Button">
+                                                        <Border Width="40" Height="40"
+                                                                            CornerRadius="8"
+                                                                            Background="{TemplateBinding Background}">
+                                                            <ContentPresenter VerticalAlignment="Center"
+                                                                                HorizontalAlignment="Center"/>
+                                                        </Border>
+                                                    </ControlTemplate>
+                                                </Button.Template>
+
+                                                <iconPacks:PackIconMaterial Kind="PencilOutline"/>
+                                            </Button>
+                                        </Grid>
+                                        <Grid
+                                            Grid.Column="1"
+                                            Visibility=
+                                            "{Binding AreAcceptCancelEditButtonsVisible,
+                                                Mode=TwoWay, 
+                                                Converter={StaticResource BooleanToVisibilityConverter}}"
+                                            Margin="6">
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition/>
+                                                    <ColumnDefinition/>
+                                                </Grid.ColumnDefinitions>
+                                                <Button x:Name="AcceptEditButton"
+                                                    Margin="2"
+                                                    Grid.Column="0"
+                                                    Command="{Binding AcceptEditCommand}">
+                                                    <Button.Style>
+                                                        <Style TargetType="Button">
+                                                            <Setter Property="Background" Value="{StaticResource ButtonBrush}"/>
+                                                            <Style.Triggers>
+                                                                <Trigger Property="IsMouseOver" Value="True">
+                                                                    <Setter Property="Background" Value="{StaticResource TertiaryBrush}"/>
+                                                                </Trigger>
+                                                            </Style.Triggers>
+                                                        </Style>
+                                                    </Button.Style>
+                                                    <Button.Template>
+                                                        <ControlTemplate TargetType="Button">
+                                                            <Border 
+                                                                Height="24"
+                                                                Width="24"
+                                                                CornerRadius="8"
+                                                                Background="{TemplateBinding Background}">
+                                                                <ContentPresenter VerticalAlignment="Center"
+                                                                                    HorizontalAlignment="Center"/>
+                                                            </Border>
+                                                        </ControlTemplate>
+                                                    </Button.Template>
+
+                                                    <iconPacks:PackIconMaterial Kind="CheckOutline" />
+
+                                                </Button>
+                                                <Button x:Name="CancelEditButton"
+                                                    Margin="2"
+                                                    Grid.Column="1"
+                                                    Command="{Binding CancelEditCommand}">
+                                                    <Button.Style>
+                                                        <Style TargetType="Button">
+                                                            <Setter Property="Background" Value="{StaticResource ButtonBrush}"/>
+                                                            <Style.Triggers>
+                                                                <Trigger Property="IsMouseOver" Value="True">
+                                                                    <Setter Property="Background" Value="{StaticResource TertiaryBrush}"/>
+                                                                </Trigger>
+                                                            </Style.Triggers>
+                                                        </Style>
+                                                    </Button.Style>
+                                                    <Button.Template>
+                                                        <ControlTemplate TargetType="Button">
+                                                            <Border 
+                                                                Height="24"
+                                                                Width="24"
+                                                                CornerRadius="8"
+                                                                Background="{TemplateBinding Background}">
+                                                                <ContentPresenter VerticalAlignment="Center"
+                                                                                    HorizontalAlignment="Center"/>
+                                                            </Border>
+                                                        </ControlTemplate>
+                                                    </Button.Template>
+
+                                                    <iconPacks:PackIconMaterial Kind="CloseOutline" />
+
+                                                </Button>
+                                            </Grid>
+                                        </Grid>
+                                        <!--End of edit button elements-->
+
+                                        <!--Delete button elements-->
+                                        <Grid
+                                            Grid.Column="2"
+                                            Margin="6"
+                                            x:Name="DeleteButtonGrid"
+                                            Visibility="{Binding IsDeleteButtonVisible,
+                                                Mode=TwoWay, 
+                                                Converter={StaticResource BooleanToVisibilityConverter}}">
+                                            <Button x:Name="DeleteButton"
+                                                Command=
+                                                "{Binding DeleteCommand}">
+                                                <Button.Style>
+                                                    <Style TargetType="Button">
+                                                        <Setter Property="Background" Value="{StaticResource ButtonBrush}"/>
+                                                        <Style.Triggers>
+                                                            <Trigger Property="IsMouseOver" Value="True">
+                                                                <Setter Property="Background" Value="{StaticResource TertiaryBrush}"/>
+                                                            </Trigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </Button.Style>
+                                                <Button.Template>
+                                                    <ControlTemplate TargetType="Button">
+                                                        <Border Width="40" Height="40"
+                                                            CornerRadius="8"
+                                                            Background="{TemplateBinding Background}">
+                                                            <ContentPresenter VerticalAlignment="Center"
+                                                                              HorizontalAlignment="Center"/>
+                                                        </Border>
+                                                    </ControlTemplate>
+                                                </Button.Template>
+
+                                                <iconPacks:PackIconMaterial Kind="DeleteOutline"/>
+                                            </Button>
+                                        </Grid>
+                                        <Grid
+                                            Grid.Column="2"
+                                            Visibility=
+                                            "{Binding AreAcceptCancelDeleteButtonsVisible,
+                                                Mode=TwoWay, 
+                                                Converter={StaticResource BooleanToVisibilityConverter}}"
+                                            Margin="6">
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition/>
+                                                    <ColumnDefinition/>
+                                                </Grid.ColumnDefinitions>
+                                                <Button x:Name="AcceptDeleteButton"
+                                                    Margin="2"
+                                                    Grid.Column="0"
+                                                    Command="{Binding AcceptDeleteCommand}">
+                                                    <Button.Style>
+                                                        <Style TargetType="Button">
+                                                            <Setter Property="Background" Value="{StaticResource ButtonBrush}"/>
+                                                            <Style.Triggers>
+                                                                <Trigger Property="IsMouseOver" Value="True">
+                                                                    <Setter Property="Background" Value="{StaticResource TertiaryBrush}"/>
+                                                                </Trigger>
+                                                            </Style.Triggers>
+                                                        </Style>
+                                                    </Button.Style>
+                                                    <Button.Template>
+                                                        <ControlTemplate TargetType="Button">
+                                                            <Border 
+                                                                Height="24"
+                                                                Width="24"
+                                                                CornerRadius="8"
+                                                                Background="{TemplateBinding Background}">
+                                                                <ContentPresenter VerticalAlignment="Center"
+                                                                    HorizontalAlignment="Center"/>
+                                                            </Border>
+                                                        </ControlTemplate>
+                                                    </Button.Template>
+
+                                                    <iconPacks:PackIconMaterial Kind="CheckOutline" />
+
+                                                </Button>
+                                                <Button x:Name="CancelDeleteButton"
+                                                        Margin="2"
+                                                        Grid.Column="1"
+                                                        Command="{Binding CancelDeleteCommand}">
+                                                    <Button.Style>
+                                                        <Style TargetType="Button">
+                                                            <Setter Property="Background" Value="{StaticResource ButtonBrush}"/>
+                                                            <Style.Triggers>
+                                                                <Trigger Property="IsMouseOver" Value="True">
+                                                                    <Setter Property="Background" Value="{StaticResource TertiaryBrush}"/>
+                                                                </Trigger>
+                                                            </Style.Triggers>
+                                                        </Style>
+                                                    </Button.Style>
+                                                    <Button.Template>
+                                                        <ControlTemplate TargetType="Button">
+                                                            <Border 
+                                                                Height="24"
+                                                                Width="24"
+                                                                CornerRadius="8"
+                                                                Background="{TemplateBinding Background}">
+                                                                <ContentPresenter VerticalAlignment="Center"
+                                                                    HorizontalAlignment="Center"/>
+                                                            </Border>
+                                                        </ControlTemplate>
+                                                    </Button.Template>
+
+                                                    <iconPacks:PackIconMaterial Kind="CloseOutline" />
+
+                                                </Button>
+                                            </Grid>
+                                        </Grid>
+                                        <!--End of delete button elements-->
+                                    </Grid>
+
+                                </Grid>
+                                <TextBlock
                                 Grid.Row="1"
-                                Text="{Binding TaskGroupDescription}"/>
-                            <Grid 
-                                Grid.Row="2"
-                                x:Name="TaskGrid"
-                                DataContext="{Binding TaskList}">
-                                <ListView
+                                Style="{DynamicResource MainTextFontStyle}"
+                                Text="{Binding TaskGroupDescription}"
+                                TextWrapping="Wrap"/>
+                                <Grid
+                                    HorizontalAlignment="Center"
+                                    Grid.Row="2"
+                                    x:Name="TaskGrid">
+                                    <ListView
                                     x:Name="TaskListView"
-                                    ItemsSource="{Binding }">
+                                    ItemsSource="{Binding TaskList}">
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate>
+                                                <Border
+                                                    Style="{DynamicResource PrettyBorderStyle}"
+                                                    BorderBrush="{DynamicResource HighlightBrush}"
+                                                    Padding="6"
+                                                    Margin="6">
+                                                    <Grid
+                                                        Width="320"
+                                                        Height="320"
+                                                        x:Name="TaskViewGrid">
+                                                        <Grid.RowDefinitions>
+                                                            <RowDefinition Height="Auto"/>
+                                                            <RowDefinition Height="3*"/>
+                                                            <RowDefinition Height="2*"/>
+                                                        </Grid.RowDefinitions>
 
-                                </ListView>
+                                                        <TextBlock Grid.Row="0"
+                                                               Margin="3"
+                                                               Style="{DynamicResource HeaderTextFontStyle}"
+                                                               Text="{Binding TaskName}"
+                                                               Foreground="{DynamicResource SecondaryBrush}"
+                                                               TextWrapping="Wrap"/>
+                                                        <ScrollViewer
+                                                        Margin="3"
+                                                        Grid.Row="1">
+                                                            <TextBlock 
+                                                                Style="{DynamicResource MainTextFontStyle}"
+                                                                Text="{Binding TaskDescription}"
+                                                                TextWrapping="Wrap"/>
+                                                        </ScrollViewer>
+
+                                                        <!--Edit and delete buttons-->
+                                                        <Grid
+                                                            Grid.Row="2">
+
+                                                            <Grid.ColumnDefinitions>
+                                                                <ColumnDefinition Width="*"/>
+                                                                <ColumnDefinition Width="*"/>
+                                                                <ColumnDefinition Width="*"/>
+                                                                <ColumnDefinition Width="*"/>
+                                                            </Grid.ColumnDefinitions>
+
+                                                            <!--Edit button elements-->
+                                                            <Grid
+                                                                Grid.Column="1"
+                                                                Margin="6"
+                                                                x:Name="EditButtonGrid"
+                                                                Visibility="{Binding IsEditButtonVisible,
+                                                                    Mode=TwoWay, 
+                                                                    Converter={StaticResource BooleanToVisibilityConverter}}">
+                                                                    <Button x:Name="EditButton"
+                                                                    Command=
+                                                                    "{Binding EditCommand}">
+                                                                    <Button.Style>
+                                                                        <Style TargetType="Button">
+                                                                            <Setter Property="Background" Value="{StaticResource ButtonBrush}"/>
+                                                                            <Style.Triggers>
+                                                                                <Trigger Property="IsMouseOver" Value="True">
+                                                                                    <Setter Property="Background" Value="{StaticResource TertiaryBrush}"/>
+                                                                                </Trigger>
+                                                                            </Style.Triggers>
+                                                                        </Style>
+                                                                    </Button.Style>
+                                                                    <Button.Template>
+                                                                        <ControlTemplate TargetType="Button">
+                                                                            <Border Width="40" Height="40"
+                                                                            CornerRadius="8"
+                                                                            Background="{TemplateBinding Background}">
+                                                                                <ContentPresenter VerticalAlignment="Center"
+                                                                                HorizontalAlignment="Center"/>
+                                                                            </Border>
+                                                                        </ControlTemplate>
+                                                                    </Button.Template>
+
+                                                                    <iconPacks:PackIconMaterial Kind="PencilOutline"/>
+                                                                </Button>
+                                                            </Grid>
+                                                            <Grid
+                                                                Grid.Column="1"
+                                                                Visibility=
+                                                                "{Binding AreAcceptCancelEditButtonsVisible,
+                                                                    Mode=TwoWay, 
+                                                                    Converter={StaticResource BooleanToVisibilityConverter}}"
+                                                                Margin="6">
+                                                                <Grid>
+                                                                    <Grid.ColumnDefinitions>
+                                                                        <ColumnDefinition/>
+                                                                        <ColumnDefinition/>
+                                                                    </Grid.ColumnDefinitions>
+                                                                    <Button x:Name="AcceptEditButton"
+                                                                    Margin="2"
+                                                                    Grid.Column="0"
+                                                                    Command="{Binding AcceptEditCommand}">
+                                                                        <Button.Style>
+                                                                            <Style TargetType="Button">
+                                                                                <Setter Property="Background" Value="{StaticResource ButtonBrush}"/>
+                                                                                <Style.Triggers>
+                                                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                                                        <Setter Property="Background" Value="{StaticResource TertiaryBrush}"/>
+                                                                                    </Trigger>
+                                                                                </Style.Triggers>
+                                                                            </Style>
+                                                                        </Button.Style>
+                                                                        <Button.Template>
+                                                                            <ControlTemplate TargetType="Button">
+                                                                                <Border 
+                                                                                Height="24"
+                                                                                Width="24"
+                                                                                CornerRadius="8"
+                                                                                Background="{TemplateBinding Background}">
+                                                                                    <ContentPresenter VerticalAlignment="Center"
+                                                                                    HorizontalAlignment="Center"/>
+                                                                                </Border>
+                                                                            </ControlTemplate>
+                                                                        </Button.Template>
+
+                                                                        <iconPacks:PackIconMaterial Kind="CheckOutline" />
+
+                                                                    </Button>
+                                                                    <Button x:Name="CancelEditButton"
+                                                                    Margin="2"
+                                                                    Grid.Column="1"
+                                                                    Command="{Binding CancelEditCommand}">
+                                                                        <Button.Style>
+                                                                            <Style TargetType="Button">
+                                                                                <Setter Property="Background" Value="{StaticResource ButtonBrush}"/>
+                                                                                <Style.Triggers>
+                                                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                                                        <Setter Property="Background" Value="{StaticResource TertiaryBrush}"/>
+                                                                                    </Trigger>
+                                                                                </Style.Triggers>
+                                                                            </Style>
+                                                                        </Button.Style>
+                                                                        <Button.Template>
+                                                                            <ControlTemplate TargetType="Button">
+                                                                                <Border 
+                                                                                Height="24"
+                                                                                Width="24"
+                                                                                CornerRadius="8"
+                                                                                Background="{TemplateBinding Background}">
+                                                                                    <ContentPresenter VerticalAlignment="Center"
+                                                                                    HorizontalAlignment="Center"/>
+                                                                                </Border>
+                                                                            </ControlTemplate>
+                                                                        </Button.Template>
+
+                                                                        <iconPacks:PackIconMaterial Kind="CloseOutline" />
+
+                                                                    </Button>
+                                                                </Grid>
+                                                            </Grid>
+                                                            <!--End of edit button elements-->
+
+                                                            <!--Delete button elements-->
+                                                            <Grid
+                                                                Grid.Column="2"
+                                                                Margin="6"
+                                                                x:Name="DeleteButtonGrid"
+                                                                Visibility="{Binding IsDeleteButtonVisible,
+                                                                    Mode=TwoWay, 
+                                                                    Converter={StaticResource BooleanToVisibilityConverter}}">
+                                                                <Button x:Name="DeleteButton"
+                                                                Command=
+                                                                "{Binding DeleteCommand}">
+                                                                    <Button.Style>
+                                                                        <Style TargetType="Button">
+                                                                            <Setter Property="Background" Value="{StaticResource ButtonBrush}"/>
+                                                                            <Style.Triggers>
+                                                                                <Trigger Property="IsMouseOver" Value="True">
+                                                                                    <Setter Property="Background" Value="{StaticResource TertiaryBrush}"/>
+                                                                                </Trigger>
+                                                                            </Style.Triggers>
+                                                                        </Style>
+                                                                    </Button.Style>
+                                                                    <Button.Template>
+                                                                        <ControlTemplate TargetType="Button">
+                                                                            <Border Width="40" Height="40"
+                                                                            CornerRadius="8"
+                                                                            Background="{TemplateBinding Background}">
+                                                                                <ContentPresenter VerticalAlignment="Center"
+                                                                                HorizontalAlignment="Center"/>
+                                                                            </Border>
+                                                                        </ControlTemplate>
+                                                                    </Button.Template>
+
+                                                                    <iconPacks:PackIconMaterial Kind="DeleteOutline"/>
+                                                                </Button>
+                                                            </Grid>
+                                                            <Grid
+                                                                Grid.Column="2"
+                                                                Visibility=
+                                                                "{Binding AreAcceptCancelDeleteButtonsVisible,
+                                                                    Mode=TwoWay, 
+                                                                    Converter={StaticResource BooleanToVisibilityConverter}}"
+                                                                 Margin="6">
+                                                                <Grid>
+                                                                    <Grid.ColumnDefinitions>
+                                                                        <ColumnDefinition/>
+                                                                        <ColumnDefinition/>
+                                                                    </Grid.ColumnDefinitions>
+                                                                    <Button x:Name="AcceptDeleteButton"
+                                                                    Margin="2"
+                                                                    Grid.Column="0"
+                                                                    Command="{Binding AcceptDeleteCommand}">
+                                                                        <Button.Style>
+                                                                            <Style TargetType="Button">
+                                                                                <Setter Property="Background" Value="{StaticResource ButtonBrush}"/>
+                                                                                <Style.Triggers>
+                                                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                                                        <Setter Property="Background" Value="{StaticResource TertiaryBrush}"/>
+                                                                                    </Trigger>
+                                                                                </Style.Triggers>
+                                                                            </Style>
+                                                                        </Button.Style>
+                                                                        <Button.Template>
+                                                                            <ControlTemplate TargetType="Button">
+                                                                                <Border 
+                                                                                Height="24"
+                                                                                Width="24"
+                                                                                CornerRadius="8"
+                                                                                Background="{TemplateBinding Background}">
+                                                                                    <ContentPresenter VerticalAlignment="Center"
+                                                                                        HorizontalAlignment="Center"/>
+                                                                                </Border>
+                                                                            </ControlTemplate>
+                                                                        </Button.Template>
+
+                                                                        <iconPacks:PackIconMaterial Kind="CheckOutline" />
+
+                                                                    </Button>
+                                                                    <Button x:Name="CancelDeleteButton"
+                                                                    Margin="2"
+                                                                    Grid.Column="1"
+                                                                    Command="{Binding CancelDeleteCommand}">
+                                                                        <Button.Style>
+                                                                            <Style TargetType="Button">
+                                                                                <Setter Property="Background" Value="{StaticResource ButtonBrush}"/>
+                                                                                <Style.Triggers>
+                                                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                                                        <Setter Property="Background" Value="{StaticResource TertiaryBrush}"/>
+                                                                                    </Trigger>
+                                                                                </Style.Triggers>
+                                                                            </Style>
+                                                                        </Button.Style>
+                                                                        <Button.Template>
+                                                                            <ControlTemplate TargetType="Button">
+                                                                                <Border 
+                                                                                Height="24"
+                                                                                Width="24"
+                                                                                CornerRadius="8"
+                                                                                Background="{TemplateBinding Background}">
+                                                                                    <ContentPresenter VerticalAlignment="Center"
+                                                                                    HorizontalAlignment="Center"/>
+                                                                                </Border>
+                                                                            </ControlTemplate>
+                                                                        </Button.Template>
+
+                                                                        <iconPacks:PackIconMaterial Kind="CloseOutline" />
+
+                                                                    </Button>
+                                                                </Grid>
+                                                            </Grid>
+                                                            <!--End of delete button elements-->
+                                                        </Grid>
+
+                                                    </Grid>
+                                                </Border>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+
+                                        <ListView.ItemsPanel>
+                                            <ItemsPanelTemplate>
+                                                <StackPanel Orientation="Vertical"
+                                                        CanVerticallyScroll="True"
+                                                        CanHorizontallyScroll="False"/>
+                                            </ItemsPanelTemplate>
+                                        </ListView.ItemsPanel>
+
+                                    </ListView>
+                                </Grid>
                             </Grid>
-                        </Grid>
+                        </Border>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
+
+                <ListView.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel Orientation="Horizontal"
+                                    CanHorizontallyScroll="True"
+                                    CanVerticallyScroll="False"/>
+                    </ItemsPanelTemplate>
+                </ListView.ItemsPanel>
             </ListView>
         </Grid>
     </Grid>

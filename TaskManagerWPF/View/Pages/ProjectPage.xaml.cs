@@ -1,8 +1,10 @@
-﻿using System.Windows;
+﻿using System;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Navigation;
 using TaskManagerWPF.Assets.CustomControl;
 using TaskManagerWPF.Model.Project;
+using TaskManagerWPF.ViewModel;
 
 namespace TaskManagerWPF.View.Pages
 {
@@ -15,14 +17,20 @@ namespace TaskManagerWPF.View.Pages
 
         public ProjectPage(int projectId)
         {
-            InitializeComponent();
-
             ProjectId = projectId;
+            InitializeComponent();
         }
         
-        private void Grid_Click(object sender, RoutedEventArgs e)
+        protected override async void OnInitialized(EventArgs e)
         {
-            var clickedButton = e.OriginalSource as NavButton;
+            var dataContext = (DataContext as ProjectPageViewModel)!;
+            await dataContext.LoadProjects(ProjectId);
+            base.OnInitialized(e);
+        }
+
+        private void BackToProjectBrowserButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is not NavButton {Name: "BackToProjectBrowserButton" } clickedButton) return;
 
             NavigationService?.Navigate(clickedButton?.NavButtonUri);
         }

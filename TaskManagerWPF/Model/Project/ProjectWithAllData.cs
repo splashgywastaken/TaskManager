@@ -11,9 +11,9 @@ public class ProjectWithAllData
     
     [JsonProperty("project_name")]
     public string ProjectName { get; set; } = null!;
-    
-    [JsonProperty("project_description")]
-    public string? ProjectDescription { get; set; }
+
+    [JsonProperty("project_description")] 
+    public string ProjectDescription { get; set; } = null!;
     
     [JsonProperty("project_start_date")]
     public DateTime ProjectStartDate { get; set; }
