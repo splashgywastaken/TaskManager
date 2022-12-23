@@ -1,22 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Net;
+﻿using System.Net;
 using System.Security;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Input;
-using System.Xml;
 using Microsoft.Extensions.DependencyInjection;
 using TaskManagerWPF.Model.User;
 using TaskManagerWPF.Services.Misc;
 using TaskManagerWPF.Services.Web;
-using TaskManagerWPF.View.Windows;
 using TaskManagerWPF.ViewModel.Base;
 
-namespace TaskManagerWPF.ViewModel
+namespace TaskManagerWPF.ViewModel.Window
 {
     class SignUpWindowViewModel : ViewModelBase
     {

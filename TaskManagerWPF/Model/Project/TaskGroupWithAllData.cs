@@ -5,6 +5,16 @@ namespace TaskManagerWPF.Model.Project;
 
 public class TaskGroupWithAllData
 {
+    public TaskGroupWithAllData()
+    {
+    }
+    public TaskGroupWithAllData(int taskGroupId, string taskGroupName, string taskGroupDescription)
+    {
+        TaskGroupId = taskGroupId;
+        TaskGroupName = taskGroupName;
+        TaskGroupDescription = taskGroupDescription;
+    }
+
     [JsonProperty("task_group_id")]
     public int TaskGroupId { get; set; }
 

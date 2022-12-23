@@ -9,7 +9,7 @@ namespace TaskManagerWPF.Services.DataAccess
 {
     public class UserDataAccess
     {
-        public UserDataModel UserDataModel { get; set; } = null!;
+        public static UserDataModel UserDataModel { get; set; } = null!;
 
         public UserDataAccess()
         {

@@ -1,20 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.IO.Packaging;
-using System.Linq;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using Microsoft.Extensions.DependencyInjection;
 using TaskManagerWPF.Model.User;
 using TaskManagerWPF.Services.DataAccess;
 using TaskManagerWPF.Services.Web;
+using TaskManagerWPF.View.Windows;
 using TaskManagerWPF.ViewModel.Base;
 
-namespace TaskManagerWPF.ViewModel
+namespace TaskManagerWPF.ViewModel.Pages
 {
     public class HomeViewModel : ViewModelBase
     {
@@ -23,26 +18,44 @@ namespace TaskManagerWPF.ViewModel
 
         // Private fields
         private readonly UserDataModel _userData;
+        private UserWithAllData _oldUser = null!;
 
         // Property related fields
         private string _title = "Home page";
         private bool _isUserDataLoaded;
+        private bool _isEditButtonVisible = true;
+        private bool _isAcceptCancelEditButtonsVisible;
         private bool _isDeleteButtonVisible = true;
-        private bool _isAcceptCancelButtonsVisible;
+        private bool _isAcceptCancelDeleteButtonsVisible;
+        private bool _isUserAdmin = true;
 
         public HomeViewModel()
         {
+            _isUserAdmin = UserDataAccess.UserDataModel.UserRole == "admin";
             var viewDataService = App.AppHost!.Services.GetRequiredService<ViewDataService>();
             MainWindowViewModel = viewDataService.GetView("MainViewModel") as MainWindowViewModel ?? throw new InvalidOperationException();
 
-            _userData = App.AppHost!.Services.GetRequiredService<UserDataAccess>().UserDataModel;
+            _userData = UserDataAccess.UserDataModel;
             IsUserDataLoaded = true;
             EditCommand = new ViewModelCommand(ExecuteEditCommand, CanExecuteEditCommand);
+            AcceptEditCommand = new ViewModelCommand(ExecuteAcceptEditCommand, CanExecuteAcceptEditCommand);
+            CancelEditCommand = new ViewModelCommand(ExecuteCancelEditCommand, CanExecuteCancelEditCommand);
             DeleteCommand = new ViewModelCommand(ExecuteDeleteCommand, CanExecuteDeleteCommand);
             AcceptDeleteCommand = new ViewModelCommand(ExecuteAcceptDeleteCommand, CanExecuteAcceptDeleteCommand);
             CancelDeleteCommand = new ViewModelCommand(ExecuteCancelDeleteCommand, CanExecuteCancelDeleteCommand);
+            OpenAdminPanelCommand = new ViewModelCommand(ExecuteOpenAdminPanelCommand, CanExecuteOpenAdminPanelCommand);
         }
         
+        private bool CanExecuteOpenAdminPanelCommand(object obj)
+        {
+            return IsUserAdmin;
+        }
+
+        private void ExecuteOpenAdminPanelCommand(object obj)
+        {
+            var adminPanel = new AdminPanelWindow();
+            adminPanel.Show();
+        }
 
         public string Title
         {
@@ -62,7 +75,24 @@ namespace TaskManagerWPF.ViewModel
                 OnPropertyChanged();
             }
         }
-
+        public bool IsEditButtonVisible
+        {
+            get => _isEditButtonVisible;
+            set
+            {
+                _isEditButtonVisible = value;
+                OnPropertyChanged();
+            }
+        }
+        public bool IsAcceptCancelEditButtonsVisible
+        {
+            get => _isAcceptCancelEditButtonsVisible;
+            set
+            {
+                _isAcceptCancelEditButtonsVisible = value;
+                OnPropertyChanged();
+            }
+        }
         public bool IsDeleteButtonVisible
         {
             get => _isDeleteButtonVisible;
@@ -72,17 +102,24 @@ namespace TaskManagerWPF.ViewModel
                 OnPropertyChanged();
             }
         }
-
-        public bool IsAcceptCancelButtonsVisible
+        public bool IsAcceptCancelDeleteButtonsVisible
         {
-            get => _isAcceptCancelButtonsVisible;
+            get => _isAcceptCancelDeleteButtonsVisible;
             set
             {
-                _isAcceptCancelButtonsVisible = value;
+                _isAcceptCancelDeleteButtonsVisible = value;
                 OnPropertyChanged();
             }
         }
-
+        public bool IsUserAdmin
+        {
+            get => _isUserAdmin;
+            set
+            {
+                _isUserAdmin = value;
+                OnPropertyChanged();
+            }
+        }
         public string UserName
         {
             get => _userData.UserName;
@@ -92,7 +129,6 @@ namespace TaskManagerWPF.ViewModel
                 OnPropertyChanged();
             }
         }
-
         public string UserEmail
         {
             get => _userData.UserEmail;
@@ -102,7 +138,6 @@ namespace TaskManagerWPF.ViewModel
                 OnPropertyChanged();
             }
         }
-
         public int UserAchievementsScore
         {
             get => _userData.UserAchievementsScore;
@@ -115,24 +150,27 @@ namespace TaskManagerWPF.ViewModel
 
         // Commands
         public ICommand EditCommand { get; set; }
+        public ICommand AcceptEditCommand { get; set; }
+        public ICommand CancelEditCommand { get; set; }
         public ICommand DeleteCommand { get; set; }
         public ICommand AcceptDeleteCommand { get; set; }
         public ICommand CancelDeleteCommand { get; set; }
+        public ICommand OpenAdminPanelCommand { get; set; }
 
         private bool CanExecuteCancelDeleteCommand(object obj)
         {
-            return IsAcceptCancelButtonsVisible;
+            return IsAcceptCancelDeleteButtonsVisible;
         }
 
         private void ExecuteCancelDeleteCommand(object obj)
         {
             IsDeleteButtonVisible = true;
-            IsAcceptCancelButtonsVisible = false;
+            IsAcceptCancelDeleteButtonsVisible = false;
         }
 
         private bool CanExecuteAcceptDeleteCommand(object obj)
         {
-            return IsAcceptCancelButtonsVisible;
+            return IsAcceptCancelDeleteButtonsVisible;
         }
 
         private async void ExecuteAcceptDeleteCommand(object obj)
@@ -148,7 +186,7 @@ namespace TaskManagerWPF.ViewModel
             }
 
             IsDeleteButtonVisible = true;
-            IsAcceptCancelButtonsVisible = false;
+            IsAcceptCancelDeleteButtonsVisible = false;
         }
         
         private bool CanExecuteDeleteCommand(object obj)
@@ -159,19 +197,46 @@ namespace TaskManagerWPF.ViewModel
         private void ExecuteDeleteCommand(object obj)
         {
             IsDeleteButtonVisible = false;
-            IsAcceptCancelButtonsVisible = true;
+            IsAcceptCancelDeleteButtonsVisible = true;
         }
 
         private bool CanExecuteEditCommand(object obj)
         {
-            return true;
+            return IsEditButtonVisible;
         }
 
         private void ExecuteEditCommand(object obj)
         {
-            
+            _oldUser = new UserWithAllData(UserName);
+
+            IsEditButtonVisible = false;
+            IsAcceptCancelEditButtonsVisible = true;
+        }
+        private void ExecuteCancelEditCommand(object obj)
+        {
+            UserName = _oldUser.UserName;
+
+            IsEditButtonVisible = true;
+            IsAcceptCancelEditButtonsVisible= false;
+        }
+        private bool CanExecuteCancelEditCommand(object obj)
+        {
+            return _isAcceptCancelEditButtonsVisible;
         }
 
+        private void ExecuteAcceptEditCommand(object obj)
+        {
+            // Do smth with data
+
+            IsEditButtonVisible = true;
+            IsAcceptCancelEditButtonsVisible = false;
+        }
+
+        private bool CanExecuteAcceptEditCommand(object obj)
+        {
+            return _isAcceptCancelEditButtonsVisible;
+        }
+        
         private async void UpdateUserData()
         {
             var httpClient = App.AppHost!.Services.GetRequiredService<HttpClientService>();

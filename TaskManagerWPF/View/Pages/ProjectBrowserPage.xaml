@@ -45,20 +45,74 @@
             <iconPacks:PackIconMaterial
                 HorizontalAlignment="Center"
                 Foreground="{StaticResource StrokeBrush}"
-                Width="100" Height="100" Kind="CalendarCheck"
+                Width="100" Height="100" Kind="BookCheckOutline"
             />
 
             <TextBlock
-                Style="{DynamicResource HighlightedSectionStyle}"
+                Style="{DynamicResource HighlightedSectionTextBlockFontStyle}"
                 VerticalAlignment="Center" HorizontalAlignment="Center"
                 Foreground="{StaticResource HighlightBrush}"
                 Text="{Binding Title}"
             ></TextBlock>
 
+            <Button
+                Command="{Binding AddNewProjectCommand}"
+                Margin="0,15">
+                <Button.Content>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="3*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        
+                        <TextBlock
+                            Margin="6"
+                            Padding="6"
+                            Background="Transparent"
+                            Style="{DynamicResource HeaderTextBLockFontStyle}"
+                            VerticalAlignment="Center"
+                            HorizontalAlignment="Left">
+                            Add new project
+                        </TextBlock>
+
+                        <iconPacks:PackIconMaterial 
+                            VerticalAlignment="Center"
+                            HorizontalAlignment="Center"
+                            Width="32"
+                            Height="32"
+                            Grid.Column="1"
+                            Kind="BookPlusOutline" />
+                    </Grid>
+                </Button.Content>
+                <Button.Style>
+                    <Style TargetType="Button" x:Name="ButtonBackgroundStyle">
+                        <Setter Property="Background" Value="{StaticResource ButtonBrush}"/>
+                        <Style.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="{StaticResource TertiaryBrush}"/>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+                <Button.Template>
+                    <ControlTemplate TargetType="Button">
+                        <Border 
+                            Height="40"
+                            Width="320"
+                            CornerRadius="15"
+                            Background="{TemplateBinding Background}">
+                            <ContentPresenter VerticalAlignment="Center"
+                                              HorizontalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Button.Template>
+            </Button>
+
             <StackPanel
                 x:Name="MainGrid"
                 DataContext="{Binding ProjectsListViewModel}">
                 <ListView
+                    d:ItemsSource="{d:SampleData 5}"
                     x:Name="ProjectsListView"
                     ItemsSource="{Binding Projects}"
                     Visibility="{
@@ -85,7 +139,7 @@
                                         Margin="6"
                                         Padding="6"
                                         Background="{DynamicResource MainBrush}"
-                                        Style="{DynamicResource HeaderTextFontStyle}"
+                                        Style="{DynamicResource HeaderTextBLockFontStyle}"
                                         VerticalAlignment="Center"
                                         HorizontalAlignment="Center" 
                                         Text="{Binding ProjectName}"/>
@@ -96,7 +150,7 @@
                                             Margin="6"
                                             Padding="6"
                                             Background="{DynamicResource MainBrush}"
-                                            Style="{DynamicResource MainTextFontStyle}"
+                                            Style="{DynamicResource MainTextBlockFontStyle}"
                                             VerticalAlignment="Center" 
                                             HorizontalAlignment="Center" 
                                             TextWrapping="Wrap"

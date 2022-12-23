@@ -1,9 +1,4 @@
-﻿using System;
-using System.CodeDom.Compiler;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using System.Windows.Input;
 using Microsoft.Extensions.DependencyInjection;
 using TaskManagerWPF.Model.Project;
@@ -11,10 +6,11 @@ using TaskManagerWPF.Services.Web;
 using TaskManagerWPF.ViewModel.Base;
 using TaskManagerWPF.ViewModel.ListViewModels;
 
-namespace TaskManagerWPF.ViewModel
+namespace TaskManagerWPF.ViewModel.Pages
 {
     public class ProjectPageViewModel : ViewModelBase
     {
+        private ProjectWithAllData _oldProject = null!;
         private int _projectId;
         private string _projectName = "Sample name";
         private string _projectDescription = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. ";
@@ -137,18 +133,25 @@ namespace TaskManagerWPF.ViewModel
 
         private void ExecuteAcceptEditCommand(object obj)
         {
+            // do things with project data
+
             AreAcceptCancelEditButtonsVisible = false;
             IsEditButtonVisible = true;
         }
 
         private void ExecuteCancelEditCommand(object obj)
         {
+            ProjectName = _oldProject.ProjectName;
+            ProjectDescription = _oldProject.ProjectDescription;
+
             AreAcceptCancelEditButtonsVisible = false;
             IsEditButtonVisible = true;
         }
 
         private void ExecuteEditCommand(object obj)
         {
+            _oldProject = new ProjectWithAllData(ProjectId, ProjectName, ProjectDescription);
+
             AreAcceptCancelEditButtonsVisible = true;
             IsEditButtonVisible = false;
         }

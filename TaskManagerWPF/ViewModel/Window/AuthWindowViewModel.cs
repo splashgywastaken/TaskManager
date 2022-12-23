@@ -1,22 +1,16 @@
 ﻿using System;
 using System.Net;
-using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Security;
-using System.Text;
-using System.Threading;
 using System.Windows.Input;
 using Microsoft.Extensions.DependencyInjection;
-using Newtonsoft.Json;
 using TaskManagerWPF.Model.User;
 using TaskManagerWPF.Services.DataAccess;
 using TaskManagerWPF.Services.Misc;
 using TaskManagerWPF.Services.Web;
-using TaskManagerWPF.View.Windows;
 using TaskManagerWPF.ViewModel.Base;
 using static System.Net.WebRequestMethods;
 
-namespace TaskManagerWPF.ViewModel
+namespace TaskManagerWPF.ViewModel.Window
 {
     public class AuthWindowViewModel : ViewModelBase
     {
@@ -114,10 +108,9 @@ namespace TaskManagerWPF.ViewModel
         private async void ExecuteLoginCommand(object obj)
         {
             IsLoggingIn = true;
-            var userDataAccess = App.AppHost!.Services.GetRequiredService<UserDataAccess>();
 
             // Getting httpClient to do requests on 
-            var httpClientService = App.AppHost.Services.GetRequiredService<HttpClientService>();
+            var httpClientService = App.AppHost!.Services.GetRequiredService<HttpClientService>();
             // Preparing data
             var password = SecureStringTools.SecureStringToString(Password!);
             var userLoginData = new UserLoginModel(Username, password);
@@ -127,7 +120,7 @@ namespace TaskManagerWPF.ViewModel
 
             if (response.IsSuccessStatusCode)
             {
-                userDataAccess!.UserDataModel = await HttpClientService.DeserializeResponse<UserDataModel>(response);
+                UserDataAccess.UserDataModel = await HttpClientService.DeserializeResponse<UserDataModel>(response);
                 IsLoggingIn = false;
                 IsViewVisible = false;
             }

@@ -20,4 +20,8 @@ public class UserDataModel
     [JsonPropertyOrder(3)]
     [JsonPropertyName("user_achievements_score")]
     public int UserAchievementsScore { get; set; }
+
+    [JsonPropertyOrder(4)]
+    [JsonPropertyName("user_role")]
+    public string UserRole { get; set; } = null!;
 }

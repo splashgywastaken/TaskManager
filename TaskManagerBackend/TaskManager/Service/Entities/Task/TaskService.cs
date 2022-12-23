@@ -30,9 +30,45 @@ public class TaskService : ITaskService
         return await GetTask(taskId);
     }
 
+    public async Task<Task> PostTask(Task task)
+    {
+        return await PostNewTask(task);
+    }
+
+    private async Task<Task> PostNewTask(Task task)
+    {
+        await _context.Tasks.FindAsync(task.TaskTaskGroupId);
+
+        _context.Tasks.Add(task);
+        await _context.SaveChangesAsync();
+
+        return task;
+    }
+
     public async Task<StatusCodeResult> PutTask(int taskId, Task task)
     {
         return await UpdateTask(taskId, task);
+    }
+
+    public async Task<StatusCodeResult> DeleteTask(int taskId)
+    { 
+        return await DeleteTaskById(taskId);
+    }
+
+    private async Task<StatusCodeResult> DeleteTaskById(int taskId)
+    {
+        var task = _context.Tasks.FirstOrDefault(t => t.TaskId == taskId);
+
+        if (task == null)
+        {
+            return new NotFoundResult();
+        }
+        
+        _context.Tasks.Remove(task);
+
+        await _context.SaveChangesAsync();
+
+        return new NoContentResult();
     }
 
     private async Task<IEnumerable<Tag>> GetTags(int taskId)
@@ -51,14 +87,15 @@ public class TaskService : ITaskService
     
     private async Task<StatusCodeResult> UpdateTask(int taskId, Task task)
     {
-        _context.Entry(task).State = EntityState.Modified;
+        _context.Tasks.Entry(task).State = EntityState.Modified;
 
         try
         {
             await _context.SaveChangesAsync();
         }
-        catch (DbUpdateConcurrencyException)
+        catch (DbUpdateConcurrencyException exception)
         {
+            
             if (!TaskExists(taskId))
             {
                 return new NotFoundResult();

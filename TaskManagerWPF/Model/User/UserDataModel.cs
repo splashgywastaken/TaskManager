@@ -11,6 +11,8 @@ namespace TaskManagerWPF.Model.User
     {
         [JsonProperty("user_id")]
         public int UserId { get; set; }
+        [JsonProperty("user_role")]
+        public string UserRole { get; set; } = null!;
         [JsonProperty("user_name")]
         public string UserName { get; set; } = null!;
         [JsonProperty("user_email")]

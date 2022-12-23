@@ -40,7 +40,7 @@
                         Margin="6"
                         Padding="6"
                         Background="{DynamicResource MainBrush}"
-                        Style="{DynamicResource HeaderTextFontStyle}"
+                        Style="{DynamicResource HeaderTextBLockFontStyle}"
                         VerticalAlignment="Center"
                         HorizontalAlignment="Center" 
                         Text="{Binding ProjectName}"/>
@@ -49,7 +49,7 @@
                         Margin="6"
                         Padding="6"
                         Background="{DynamicResource MainBrush}"
-                        Style="{DynamicResource MainTextFontStyle}"
+                        Style="{DynamicResource MainTextBlockFontStyle}"
                         VerticalAlignment="Center" 
                         HorizontalAlignment="Center" 
                         TextWrapping="Wrap"

@@ -38,11 +38,20 @@ public class TaskListViewModel : ViewModelBase
         set => SetField(ref _areAcceptCancelEditButtonsVisible, value);
     }
     #endregion
-    #region DataProperties
+    #region DataPropertiesAndFields
+    // Private fields
+    private TaskWithAllData _oldTask = null!;
     // Private fields related to properties
+    private int _taskId;
     private string _taskName = null!;
     private string _taskDescription = null!;
+    private bool _taskCompletionStatus;
     // Properties
+    public int TaskId
+    {
+        get => _taskId;
+        set => SetField(ref _taskId, value);
+    }
     public string TaskName
     {
         get => _taskName;
@@ -53,6 +62,11 @@ public class TaskListViewModel : ViewModelBase
         get => _taskDescription;
         set => SetField(ref _taskDescription, value);
     }
+    public bool TaskCompletionStatus
+    {
+        get => _taskCompletionStatus;
+        set => SetField(ref _taskCompletionStatus, value);
+    }
     #endregion
     #region Commands
     public ICommand DeleteCommand { get; set; }
@@ -61,6 +75,7 @@ public class TaskListViewModel : ViewModelBase
     public ICommand EditCommand { get; set; }
     public ICommand CancelEditCommand { get; set; }
     public ICommand AcceptEditCommand { get; set; }
+    public ICommand ChangeCompletionStatusCommand { get; set; }
     #endregion
     #region CommandsMethods
     private bool CanExecuteAcceptEditCommand(object obj)
@@ -89,16 +104,23 @@ public class TaskListViewModel : ViewModelBase
     }
     private void ExecuteAcceptEditCommand(object obj)
     {
+        // Do smth with data
+
         AreAcceptCancelEditButtonsVisible = false;
         IsEditButtonVisible = true;
     }
     private void ExecuteCancelEditCommand(object obj)
     {
+        TaskName = _oldTask.TaskName;
+        TaskDescription = _oldTask.TaskDescription;
+
         AreAcceptCancelEditButtonsVisible = false;
         IsEditButtonVisible = true;
     }
     private void ExecuteEditCommand(object obj)
     {
+        _oldTask = new TaskWithAllData(TaskName, TaskDescription);
+
         AreAcceptCancelEditButtonsVisible = true;
         IsEditButtonVisible = false;
     }
@@ -117,6 +139,10 @@ public class TaskListViewModel : ViewModelBase
         AreAcceptCancelDeleteButtonsVisible = true;
         IsDeleteButtonVisible = false;
     }
+    private void ExecuteChangeCompletionStatusCommand(object obj)
+    {
+        TaskCompletionStatus = !TaskCompletionStatus;
+    }
     #endregion
     public TaskListViewModel(TaskWithAllData task)
     {
@@ -126,8 +152,11 @@ public class TaskListViewModel : ViewModelBase
         EditCommand = new ViewModelCommand(ExecuteEditCommand, CanExecuteEditCommand);
         CancelEditCommand = new ViewModelCommand(ExecuteCancelEditCommand, CanExecuteCancelEditCommand);
         AcceptEditCommand = new ViewModelCommand(ExecuteAcceptEditCommand, CanExecuteAcceptEditCommand);
+        ChangeCompletionStatusCommand = new ViewModelCommand(ExecuteChangeCompletionStatusCommand);
         
+        TaskId = task.TaskId;
         TaskName = new string(task.TaskName);
         TaskDescription = new string(task.TaskDescription);
+        TaskCompletionStatus = task.TaskCompletionStatus;
     }
 }

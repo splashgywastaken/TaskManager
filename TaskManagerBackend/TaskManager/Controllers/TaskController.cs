@@ -10,7 +10,6 @@ using Task = TaskManager.Entities.Task;
 namespace TaskManager.Controllers;
 
 [ApiController]
-[Route("tasks")]
 public class TaskController : Controller
 {
     private readonly ITaskService _taskService;
@@ -23,7 +22,7 @@ public class TaskController : Controller
     }
 
     [HttpGet]
-    [Route("{id:int}/tags")]
+    [Route("task/{taskId:int}/tags")]
     [Authorize(Roles = "admin, user")]
     public async Task<IActionResult> GetAllTaskTags(int taskId)
     {
@@ -45,7 +44,7 @@ public class TaskController : Controller
     }
 
     [HttpGet]
-    [Route("{id:int}")]
+    [Route("tasks/{taskId:int}")]
     [Authorize(Roles = "admin, user")]
     public async Task<IActionResult> GetTask(int id)
     {
@@ -64,19 +63,53 @@ public class TaskController : Controller
         return Ok(mappedTask);
     }
 
-    [HttpPut]
-    [Route("{id:int}")]
-    [Authorize(Roles = "admin, user")]
-    public async Task<IActionResult> UpdateTask(int id, [FromBody] TaskModel task)
+    [HttpPost]
+    [Route("taskGroup/{taskGroupId}/task")]
+    public async Task<IActionResult> PostNewTask(int taskGroupId, [FromBody] TaskPostModel data)
     {
-        if (id != task.TaskId)
+        if (taskGroupId != data.TaskTaskGroupId) return BadRequest();
+
+        var mappedTask = _mapper.Map<Task>(data);
+
+        Task task;
+        try
+        {
+            task = await _taskService.PostTask(mappedTask);
+        }
+        catch (Microsoft.EntityFrameworkCore.DbUpdateException exception)
+        {
+            var message = new
+            {
+                message = "Exception triggered on Db update",
+                exception_message = exception.Message
+            };
+
+            return BadRequest(message);
+        }
+
+        var mappedResult = _mapper.Map<TaskPostModel>(task);
+
+        return CreatedAtAction(
+            nameof(GetTask),
+            new { id = mappedResult.TaskId},
+            mappedResult
+            );
+    }
+
+    [HttpPut]
+    [Route("taskGroup/{taskGroupId:int}/task/{taskId:int}")]
+    [Authorize(Roles = "admin, user")]
+    public async Task<IActionResult> UpdateTask(int taskGroupId, int taskId, [FromBody] TaskModel task)
+    {
+        if (taskId != task.TaskId)
         {
             return BadRequest();
         }
 
         var mappedTask = _mapper.Map<Task>(task);
+        mappedTask.TaskTaskGroupId = taskGroupId;
 
-        var status = await _taskService.PutTask(id, mappedTask);
+        var status = await _taskService.PutTask(taskId, mappedTask);
 
         if (status.StatusCode == StatusCodes.Status204NoContent)
         {
@@ -84,5 +117,19 @@ public class TaskController : Controller
         }
 
         return NotFound();
+    }
+
+    [HttpDelete]
+    [Route("tasks/{taskId:int}")]
+    public async Task<IActionResult> DeleteTask(int taskId)
+    {
+        var result = await _taskService.DeleteTask(taskId);
+
+        if (result.StatusCode == StatusCodes.Status404NotFound)
+        {
+            return NotFound();
+        }
+
+        return NoContent();
     }
 }

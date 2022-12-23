@@ -1,4 +1,4 @@
-﻿namespace TaskManagerWPF.ViewModel
+﻿namespace TaskManagerWPF.ViewModel.Pages
 {
     public class AchievementsViewModel
     {

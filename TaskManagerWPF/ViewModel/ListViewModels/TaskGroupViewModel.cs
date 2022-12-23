@@ -39,8 +39,12 @@ public class TaskGroupViewModel : ViewModelBase
         set => SetField(ref _areAcceptCancelEditButtonsVisible, value);
     }
     #endregion
+    #region DataFields
+    private TaskGroupWithAllData _oldTaskGroup = null!;
+    #endregion
     #region DataProperties
     // Private properties fields
+    private readonly int _taskGroupId;
     private string _taskGroupName = null!;
     private string _taskGroupDescription = null!;
     private ObservableCollection<TaskListViewModel> _taskList = null!;
@@ -96,16 +100,24 @@ public class TaskGroupViewModel : ViewModelBase
     }
     private void ExecuteAcceptEditCommand(object obj)
     {
+        // Do things with taskgroup data
+
         AreAcceptCancelEditButtonsVisible = false;
         IsEditButtonVisible = true;
     }
     private void ExecuteCancelEditCommand(object obj)
     {
+        TaskGroupName = _oldTaskGroup.TaskGroupName;
+        TaskGroupDescription = _oldTaskGroup.TaskGroupDescription;
+
         AreAcceptCancelEditButtonsVisible = false;
         IsEditButtonVisible = true;
     }
     private void ExecuteEditCommand(object obj)
     {
+        _oldTaskGroup = new TaskGroupWithAllData(_taskGroupId, TaskGroupName, TaskGroupDescription);
+
+
         AreAcceptCancelEditButtonsVisible = true;
         IsEditButtonVisible = false;
     }
@@ -134,6 +146,7 @@ public class TaskGroupViewModel : ViewModelBase
         CancelEditCommand = new ViewModelCommand(ExecuteCancelEditCommand, CanExecuteCancelEditCommand);
         AcceptEditCommand = new ViewModelCommand(ExecuteAcceptEditCommand, CanExecuteAcceptEditCommand);
 
+        _taskGroupId = taskGroup.TaskGroupId;
         TaskGroupName = new string(taskGroup.TaskGroupName);
         TaskGroupDescription = new string(taskGroup.TaskGroupDescription);
         TaskList = new ObservableCollection<TaskListViewModel>();

@@ -6,6 +6,19 @@ namespace TaskManagerWPF.Model.Project;
 
 public class ProjectWithAllData
 {
+    public ProjectWithAllData()
+    {
+    }
+    public ProjectWithAllData(int projectId, string projectName, string projectDescription)
+    {
+        ProjectId = projectId;
+        ProjectName = projectName;
+        ProjectDescription = projectDescription;
+    }
+
+    [JsonProperty("project_user_id")] 
+    public int ProjectUserId { get; set; }
+
     [JsonProperty("project_id")]
     public int ProjectId { get; set; }
     

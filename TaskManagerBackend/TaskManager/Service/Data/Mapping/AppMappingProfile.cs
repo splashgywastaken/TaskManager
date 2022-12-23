@@ -53,9 +53,9 @@ public class AppMappingProfile : Profile
             .ReverseMap();
 
         // Task mapping
-        CreateMap<Task, TaskModel>();
         CreateMap<Task, TaskModel>().ReverseMap();
         CreateMap<Task, TaskResponseModel>().ReverseMap();
+        CreateMap<Task, TaskPostModel>().ReverseMap();
 
         // Achievement mapping
         CreateMap<Achievement, AchievementModel>().ReverseMap();

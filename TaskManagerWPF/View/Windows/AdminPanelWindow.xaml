@@ -1,0 +1,394 @@
+﻿<Window x:Class="TaskManagerWPF.View.Windows.AdminPanelWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:TaskManagerWPF.View.Windows"
+        xmlns:viewModel="clr-namespace:TaskManagerWPF.ViewModel.Window"
+        xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
+
+        mc:Ignorable="d"
+        Title="AdminPanelWindow" 
+        Height="600" Width="900"
+        MaxHeight="600" MaxWidth="900"
+        WindowStyle="None"
+        Background="Transparent"
+        AllowsTransparency="True"
+        WindowStartupLocation="CenterScreen"
+        MouseDown="AdminPanelWindow_OnMouseDown"
+        >
+    <Window.DataContext>
+        <viewModel:AdminPanelWindowViewModel/>
+    </Window.DataContext>
+
+    <Window.Resources>
+        <ResourceDictionary>
+            <Style x:Key="NavigationContentStyle" TargetType="ContentControl">
+                <Setter Property="ContentTemplate" Value="{StaticResource HomeViewTemplate}"/>
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding ElementName=NavigationMenuListBox, Path=SelectedItem}"
+                             Value="Projects">
+                        <Setter Property="ContentTemplate" Value="{StaticResource ProjectViewTemplate}"/>
+                    </DataTrigger>
+                    <DataTrigger Binding="{Binding ElementName=NavigationMenuListBox, Path=SelectedItem}"
+                             Value="Achievements">
+                        <Setter Property="ContentTemplate" Value="{StaticResource AchievementsViewTemplate}"/>
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+            <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/Styles/Brushes.xaml"/>
+                <ResourceDictionary Source="/Styles/ControlStyles/Borders.xaml"/>
+                <ResourceDictionary Source="/Styles/ControlStyles/Buttons.xaml"/>
+                <ResourceDictionary Source="/Styles/Fonts.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
+
+    <Window.Visibility>
+        <Binding
+            Path="IsViewVisible"
+            Mode="TwoWay"
+            Converter="{StaticResource BooleanToVisibilityConverter}"/>
+    </Window.Visibility>
+
+    <Border Style="{DynamicResource PrettyBorderStyle}"
+            Background="White">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="30"/>
+                <RowDefinition/>
+            </Grid.RowDefinitions >
+
+            <Grid Grid.Row="0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition Width="25"/>
+                    <ColumnDefinition Width="25"/>
+                    <ColumnDefinition Width="5"/>
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Text="Task manager admin panel"
+                           Foreground="{DynamicResource ButtonTextBrush}"
+                           FontSize="10"
+                           FontFamily="Montserrat"
+                           Grid.Column="0"
+                           VerticalAlignment="Center"
+                           Margin="10, 0,0,0"/>
+
+                <Button
+                    x:Name="ButtonMinimize"
+                    Content="-"
+                    FontSize="16"
+                    FontFamily="Montserrat"
+                    Cursor="Hand"
+                    Click="ButtonMinimize_OnClick"
+                    Grid.Column="1">
+                    <Button.Style>
+                        <Style TargetType="Button">
+                            <Setter Property="Background" Value="{StaticResource ButtonBrush}"/>
+                            <Style.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Background" Value="{StaticResource TertiaryBrush}"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                    <Button.Template>
+                        <ControlTemplate TargetType="Button">
+                            <Border Width="18" Height="18"
+                                    CornerRadius="9"
+                                    Background="{TemplateBinding Background}">
+                                <ContentPresenter VerticalAlignment="Center"
+                                                  HorizontalAlignment="Center"/>
+                            </Border>
+                        </ControlTemplate>
+                    </Button.Template>
+                </Button>
+                <Button
+                    x:Name="ButtonClose"
+                    Content="X"
+                    FontSize="16"
+                    FontFamily="Montserrat"
+                    Cursor="Hand"
+                    Click="ButtonClose_OnClick"
+                    Grid.Column="2">
+                    <Button.Style>
+                        <Style TargetType="Button">
+                            <Setter Property="Background" Value="{StaticResource ButtonBrush}"/>
+                            <Style.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Background" Value="{StaticResource TertiaryBrush}"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                    <Button.Template>
+                        <ControlTemplate TargetType="Button">
+                            <Border Width="18" Height="18"
+                                    CornerRadius="9"
+                                    Background="{TemplateBinding Background}">
+                                <ContentPresenter VerticalAlignment="Center"
+                                                  HorizontalAlignment="Center"/>
+                            </Border>
+                        </ControlTemplate>
+                    </Button.Template>
+                </Button>
+            </Grid>
+            <StackPanel
+                Grid.Row="1"
+                Orientation="Vertical"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Top">
+                <iconPacks:PackIconMaterial
+                    HorizontalAlignment="Center"
+                    Margin="0,10,0,0"
+                    Foreground="{DynamicResource StrokeBrush}"
+                    Width="100" Height="100" Kind="AccountTieOutline"
+                />
+
+                <TextBlock
+                    Style="{DynamicResource HighlightedSectionTextBlockFontStyle}"
+                    VerticalAlignment="Top" HorizontalAlignment="Center"
+                    Foreground="{DynamicResource HighlightBrush}"
+                    Text="Admin panel"
+                />
+
+                <TextBlock
+                    Style="{DynamicResource HeaderTextBLockFontStyle}"
+                    VerticalAlignment="Top" HorizontalAlignment="Left"
+                    Foreground="{DynamicResource ButtonTextBrush}"
+                    Text="User list"
+                    Margin="50, 0"/>
+
+                <Grid
+                    x:Name="UserListGrid"
+                    DataContext="{Binding UserListViewModel}">
+                    <Grid>
+                        <ListView
+                            x:Name="UserListView"
+                            ItemsSource="{Binding Users}" d:ItemsSource="{d:SampleData ItemCount=5}"
+                            ScrollViewer.HorizontalScrollBarVisibility="Visible"
+                            ScrollViewer.CanContentScroll="False">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border
+                                        Style="{DynamicResource PrettyBorderStyle}"
+                                        Padding="10">
+                                        <Grid
+                                            Background="Transparent"
+                                            Width="600">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="2*"/>
+                                                <ColumnDefinition Width="4*"/>
+                                                <ColumnDefinition Width="80"/>
+                                            </Grid.ColumnDefinitions>
+
+                                            <Grid
+                                                Grid.Column="0">
+                                                <Grid.RowDefinitions>
+                                                    <RowDefinition/>
+                                                    <RowDefinition/>
+                                                    <RowDefinition/>
+                                                    <RowDefinition/>
+                                                </Grid.RowDefinitions>
+
+                                                <TextBlock
+                                                    HorizontalAlignment="Left"
+                                                    Grid.Row="0"
+                                                    Text="Username:"
+                                                    Style="{StaticResource MainTextBlockFontStyle}"
+                                                    Foreground="{DynamicResource ButtonTextBrush}"
+                                                    Margin="0,0,8,0"/>
+                                                <TextBlock
+                                                    HorizontalAlignment="Left"
+                                                    Grid.Row="1"
+                                                    Text="Email:"
+                                                    Style="{StaticResource MainTextBlockFontStyle}"
+                                                    Foreground="{DynamicResource ButtonTextBrush}"
+                                                    Margin="0,0,8,0"/>
+                                                <TextBlock
+                                                    HorizontalAlignment="Left"
+                                                    Grid.Row="2"
+                                                    Text="Role:"
+                                                    Style="{StaticResource MainTextBlockFontStyle}"
+                                                    Foreground="{DynamicResource ButtonTextBrush}"
+                                                    Margin="0,0,8,0"/>
+                                                <TextBlock
+                                                    HorizontalAlignment="Left"
+                                                    Grid.Row="3"
+                                                    Text="Achievements score:"
+                                                    Style="{StaticResource MainTextBlockFontStyle}"
+                                                    Foreground="{DynamicResource ButtonTextBrush}"
+                                                    Grid.Column="0"
+                                                    Margin="0,0,8,0"/>
+                                            </Grid>
+                                            <Grid
+                                                Grid.Column="1">
+                                                <Grid.RowDefinitions>
+                                                    <RowDefinition/>
+                                                    <RowDefinition/>
+                                                    <RowDefinition/>
+                                                    <RowDefinition/>
+                                                </Grid.RowDefinitions>
+
+                                                <TextBox
+                                                    HorizontalAlignment="Left"
+                                                    Grid.Row="0"
+                                                    Text="{Binding UserName}"
+                                                    Style="{StaticResource MiniMainTextBoxFontStyle}"
+                                                    IsReadOnly="True"/>
+                                                <TextBox
+                                                    HorizontalAlignment="Left"
+                                                    Grid.Row="1"
+                                                    Text="{Binding Email}"
+                                                    Style="{StaticResource MiniMainTextBoxFontStyle}"
+                                                    IsReadOnly="True"/>
+                                                <TextBox
+                                                    HorizontalAlignment="Left"
+                                                    Grid.Row="2"
+                                                    Text="{Binding Role}"
+                                                    Style="{StaticResource MiniMainTextBoxFontStyle}"
+                                                    Foreground="{DynamicResource ButtonTextBrush}"/>
+                                                <TextBox
+                                                    HorizontalAlignment="Left"
+                                                    Grid.Row="3"
+                                                    Text="{Binding AchievementsScore}"
+                                                    Style="{StaticResource MiniMainTextBoxFontStyle}"
+                                                    IsReadOnly="True"/>
+                                            </Grid>
+
+
+                                            <!--Delete button elements-->
+                                            <Grid
+                                            Grid.Column="2"
+                                            Margin="6"
+                                            x:Name="DeleteButtonGrid"
+                                            Visibility="{Binding IsDeleteButtonVisible,
+                                                Mode=TwoWay, 
+                                                Converter={StaticResource BooleanToVisibilityConverter}}">
+                                                <Button x:Name="DeleteButton"
+                                                Command=
+                                                "{Binding DeleteUser}">
+                                                    <Button.Style>
+                                                        <Style TargetType="Button">
+                                                            <Setter Property="Background" Value="{StaticResource ButtonBrush}"/>
+                                                            <Style.Triggers>
+                                                                <Trigger Property="IsMouseOver" Value="True">
+                                                                    <Setter Property="Background" Value="{StaticResource TertiaryBrush}"/>
+                                                                </Trigger>
+                                                            </Style.Triggers>
+                                                        </Style>
+                                                    </Button.Style>
+                                                    <Button.Template>
+                                                        <ControlTemplate TargetType="Button">
+                                                            <Border Width="40" Height="40"
+                                                            CornerRadius="8"
+                                                            Background="{TemplateBinding Background}">
+                                                                <ContentPresenter VerticalAlignment="Center"
+                                                          HorizontalAlignment="Center"/>
+                                                            </Border>
+                                                        </ControlTemplate>
+                                                    </Button.Template>
+
+                                                    <iconPacks:PackIconMaterial Kind="DeleteOutline"/>
+                                                </Button>
+                                            </Grid>
+                                            <Grid
+                                            Grid.Column="2"
+                                            Visibility=
+                                            "{Binding AreAcceptCancelButtonsVisible,
+                                                Mode=TwoWay, 
+                                                Converter={StaticResource BooleanToVisibilityConverter}}"
+                                            Margin="6">
+                                                <Grid>
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="79*"/>
+                                                        <ColumnDefinition Width="49*"/>
+                                                        <ColumnDefinition Width="128*"/>
+                                                    </Grid.ColumnDefinitions>
+                                                    <Button x:Name="AcceptDeleteButton"
+                                                    Margin="2,2,2,2"
+                                                    Grid.Column="0"
+                                                    Command="{Binding AcceptDeleteUser}" Grid.ColumnSpan="2">
+                                                        <Button.Style>
+                                                            <Style TargetType="Button">
+                                                                <Setter Property="Background" Value="{StaticResource ButtonBrush}"/>
+                                                                <Style.Triggers>
+                                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                                        <Setter Property="Background" Value="{StaticResource TertiaryBrush}"/>
+                                                                    </Trigger>
+                                                                </Style.Triggers>
+                                                            </Style>
+                                                        </Button.Style>
+                                                        <Button.Template>
+                                                            <ControlTemplate TargetType="Button">
+                                                                <Border 
+                                                                Height="24"
+                                                                Width="24"
+                                                                CornerRadius="8"
+                                                                Background="{TemplateBinding Background}">
+                                                                    <ContentPresenter VerticalAlignment="Center"
+                                                              HorizontalAlignment="Center"/>
+                                                                </Border>
+                                                            </ControlTemplate>
+                                                        </Button.Template>
+
+                                                        <iconPacks:PackIconMaterial Kind="CheckOutline" />
+
+                                                    </Button>
+                                                    <Button x:Name="CancelDeleteButton"
+                                                    Margin="2,2,2,2"
+                                                    Grid.Column="2"
+                                                    Command="{Binding CancelDeleteUser}">
+                                                        <Button.Style>
+                                                            <Style TargetType="Button">
+                                                                <Setter Property="Background" Value="{StaticResource ButtonBrush}"/>
+                                                                <Style.Triggers>
+                                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                                        <Setter Property="Background" Value="{StaticResource TertiaryBrush}"/>
+                                                                    </Trigger>
+                                                                </Style.Triggers>
+                                                            </Style>
+                                                        </Button.Style>
+                                                        <Button.Template>
+                                                            <ControlTemplate TargetType="Button">
+                                                                <Border 
+                                                                Height="24"
+                                                                Width="24"
+                                                                CornerRadius="8"
+                                                                Background="{TemplateBinding Background}">
+                                                                    <ContentPresenter VerticalAlignment="Center"
+                                                              HorizontalAlignment="Center"/>
+                                                                </Border>
+                                                            </ControlTemplate>
+                                                        </Button.Template>
+
+                                                        <iconPacks:PackIconMaterial Kind="CloseOutline" />
+
+                                                    </Button>
+                                                </Grid>
+                                            </Grid>
+                                            <!--End of delete button elements-->
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+
+                            <ListView.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <StackPanel 
+                                    Orientation="Horizontal"
+                                    CanHorizontallyScroll="True"
+                                    HorizontalAlignment="Center"/>
+                                </ItemsPanelTemplate>
+                            </ListView.ItemsPanel>
+                        </ListView>
+                    </Grid>
+                </Grid>
+
+            </StackPanel>
+        </Grid>
+    </Border>
+</Window>

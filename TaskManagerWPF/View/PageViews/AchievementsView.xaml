@@ -7,11 +7,12 @@
              xmlns:viewModel="clr-namespace:TaskManagerWPF.ViewModel"
              xmlns:modelViews="clr-namespace:TaskManagerWPF.View.ModelViews"
              xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
+             xmlns:pages="clr-namespace:TaskManagerWPF.ViewModel.Pages"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
 
     <UserControl.DataContext>
-        <viewModel:AchievementsViewModel/>
+        <pages:AchievementsViewModel/>
     </UserControl.DataContext>
 
     <UserControl.Resources>
@@ -35,13 +36,10 @@
             />
 
             <TextBlock
-                Style="{DynamicResource HighlightedSectionStyle}"
+                Style="{DynamicResource HighlightedSectionTextBlockFontStyle}"
                 VerticalAlignment="Center" HorizontalAlignment="Center"
                 Foreground="{StaticResource HighlightBrush}"
                 Text="{Binding Title}"/>
-
-            <modelViews:TaskView></modelViews:TaskView>
-
         </StackPanel>
     </Grid>
 </UserControl>

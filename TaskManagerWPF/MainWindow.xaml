@@ -7,7 +7,7 @@
         xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
         xmlns:viewModel="clr-namespace:TaskManagerWPF.ViewModel"
         mc:Ignorable="d"
-        MinHeight="720" MinWidth="1280" 
+        MinHeight="800" MinWidth="1280" 
         WindowStyle="None"
         Background="Transparent"
         AllowsTransparency="True"
@@ -36,9 +36,9 @@
             </Style>
             <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="View/../Styles/Brushes.xaml"/>
-                <ResourceDictionary Source="View/../Styles/ControlStyles/Borders.xaml"/>
-                <ResourceDictionary Source="View/../Styles/ControlStyles/Buttons.xaml"/>
+                <ResourceDictionary Source="/Styles/Brushes.xaml"/>
+                <ResourceDictionary Source="/Styles/ControlStyles/Borders.xaml"/>
+                <ResourceDictionary Source="/Styles/ControlStyles/Buttons.xaml"/>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Window.Resources>

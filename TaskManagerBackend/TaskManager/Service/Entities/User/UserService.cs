@@ -73,6 +73,7 @@ public class UserService : IUserService
     private async Task<StatusCodeResult> UpdateUserById(int userId, User user)
     {
         _context.Entry(user).State = EntityState.Modified;
+        _context.Users.Update(user);
 
         try
         {
@@ -103,13 +104,30 @@ public class UserService : IUserService
 
     private async Task<StatusCodeResult> DeleteUserById(int userId)
     {
-        var user = await _context.Users.FindAsync(userId);
+        var user = await _context.Users
+            .Include(p => p.Projects)
+            .ThenInclude(tg => tg.TaskGroups)
+            .ThenInclude(t => t.Tasks)
+            .FirstOrDefaultAsync(u => u.UserId == userId);
         if (user == null)
         {
             return new NotFoundResult();
         }
 
+        foreach (var project in user.Projects)
+        {
+            foreach (var taskGroup in project.TaskGroups)
+            {
+                foreach (var task in taskGroup.Tasks)
+                {
+                    _context.Tasks.Remove(task);
+                }
+                _context.TaskGroups.Remove(taskGroup);
+            }
+            _context.Projects.Remove(project);
+        }
         _context.Users.Remove(user);
+
         await _context.SaveChangesAsync();
 
         return new NoContentResult();

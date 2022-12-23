@@ -15,6 +15,7 @@ using TaskManager.Service.Entities.Achievement;
 using TaskManager.Service.Entities.Project;
 using TaskManager.Service.Entities.Tag;
 using TaskManager.Service.Entities.Task;
+using TaskManager.Service.Entities.TaskGroup;
 using TaskManager.Service.Entities.User;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -139,4 +140,5 @@ static void ConfigureApplicationDataServices(IServiceCollection services)
     services.AddScoped<ITagService, TagService>();
     services.AddScoped<ITaskService, TaskService>();
     services.AddScoped<IProjectService, ProjectService>();
+    services.AddScoped<ITaskGroupService, TaskGroupService>();
 }

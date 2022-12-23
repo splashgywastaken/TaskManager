@@ -45,7 +45,7 @@
                     x:Name="TaskName"  
                     Grid.Row="0"
                     Text="{Binding TaskName}"
-                    Style="{DynamicResource HeaderTextFontStyle}"
+                    Style="{DynamicResource HeaderTextBLockFontStyle}"
                     VerticalAlignment="Center"
                     HorizontalAlignment="Center"
                     Padding="10"
@@ -55,7 +55,7 @@
                     <TextBlock 
                     x:Name="TaskDescription" 
                     Text="{Binding TaskDescription}"
-                    Style="{DynamicResource MainTextFontStyle}"
+                    Style="{DynamicResource MainTextBlockFontStyle}"
                     HorizontalAlignment="Center"
                     Padding="6"
                     Margin="6"
@@ -71,7 +71,7 @@
                     </Grid.ColumnDefinitions>
                     <TextBlock 
                         Grid.Column="0"
-                        Style="{DynamicResource MainTextFontStyle}"
+                        Style="{DynamicResource MainTextBlockFontStyle}"
                         VerticalAlignment="Center"
                         HorizontalAlignment="Right">
                     Task completion status

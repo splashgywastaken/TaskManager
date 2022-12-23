@@ -7,11 +7,12 @@
              xmlns:viewModel="clr-namespace:TaskManagerWPF.ViewModel"
              xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
              xmlns:fa="http://schemas.fontawesome.io/icons/"
+             xmlns:pages="clr-namespace:TaskManagerWPF.ViewModel.Pages"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
 
     <UserControl.DataContext>
-        <viewModel:HomeViewModel/>
+        <pages:HomeViewModel/>
     </UserControl.DataContext>
 
     <UserControl.Resources>
@@ -20,6 +21,7 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="../../Styles/Fonts.xaml" />
                 <ResourceDictionary Source="../../Styles/Brushes.xaml"/>
+                <ResourceDictionary Source="../../Styles/ControlStyles/TextBlocks.xaml"/>
                 <ResourceDictionary Source="../../Styles/ControlStyles/TextBoxes.xaml"/>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
@@ -44,7 +46,7 @@
             />
 
             <TextBlock
-                Style="{DynamicResource HighlightedSectionStyle}"
+                Style="{DynamicResource HighlightedSectionTextBlockFontStyle}"
                 VerticalAlignment="Top" HorizontalAlignment="Center"
                 Foreground="{DynamicResource HighlightBrush}"
                 Text="{Binding Title}"
@@ -101,32 +103,33 @@
 
                     <TextBlock
                         Text="Username"
-                        Style="{DynamicResource MainTextFontStyle}"
+                        Style="{DynamicResource MainTextBlockFontStyle}"
                         Margin="0, 15,0,0"/>
 
-                    <TextBlock 
+                    <TextBox 
+                        IsReadOnly="{Binding IsEditButtonVisible}"
                         Text="{Binding UserName}"
-                        Style="{DynamicResource DataTextStyle}"
+                        Style="{DynamicResource DataTextBoxStyle}"
                         Margin="0, 5,0,0"/>
 
                     <TextBlock
                         Text="User email"
-                        Style="{DynamicResource MainTextFontStyle}"
+                        Style="{DynamicResource MainTextBlockFontStyle}"
                         Margin="0, 15,0,0"/>
 
                     <TextBlock 
                         Text="{Binding UserEmail}"
-                        Style="{DynamicResource DataTextStyle}"
+                        Style="{DynamicResource DataTextBlockStyle}"
                         Margin="0, 5,0,0"/>
 
                     <TextBlock
                         Text="User achievements score"
-                        Style="{DynamicResource MainTextFontStyle}"
+                        Style="{DynamicResource MainTextBlockFontStyle}"
                         Margin="0, 15,0,0"/>
 
                     <TextBlock 
                         Text="{Binding UserAchievementsScore}"
-                        Style="{DynamicResource DataTextStyle}"
+                        Style="{DynamicResource DataTextBlockStyle}"
                         Margin="0, 5,0,0"/>
 
                     <Grid>
@@ -135,33 +138,116 @@
                             <ColumnDefinition/>
                         </Grid.ColumnDefinitions>
 
-                        <Button x:Name="EditButton"
-                                Grid.Column="0"
-                                Margin="6"
-                                Command="{Binding EditCommand}">
-                            <Button.Style>
-                                <Style TargetType="Button">
-                                    <Setter Property="Background" Value="{StaticResource ButtonBrush}"/>
-                                    <Style.Triggers>
-                                        <Trigger Property="IsMouseOver" Value="True">
-                                            <Setter Property="Background" Value="{StaticResource TertiaryBrush}"/>
-                                        </Trigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </Button.Style>
-                            <Button.Template>
-                                <ControlTemplate TargetType="Button">
-                                    <Border Width="40" Height="40"
-                                            CornerRadius="8"
-                                            Background="{TemplateBinding Background}">
-                                        <ContentPresenter VerticalAlignment="Center"
+                        <!--Edit button elements-->
+                        <Grid
+                            Grid.Column="0"
+                            Margin="6"
+                            x:Name="EditButtonGrid"
+                            Visibility="{Binding IsEditButtonVisible,
+                                Mode=TwoWay, 
+                                Converter={StaticResource BooleanToVisibilityConverter}}">
+                            <Button x:Name="EditButton"
+                                Command=
+                                "{Binding EditCommand}">
+                                <Button.Style>
+                                    <Style TargetType="Button">
+                                        <Setter Property="Background" Value="{StaticResource ButtonBrush}"/>
+                                        <Style.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter Property="Background" Value="{StaticResource TertiaryBrush}"/>
+                                            </Trigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                                <Button.Template>
+                                    <ControlTemplate TargetType="Button">
+                                        <Border Width="40" Height="40"
+                                        CornerRadius="8"
+                                        Background="{TemplateBinding Background}">
+                                                    <ContentPresenter VerticalAlignment="Center"
                                                           HorizontalAlignment="Center"/>
-                                    </Border>
-                                </ControlTemplate>
-                            </Button.Template>
+                                        </Border>
+                                    </ControlTemplate>
+                                </Button.Template>
 
-                            <iconPacks:PackIconMaterial Kind="PencilOutline" />
-                        </Button>
+                                <iconPacks:PackIconMaterial Kind="PencilOutline"/>
+                            </Button>
+                        </Grid>
+                        <Grid
+                            Grid.Column="0"
+                            Visibility=
+                                "{Binding IsAcceptCancelEditButtonsVisible,
+                                    Mode=TwoWay, 
+                                    Converter={StaticResource BooleanToVisibilityConverter}}"
+                                Margin="6">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition/>
+                                </Grid.ColumnDefinitions>
+                                <Button x:Name="AcceptEditButton"
+                                    Margin="2"
+                                    Grid.Column="0"
+                                    Command="{Binding AcceptEditCommand}">
+                                    <Button.Style>
+                                        <Style TargetType="Button">
+                                            <Setter Property="Background" Value="{StaticResource ButtonBrush}"/>
+                                            <Style.Triggers>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter Property="Background" Value="{StaticResource TertiaryBrush}"/>
+                                                </Trigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Button.Style>
+                                    <Button.Template>
+                                        <ControlTemplate TargetType="Button">
+                                            <Border 
+                                                Height="24"
+                                                Width="24"
+                                                CornerRadius="8"
+                                                Background="{TemplateBinding Background}">
+                                                <ContentPresenter VerticalAlignment="Center"
+                                                                  HorizontalAlignment="Center"/>
+                                            </Border>
+                                        </ControlTemplate>
+                                    </Button.Template>
+
+                                    <iconPacks:PackIconMaterial Kind="CheckOutline" />
+
+                                </Button>
+                                <Button x:Name="CancelEditButton"
+                                    Margin="2"
+                                    Grid.Column="1"
+                                    Command="{Binding CancelEditCommand}">
+                                    <Button.Style>
+                                        <Style TargetType="Button">
+                                            <Setter Property="Background" Value="{StaticResource ButtonBrush}"/>
+                                            <Style.Triggers>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter Property="Background" Value="{StaticResource TertiaryBrush}"/>
+                                                </Trigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Button.Style>
+                                    <Button.Template>
+                                        <ControlTemplate TargetType="Button">
+                                            <Border 
+                                                Height="24"
+                                                Width="24"
+                                                CornerRadius="8"
+                                                Background="{TemplateBinding Background}">
+                                                <ContentPresenter VerticalAlignment="Center" 
+                                                                  HorizontalAlignment="Center"/>
+                                            </Border>
+                                        </ControlTemplate>
+                                    </Button.Template>
+
+                                    <iconPacks:PackIconMaterial Kind="CloseOutline" />
+
+                                </Button>
+                            </Grid>
+                        </Grid>
+                        <!--End of edit button elements-->
 
                         <Grid
                             Margin="6"
@@ -205,7 +291,7 @@
 
                             <Grid.Visibility>
                                 <Binding
-                                    Path="IsAcceptCancelButtonsVisible"
+                                    Path="IsAcceptCancelDeleteButtonsVisible"
                                     Mode="TwoWay"
                                     Converter="{StaticResource BooleanToVisibilityConverter}"/>
                             </Grid.Visibility>
@@ -278,7 +364,36 @@
                                 </Button>
                             </Grid>
                         </Grid>
+                        
                     </Grid>
+
+                    <Button
+                        x:Name="AdminPanelButton"
+                        Content="Open admin panel"
+                        Command="{Binding OpenAdminPanelCommand}"
+                        Visibility="{Binding IsUserAdmin, Converter={StaticResource BooleanToVisibilityConverter}, Mode=TwoWay}">
+                        <Button.Style>
+                            <Style TargetType="Button">
+                                <Setter Property="Background" Value="{StaticResource ButtonBrush}"/>
+                                <Style.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Background" Value="{StaticResource TertiaryBrush}"/>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                        <Button.Template>
+                            <ControlTemplate TargetType="Button">
+                                <Border Width="100" Height="40"
+                                        CornerRadius="8"
+                                        Background="{TemplateBinding Background}">
+                                    <ContentPresenter VerticalAlignment="Center"
+                                                      HorizontalAlignment="Center"/>
+                                </Border>
+                            </ControlTemplate>
+                        </Button.Template>
+                    </Button>
+
                 </StackPanel>
 
             </Grid>

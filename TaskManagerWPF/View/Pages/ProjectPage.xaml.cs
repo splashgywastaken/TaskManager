@@ -5,6 +5,7 @@ using System.Windows.Navigation;
 using TaskManagerWPF.Assets.CustomControl;
 using TaskManagerWPF.Model.Project;
 using TaskManagerWPF.ViewModel;
+using TaskManagerWPF.ViewModel.Pages;
 
 namespace TaskManagerWPF.View.Pages
 {
@@ -33,6 +34,23 @@ namespace TaskManagerWPF.View.Pages
             if (sender is not NavButton {Name: "BackToProjectBrowserButton" } clickedButton) return;
 
             NavigationService?.Navigate(clickedButton?.NavButtonUri);
+        }
+
+        private void CompletionStatusButton_OnClick(object sender, RoutedEventArgs e)
+        {
+            if (sender is not Button button) return;
+            if (DataContext is not TaskViewModel task) return;
+
+            if (task.TaskCompletionStatus)
+            {
+                task.TaskCompletionStatus = false;
+                button.Style = FindResource("CompletionStatusButtonUncheckedStyle") as Style;
+            }
+            else
+            {
+                task.TaskCompletionStatus = true;
+                button.Style = FindResource("CompletionStatusButtonCheckedStyle") as Style;
+            }
         }
     }
 }

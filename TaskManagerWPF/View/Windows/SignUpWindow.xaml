@@ -7,6 +7,7 @@
         xmlns:viewModel="clr-namespace:TaskManagerWPF.ViewModel"
         xmlns:customControl="clr-namespace:TaskManagerWPF.Assets.CustomControl"
         xmlns:fa="http://schemas.fontawesome.io/icons/"
+        xmlns:window="clr-namespace:TaskManagerWPF.ViewModel.Window"
         mc:Ignorable="d" Height="600" Width="480"
         WindowStyle="None"
         ResizeMode="NoResize"
@@ -16,7 +17,7 @@
         MouseDown="SignUpWindow_OnMouseDown">
 
     <Window.DataContext>
-        <viewModel:SignUpWindowViewModel/>
+        <window:SignUpWindowViewModel/>
     </Window.DataContext>
 
     <Window.Resources>

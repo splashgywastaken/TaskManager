@@ -25,6 +25,11 @@ public class ProjectListViewModel : ViewModelBase
         set => SetField(ref _areProjectsLoaded, value);
     }
 
+    public void AddProject(Project project)
+    {
+        Projects.Add(new ProjectBindableViewModel(project));
+    }
+
     public ProjectListViewModel(IEnumerable<Project> projects)
     {
         AreProjectsLoaded = false;

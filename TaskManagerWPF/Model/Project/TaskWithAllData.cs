@@ -5,6 +5,12 @@ namespace TaskManagerWPF.Model.Project;
 
 public class TaskWithAllData
 {
+    public TaskWithAllData(string taskName, string taskDescription)
+    {
+        TaskName = taskName;
+        TaskDescription = taskDescription;
+    }
+
     [JsonProperty("task_id")]
     public int TaskId { get; set; }
 

@@ -132,6 +132,7 @@ public class ProjectService : IProjectService
     private async Task<StatusCodeResult> UpdateProjectById(int projectId, Project project)
     {
         _context.Entry(project).State = EntityState.Modified;
+        _context.Projects.Update(project);
 
         try
         {
@@ -157,13 +158,26 @@ public class ProjectService : IProjectService
 
     private async Task<StatusCodeResult> DeleteProjectById(int projectId)
     {
-        var project = await _context.Projects.FindAsync(projectId);
+        var project = await _context.Projects
+            .Include(tg => tg.TaskGroups)
+            .ThenInclude(t => t.Tasks)
+            .FirstOrDefaultAsync(p => p.ProjectId == projectId);
+
         if (project == null)
         {
             return new NotFoundResult();
         }
 
+        foreach (var taskGroup in project.TaskGroups)
+        {
+            foreach (var task in taskGroup.Tasks)
+            {
+                _context.Tasks.Remove(task);
+            }
+            _context.TaskGroups.Remove(taskGroup);
+        }
         _context.Projects.Remove(project);
+
         await _context.SaveChangesAsync();
 
         return new NoContentResult();
