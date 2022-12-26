@@ -1,7 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Transactions;
-using TaskManagerWPF.Model;
 using TaskManagerWPF.Model.Project;
 using TaskManagerWPF.ViewModel.Base;
 using TaskManagerWPF.ViewModel.SimpleViewModels;
@@ -25,18 +23,18 @@ public class ProjectListViewModel : ViewModelBase
         set => SetField(ref _areProjectsLoaded, value);
     }
 
-    public void AddProject(Project project)
+    public void AddProject(ProjectsViewModel parentViewModel, Project project)
     {
-        Projects.Add(new ProjectBindableViewModel(project));
+        Projects.Add(new ProjectBindableViewModel(parentViewModel, project));
     }
 
-    public ProjectListViewModel(IEnumerable<Project> projects)
+    public ProjectListViewModel(ProjectsViewModel parentViewModel, IEnumerable<Project> projects)
     {
         AreProjectsLoaded = false;
         _projects = new ObservableCollection<ProjectBindableViewModel>();
         foreach (var project in projects)
         {
-            _projects.Add(new ProjectBindableViewModel(project));
+            AddProject(parentViewModel, project);
         }
         AreProjectsLoaded = true;
     }

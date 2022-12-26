@@ -1,5 +1,6 @@
 ﻿using System;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 
 namespace TaskManagerWPF.Model.Project;
 
@@ -11,8 +12,15 @@ public class TaskWithAllData
         TaskDescription = taskDescription;
     }
 
+    public TaskWithAllData()
+    {
+    }
+
     [JsonProperty("task_id")]
     public int TaskId { get; set; }
+
+    [JsonProperty("task_task_group_id")]
+    public int TaskTaskGroupId { get; set; }
 
     [JsonProperty("task_name")]
     public string TaskName { get; set; } = null!;

@@ -14,12 +14,14 @@ namespace TaskManagerWPF.View.Pages
     /// </summary>
     public partial class ProjectPage : Page
     {
-        public int ProjectId { get; set; }
+        private int ProjectId { get; set; }
 
-        public ProjectPage(int projectId)
+        public ProjectPage(ProjectsViewModel parentViewModel, int projectId)
         {
             ProjectId = projectId;
             InitializeComponent();
+            var dataContext = (DataContext as ProjectPageViewModel)!;
+            dataContext.ParentViewModel = parentViewModel;
         }
         
         protected override async void OnInitialized(EventArgs e)
@@ -51,6 +53,12 @@ namespace TaskManagerWPF.View.Pages
                 task.TaskCompletionStatus = true;
                 button.Style = FindResource("CompletionStatusButtonCheckedStyle") as Style;
             }
+        }
+
+        private void AcceptDeleteButton_OnClick(object sender, RoutedEventArgs e)
+        {
+            var uri = BackToProjectBrowserButton.NavButtonUri;
+            NavigationService?.Navigate(uri);
         }
     }
 }

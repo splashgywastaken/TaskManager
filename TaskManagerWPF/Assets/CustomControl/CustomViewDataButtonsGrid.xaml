@@ -26,22 +26,6 @@
                 <ResourceDictionary.MergedDictionaries>
                     <ResourceDictionary Source="../../Styles/Colors.xaml"/>
                     <ResourceDictionary Source="../../Styles/Fonts.xaml"/>
-                    <ResourceDictionary>
-                        <!-- TODO:Make some sort of fade in - fade out for buttons -->
-                        <!--<ControlTemplate x:Key="PrettyButton" TargetType="Button">
-                            <Grid>
-                                <Rectangle x:Name="backgroundElement" 
-                                               Fill="{TemplateBinding Background}" 
-                                               Stroke="Transparent"/>
-                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                            </Grid>
-                            <ControlTemplate.Triggers>
-                                <Trigger Property="IsMouseOver" Value="True">
-                                    <Setter Property="Fill" TargetName="backgroundElement" Value="{DynamicResource SecondaryBrush}"/>
-                                </Trigger>
-                            </ControlTemplate.Triggers>
-                        </ControlTemplate>-->
-                    </ResourceDictionary>
                 </ResourceDictionary.MergedDictionaries>
             </ResourceDictionary>
         </Grid.Resources>

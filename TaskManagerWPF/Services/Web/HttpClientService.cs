@@ -13,7 +13,7 @@ namespace TaskManagerWPF.Services.Web
 {
     public class HttpClientService
     {
-        private HttpClient _httpClient;
+        private HttpClient _httpClient = null!;
         private readonly string _domainUrl;
 
         public HttpClientService(string domainUrl)

@@ -53,8 +53,8 @@ public class UsersController : Controller
         return Ok(mappedUsers);
     }
 
-    [HttpGet("{id:int}")]
-    [Authorize(Roles = "admin, user")]
+    [HttpPut("{id:int}")]
+    //[Authorize(Roles = "admin, user")]
     public async Task<IActionResult> UpdateUser(int id, [FromBody] UserDataModel userDataModel)
     {
         if (id != userDataModel.UserId)

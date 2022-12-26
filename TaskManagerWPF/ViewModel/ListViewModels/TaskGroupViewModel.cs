@@ -1,9 +1,14 @@
-﻿using System.Collections.ObjectModel;
-using System.Configuration;
-using System.Windows.Documents;
+﻿using System;
+using System.Collections.ObjectModel;
+using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Input;
+using Microsoft.Extensions.DependencyInjection;
+using TaskManagerWPF.Model;
 using TaskManagerWPF.Model.Project;
+using TaskManagerWPF.Services.Web;
 using TaskManagerWPF.ViewModel.Base;
+using Task = System.Threading.Tasks.Task;
 
 namespace TaskManagerWPF.ViewModel.ListViewModels;
 
@@ -44,11 +49,17 @@ public class TaskGroupViewModel : ViewModelBase
     #endregion
     #region DataProperties
     // Private properties fields
-    private readonly int _taskGroupId;
+    private int _taskGroupId;
     private string _taskGroupName = null!;
     private string _taskGroupDescription = null!;
     private ObservableCollection<TaskListViewModel> _taskList = null!;
+    private ProjectTaskGroupsViewModel _parentViewModel;
     // Properties
+    public int TaskGroupId
+    {
+        get => _taskGroupId;
+        set => SetField(ref _taskGroupId, value);
+    }
     public string TaskGroupName
     {
         get => _taskGroupName;
@@ -72,6 +83,7 @@ public class TaskGroupViewModel : ViewModelBase
     public ICommand EditCommand { get; set; }
     public ICommand CancelEditCommand { get; set; }
     public ICommand AcceptEditCommand { get; set; }
+    public ICommand AddNewTaskCommand { get; set; }
     #endregion
     #region CommandsMethods
     private bool CanExecuteAcceptEditCommand(object obj)
@@ -88,7 +100,7 @@ public class TaskGroupViewModel : ViewModelBase
     }
     private bool CanExecuteAcceptDeleteCommand(object obj)
     {
-        return AreAcceptCancelDeleteButtonsVisible;
+        return AreAcceptCancelDeleteButtonsVisible && _parentViewModel.TaskGroups.Count != 1;
     }
     private bool CanExecuteCancelDeleteCommand(object obj)
     {
@@ -98,9 +110,29 @@ public class TaskGroupViewModel : ViewModelBase
     {
         return IsDeleteButtonVisible;
     }
-    private void ExecuteAcceptEditCommand(object obj)
+    private async void ExecuteAcceptEditCommand(object obj)
     {
-        // Do things with taskgroup data
+        // TODO: Test new code
+        var httpClientService = App.AppHost!.Services.GetRequiredService<HttpClientService>();
+        var taskGroupProjectId = _parentViewModel.ProjectId;
+        var route = $"/project/{taskGroupProjectId}/taskGroup/{TaskGroupId}";
+
+        var newTaskGroup = new TaskGroupWithAllData
+        {
+            TaskGroupProjectId = taskGroupProjectId,
+            TaskGroupId = TaskGroupId,
+            TaskGroupName = TaskGroupName,
+            TaskGroupDescription = TaskGroupDescription
+        };
+
+        var response = await httpClientService.PutAsync(newTaskGroup, route);
+
+        if (!response.IsSuccessStatusCode)
+        {
+            MessageBox.Show($"Couldn't update taskGroup #{TaskGroupId} " +
+                            $"from project #{taskGroupProjectId} data");
+            return;
+        }
 
         AreAcceptCancelEditButtonsVisible = false;
         IsEditButtonVisible = true;
@@ -121,8 +153,11 @@ public class TaskGroupViewModel : ViewModelBase
         AreAcceptCancelEditButtonsVisible = true;
         IsEditButtonVisible = false;
     }
-    private void ExecuteAcceptDeleteCommand(object obj)
+    private async void ExecuteAcceptDeleteCommand(object obj)
     {
+        // TODO: test new code
+        await _parentViewModel.DeleteTaskGroupById(TaskGroupId);
+
         AreAcceptCancelDeleteButtonsVisible = false;
         IsDeleteButtonVisible = true;
     }
@@ -136,8 +171,12 @@ public class TaskGroupViewModel : ViewModelBase
         AreAcceptCancelDeleteButtonsVisible = true;
         IsDeleteButtonVisible = false;
     }
+    private async void ExecuteAddNewTaskCommand(object obj)
+    {
+        await AddNewTask();
+    }
     #endregion
-    public TaskGroupViewModel(TaskGroupWithAllData taskGroup)
+    public TaskGroupViewModel(ProjectTaskGroupsViewModel parentViewModel, TaskGroupWithAllData taskGroup)
     {
         DeleteCommand = new ViewModelCommand(ExecuteDeleteCommand, CanExecuteDeleteCommand);
         CancelDeleteCommand = new ViewModelCommand(ExecuteCancelDeleteCommand, CanExecuteCancelDeleteCommand);
@@ -145,6 +184,7 @@ public class TaskGroupViewModel : ViewModelBase
         EditCommand = new ViewModelCommand(ExecuteEditCommand, CanExecuteEditCommand);
         CancelEditCommand = new ViewModelCommand(ExecuteCancelEditCommand, CanExecuteCancelEditCommand);
         AcceptEditCommand = new ViewModelCommand(ExecuteAcceptEditCommand, CanExecuteAcceptEditCommand);
+        AddNewTaskCommand = new ViewModelCommand(ExecuteAddNewTaskCommand);
 
         _taskGroupId = taskGroup.TaskGroupId;
         TaskGroupName = new string(taskGroup.TaskGroupName);
@@ -152,8 +192,10 @@ public class TaskGroupViewModel : ViewModelBase
         TaskList = new ObservableCollection<TaskListViewModel>();
         foreach (var task in taskGroup.TaskGroupTasks)
         {
-            TaskList.Add(new TaskListViewModel(task));
+            TaskList.Add(new TaskListViewModel(this, task));
         }
+
+        _parentViewModel = parentViewModel;
     }
 
     public ObservableCollection<TaskListViewModel> TaskTags
@@ -163,6 +205,53 @@ public class TaskGroupViewModel : ViewModelBase
         {
             _taskList = value;
             SetField(ref _taskList, value);
+        }
+    }
+
+    private async Task AddNewTask()
+    {
+        var httpClientService = App.AppHost!.Services.GetRequiredService<HttpClientService>();
+        var route = $"/taskGroup/{TaskGroupId}/task";
+
+        var newTask = new TaskWithAllData
+        {
+            TaskTaskGroupId = TaskGroupId,
+            TaskName = "Task name",
+            TaskDescription = "Task description",
+            TaskStartDate = DateTime.Now,
+            TaskFinishDate = DateTime.Now.AddDays(30),
+            TaskCompletionStatus = false
+        };
+
+        var response = await httpClientService.PostAsync(newTask, route);
+
+        if (!response.IsSuccessStatusCode)
+        {
+            MessageBox.Show($"Cannot add task to taskGroup {TaskGroupId}");
+            return;
+        }
+
+        TaskList.Add(new TaskListViewModel(this, newTask));
+    }
+
+    public async Task DeleteTaskById(int taskId)
+    {
+        var httpClientService = App.AppHost!.Services.GetRequiredService<HttpClientService>();
+        var route = $"/task/{taskId}";
+
+        var response = await httpClientService.DeleteAsync(route);
+
+        if (!response.IsSuccessStatusCode)
+        {
+            MessageBox.Show($"Cannot delete task {taskId}");
+            return;
+        }
+
+        foreach (var task in TaskList)
+        {
+            if (task.TaskId != taskId) continue;
+            TaskList.Remove(task);
+            break;
         }
     }
 }

@@ -311,7 +311,9 @@
                                                     <Button x:Name="AcceptDeleteButton"
                                                     Margin="2,2,2,2"
                                                     Grid.Column="0"
-                                                    Command="{Binding AcceptDeleteUser}" Grid.ColumnSpan="2">
+                                                    Command="{Binding AcceptDeleteUser}" 
+                                                    CommandParameter="{Binding UserId}"
+                                                    Grid.ColumnSpan="2">
                                                         <Button.Style>
                                                             <Style TargetType="Button">
                                                                 <Setter Property="Background" Value="{StaticResource ButtonBrush}"/>

@@ -7,7 +7,7 @@
         xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
         xmlns:viewModel="clr-namespace:TaskManagerWPF.ViewModel"
         mc:Ignorable="d"
-        MinHeight="800" MinWidth="1280" 
+        MinHeight="900" MinWidth="1280" 
         WindowStyle="None"
         Background="Transparent"
         AllowsTransparency="True"

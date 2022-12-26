@@ -20,7 +20,17 @@ public class UsersListViewModel : ViewModelBase
         _users = new ObservableCollection<AdminPanelUserListViewModel>();
         foreach (var user in users)
         {
-            _users.Add(new AdminPanelUserListViewModel(user));
+            _users.Add(new AdminPanelUserListViewModel(this, user));
+        }
+    }
+
+    public void DeleteUserById(int userId)
+    {
+        foreach (var user in Users)
+        {
+            if (user.UserId != userId) continue;
+            Users.Remove(user);
+            break;
         }
     }
 }

@@ -42,13 +42,9 @@ namespace TaskManagerWPF
         protected override async void OnStartup(StartupEventArgs e)
         {
             await AppHost!.StartAsync();
-
-            //var authWindow = AppHost.Services.GetRequiredService<AuthWindow>();
-            //var mainWindow = AppHost.Services.GetRequiredService<MainWindow>();
+            
             var authWindow = new AuthWindow();
             authWindow.Show();
-
-            // TODO: Think about how to make this right
 
             authWindow.IsVisibleChanged += (s, e) =>
             {

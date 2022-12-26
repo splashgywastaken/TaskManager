@@ -31,7 +31,7 @@ namespace TaskManager.Service.Data.DbContext
         {
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseSqlServer(_configuration.GetConnectionString("TaskManagerDataBase"));
+                optionsBuilder.UseSqlServer(_configuration!.GetConnectionString("TaskManagerDataBase"));
             }
         }
 

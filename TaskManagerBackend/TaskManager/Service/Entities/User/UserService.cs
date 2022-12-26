@@ -72,8 +72,15 @@ public class UserService : IUserService
 
     private async Task<StatusCodeResult> UpdateUserById(int userId, User user)
     {
-        _context.Entry(user).State = EntityState.Modified;
-        _context.Users.Update(user);
+        var userInContext = await _context.Users.FindAsync(user.UserId);
+        if (userInContext == null) throw new KeyNotFoundException();
+
+        userInContext.UserName = user.UserName;
+        userInContext.UserEmail = user.UserEmail;
+        userInContext.UserRole = user.UserRole;
+        userInContext.UserAchievementsScore = user.UserAchievementsScore;
+
+        _context.Entry(userInContext).State = EntityState.Modified;
 
         try
         {

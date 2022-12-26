@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Net;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using Microsoft.Extensions.DependencyInjection;
@@ -224,9 +225,10 @@ namespace TaskManagerWPF.ViewModel.Pages
             return _isAcceptCancelEditButtonsVisible;
         }
 
-        private void ExecuteAcceptEditCommand(object obj)
+        private async void ExecuteAcceptEditCommand(object obj)
         {
             // Do smth with data
+            await UpdateUserData();
 
             IsEditButtonVisible = true;
             IsAcceptCancelEditButtonsVisible = false;
@@ -237,7 +239,7 @@ namespace TaskManagerWPF.ViewModel.Pages
             return _isAcceptCancelEditButtonsVisible;
         }
         
-        private async void UpdateUserData()
+        private async Task UpdateUserData()
         {
             var httpClient = App.AppHost!.Services.GetRequiredService<HttpClientService>();
             var route = $"/user/{_userData.UserId}";
@@ -252,8 +254,8 @@ namespace TaskManagerWPF.ViewModel.Pages
             else
             {
                 MessageBox.Show("Error occurred while updating user"); 
-#endif
             }
+#endif
         }
     }
 }

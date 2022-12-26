@@ -186,7 +186,7 @@ public class AccountController : Controller
     }
 
     [HttpDelete("{id:int}")]
-    [Authorize(Roles = "admin, user")]
+    //[Authorize(Roles = "admin, user")]
     public async Task<IActionResult> Delete(int id)
     {
         User user;
@@ -199,20 +199,21 @@ public class AccountController : Controller
             return BadRequest();
         }
 
-        var userIdCorrespondsUserIdInContext = false;
-        try
-        {
-            userIdCorrespondsUserIdInContext =
-                await UserValidation.CheckUserIdentity(HttpContext, id, _userService);
-        }
-        catch (ObjectNotFoundException) { }
+        // Bring that back when you will fix auth
+        //var userIdCorrespondsUserIdInContext = false;
+        //try
+        //{
+        //    userIdCorrespondsUserIdInContext =
+        //        await UserValidation.CheckUserIdentity(HttpContext, id, _userService);
+        //}
+        //catch (ObjectNotFoundException) { }
 
-        var userRole = UserValidation.GetUserRole(HttpContext);
+        //var userRole = UserValidation.GetUserRole(HttpContext);
 
-        if (!(userRole == "admin" || userIdCorrespondsUserIdInContext))
-        {
-            return new UnauthorizedResult();
-        }
+        //if (!(userRole == "admin" || userIdCorrespondsUserIdInContext))
+        //{
+        //    return new UnauthorizedResult();
+        //}
 
         return await _userService.DeleteUser(id);
     }

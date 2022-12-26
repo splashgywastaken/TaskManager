@@ -1,15 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
-using System.Reflection.Metadata;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Input;
-using System.Windows.Navigation;
 using Microsoft.Extensions.DependencyInjection;
-using TaskManagerWPF.Model;
+using SharpVectors.Converters;
 using TaskManagerWPF.Model.PostModels;
 using TaskManagerWPF.Model.Project;
 using TaskManagerWPF.Model.User;
@@ -104,8 +98,10 @@ namespace TaskManagerWPF.ViewModel
         {
             return !_isDeleteButtonVisible;
         }
-        private void ExecuteAcceptDeleteCommand(object obj)
+        private async void ExecuteAcceptDeleteCommand(object obj)
         {
+            await DeleteProjectById((int)obj);
+
             IsDeleteButtonVisible = true;
             IsAcceptCancelButtonsVisible = false;
         }
@@ -146,7 +142,7 @@ namespace TaskManagerWPF.ViewModel
         {
             // http backend stuff
             var httpClientService = App.AppHost!.Services.GetRequiredService<HttpClientService>();
-            const string route = "/user/projects";
+            var route = "/user/projects";
             var data = new CompositeProjectTaskGroupModel
             {
                 ProjectPostModel = new ProjectPostModel
@@ -165,7 +161,35 @@ namespace TaskManagerWPF.ViewModel
             var response = await httpClientService.PostAsync(data, route);
 
             var project = await HttpClientService.DeserializeResponse<Project>(response);
-            ProjectsListViewModel.AddProject(project);
+
+            route = $"/project/{project.ProjectId}/all";
+            response = await httpClientService.GetAsync(route);
+
+            var projectData = await HttpClientService.DeserializeResponse<ProjectWithAllData>(response);
+            var taskGroupId = projectData.ProjectTaskGroups.Last().TaskGroupId;
+
+            // Adding new task to added task group
+            var newTask = new TaskWithAllData
+            {
+                TaskTaskGroupId = taskGroupId,
+                TaskName = "Task name",
+                TaskDescription = "Task description",
+                TaskStartDate = DateTime.Now,
+                TaskFinishDate = DateTime.Now.AddDays(30),
+                TaskCompletionStatus = false
+            };
+            route = $"/taskGroup/{taskGroupId}/task";
+            response = await httpClientService.PostAsync(newTask, route);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                MessageBox.Show("Cannot add base task to a new task group");
+                return;
+            }
+
+            var postedTask = await HttpClientService.DeserializeResponse<TaskWithAllData>(response);
+
+            ProjectsListViewModel.AddProject(this, project);
         }
 
         private async void LoadProjects()
@@ -179,7 +203,28 @@ namespace TaskManagerWPF.ViewModel
 
             var projects = deserializeResponse.UserProjects;
 
-            ProjectsListViewModel = new ProjectListViewModel(projects);
+            ProjectsListViewModel = new ProjectListViewModel(this, projects);
+        }
+
+        public async Task DeleteProjectById(int projectId)
+        {
+            var httpClientService = App.AppHost!.Services.GetRequiredService<HttpClientService>();
+            var route = $"/project/{projectId}";
+
+            var response = await httpClientService.DeleteAsync(route);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                MessageBox.Show("Failed deleting project");
+                return;
+            }
+
+            foreach (var project in ProjectsListViewModel.Projects)
+            {
+                if (project.ProjectId != projectId) continue;
+                ProjectsListViewModel.Projects.Remove(project);
+                break;
+            }
         }
     }
 }

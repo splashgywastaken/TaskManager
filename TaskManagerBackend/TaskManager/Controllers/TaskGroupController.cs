@@ -109,8 +109,8 @@ public class TaskGroupController : Controller
     }
 
     [HttpDelete]
-    [Route("taskGroups/{taskGroupId:int}")]
-    public async Task<IActionResult> DeleteProject(int projectId, int taskGroupId)
+    [Route("taskGroup/{taskGroupId:int}")]
+    public async Task<IActionResult> DeleteTaskGroup(int taskGroupId)
     {
         var result = await _taskGroupService.DeleteTaskGroup(taskGroupId);
 

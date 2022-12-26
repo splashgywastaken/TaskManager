@@ -131,6 +131,14 @@ public class ProjectService : IProjectService
 
     private async Task<StatusCodeResult> UpdateProjectById(int projectId, Project project)
     {
+        // Forming current data
+        var user = await _context.Users.FindAsync(project.ProjectUserId);
+        var taskGroups = await _context.TaskGroups.Where(
+                p => p.TaskGroupProjectId == project.ProjectId
+            ).ToListAsync();
+        project.ProjectUser = user;
+        project.TaskGroups = taskGroups;
+
         _context.Entry(project).State = EntityState.Modified;
         _context.Projects.Update(project);
 

@@ -43,10 +43,9 @@ public class TaskController : Controller
         return Ok(mappedTags);
     }
 
-    [HttpGet]
-    [Route("tasks/{taskId:int}")]
+    [HttpGet("tasks/{id:int}", Name = "GetTaskAsync")]
     [Authorize(Roles = "admin, user")]
-    public async Task<IActionResult> GetTask(int id)
+    public async Task<IActionResult> GetTaskAsync(int id)
     {
         Task task;
         try
@@ -58,7 +57,7 @@ public class TaskController : Controller
             return NotFound(exception.Data);
         }
 
-        var mappedTask = _mapper.Map<TaskModel>(task);
+        var mappedTask = _mapper.Map<TaskPostModel>(task);
 
         return Ok(mappedTask);
     }
@@ -89,8 +88,8 @@ public class TaskController : Controller
 
         var mappedResult = _mapper.Map<TaskPostModel>(task);
 
-        return CreatedAtAction(
-            nameof(GetTask),
+        return CreatedAtRoute(
+            "GetTaskAsync",
             new { id = mappedResult.TaskId},
             mappedResult
             );
@@ -98,7 +97,7 @@ public class TaskController : Controller
 
     [HttpPut]
     [Route("taskGroup/{taskGroupId:int}/task/{taskId:int}")]
-    [Authorize(Roles = "admin, user")]
+    //[Authorize(Roles = "admin, user")]
     public async Task<IActionResult> UpdateTask(int taskGroupId, int taskId, [FromBody] TaskModel task)
     {
         if (taskId != task.TaskId)
@@ -120,7 +119,7 @@ public class TaskController : Controller
     }
 
     [HttpDelete]
-    [Route("tasks/{taskId:int}")]
+    [Route("task/{taskId:int}")]
     public async Task<IActionResult> DeleteTask(int taskId)
     {
         var result = await _taskService.DeleteTask(taskId);

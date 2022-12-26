@@ -1,8 +1,12 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Windows;
 using System.Windows.Input;
+using Microsoft.Extensions.DependencyInjection;
 using TaskManagerWPF.Model;
 using TaskManagerWPF.Model.Project;
+using TaskManagerWPF.Services.Web;
 using TaskManagerWPF.ViewModel.Base;
+using Task = System.Threading.Tasks.Task;
 
 namespace TaskManagerWPF.ViewModel.ListViewModels;
 
@@ -40,6 +44,7 @@ public class TaskListViewModel : ViewModelBase
     #endregion
     #region DataPropertiesAndFields
     // Private fields
+    private TaskGroupViewModel _parentViewModel;
     private TaskWithAllData _oldTask = null!;
     // Private fields related to properties
     private int _taskId;
@@ -102,9 +107,10 @@ public class TaskListViewModel : ViewModelBase
     {
         return IsDeleteButtonVisible;
     }
-    private void ExecuteAcceptEditCommand(object obj)
+    private async void ExecuteAcceptEditCommand(object obj)
     {
-        // Do smth with data
+        // TODO: test new code
+        await UpdateTaskData();
 
         AreAcceptCancelEditButtonsVisible = false;
         IsEditButtonVisible = true;
@@ -124,8 +130,11 @@ public class TaskListViewModel : ViewModelBase
         AreAcceptCancelEditButtonsVisible = true;
         IsEditButtonVisible = false;
     }
-    private void ExecuteAcceptDeleteCommand(object obj)
+    private async void ExecuteAcceptDeleteCommand(object obj)
     {
+        // TODO: test new code
+        await _parentViewModel.DeleteTaskById(TaskId);
+
         AreAcceptCancelDeleteButtonsVisible = false;
         IsDeleteButtonVisible = true;
     }
@@ -139,12 +148,15 @@ public class TaskListViewModel : ViewModelBase
         AreAcceptCancelDeleteButtonsVisible = true;
         IsDeleteButtonVisible = false;
     }
-    private void ExecuteChangeCompletionStatusCommand(object obj)
+    private async void ExecuteChangeCompletionStatusCommand(object obj)
     {
+        //TODO: Test new code
         TaskCompletionStatus = !TaskCompletionStatus;
+
+        await UpdateTaskData();
     }
     #endregion
-    public TaskListViewModel(TaskWithAllData task)
+    public TaskListViewModel(TaskGroupViewModel parentViewModel, TaskWithAllData task)
     {
         DeleteCommand = new ViewModelCommand(ExecuteDeleteCommand, CanExecuteDeleteCommand);
         CancelDeleteCommand = new ViewModelCommand(ExecuteCancelDeleteCommand, CanExecuteCancelDeleteCommand);
@@ -153,10 +165,37 @@ public class TaskListViewModel : ViewModelBase
         CancelEditCommand = new ViewModelCommand(ExecuteCancelEditCommand, CanExecuteCancelEditCommand);
         AcceptEditCommand = new ViewModelCommand(ExecuteAcceptEditCommand, CanExecuteAcceptEditCommand);
         ChangeCompletionStatusCommand = new ViewModelCommand(ExecuteChangeCompletionStatusCommand);
-        
+
         TaskId = task.TaskId;
         TaskName = new string(task.TaskName);
         TaskDescription = new string(task.TaskDescription);
         TaskCompletionStatus = task.TaskCompletionStatus;
+
+        _parentViewModel = parentViewModel;
+    }
+
+    private async Task UpdateTaskData()
+    {
+        var httpClientService = App.AppHost!.Services.GetRequiredService<HttpClientService>();
+        var taskGroupId = _parentViewModel.TaskGroupId;
+        var route = $"/taskGroup/{taskGroupId}/task/{TaskId}";
+
+        var newTask = new TaskWithAllData
+        {
+            TaskId = TaskId,
+            TaskTaskGroupId = taskGroupId,
+            TaskName = TaskName,
+            TaskDescription = TaskDescription,
+            TaskStartDate = DateTime.Now,
+            TaskFinishDate = DateTime.Now.AddDays(30),
+            TaskCompletionStatus = TaskCompletionStatus
+        };
+
+        var response = await httpClientService.PutAsync(newTask, route);
+
+        if (!response.IsSuccessStatusCode)
+        {
+            MessageBox.Show($"Couldn't update data of {TaskId} task");
+        }
     }
 }

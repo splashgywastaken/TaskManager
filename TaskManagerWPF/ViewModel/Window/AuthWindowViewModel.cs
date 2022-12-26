@@ -8,7 +8,6 @@ using TaskManagerWPF.Services.DataAccess;
 using TaskManagerWPF.Services.Misc;
 using TaskManagerWPF.Services.Web;
 using TaskManagerWPF.ViewModel.Base;
-using static System.Net.WebRequestMethods;
 
 namespace TaskManagerWPF.ViewModel.Window
 {

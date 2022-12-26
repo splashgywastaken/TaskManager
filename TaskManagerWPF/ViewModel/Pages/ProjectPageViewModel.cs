@@ -1,7 +1,13 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Input;
 using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json;
 using TaskManagerWPF.Model.Project;
+using TaskManagerWPF.Services.DataAccess;
 using TaskManagerWPF.Services.Web;
 using TaskManagerWPF.ViewModel.Base;
 using TaskManagerWPF.ViewModel.ListViewModels;
@@ -10,17 +16,21 @@ namespace TaskManagerWPF.ViewModel.Pages
 {
     public class ProjectPageViewModel : ViewModelBase
     {
+        #region Private fields
         private ProjectWithAllData _oldProject = null!;
         private int _projectId;
         private string _projectName = "Sample name";
         private string _projectDescription = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. ";
+        private ProjectsViewModel _parentViewModel = null!;
         private ProjectTaskGroupsViewModel _projectTaskGroupsViewModel = null!;
         private bool _isDeleteButtonVisible = true;
         private bool _areAcceptCancelDeleteButtonsVisible;
         private bool _isEditButtonVisible = true;
         private bool _areAcceptCancelEditButtonsVisible;
+        #endregion
 
-        public int ProjectId
+        #region Properties
+        private int ProjectId
         {
             get => _projectId;
             set => SetField(ref _projectId, value);
@@ -42,6 +52,11 @@ namespace TaskManagerWPF.ViewModel.Pages
                 _projectDescription = value;
                 OnPropertyChanged();
             }
+        }
+        public ProjectsViewModel ParentViewModel
+        {
+            get => _parentViewModel;
+            set => SetField(ref _parentViewModel, value);
         }
         public ProjectTaskGroupsViewModel ProjectTaskGroupsViewModel
         {
@@ -71,14 +86,18 @@ namespace TaskManagerWPF.ViewModel.Pages
         {
             get => _areAcceptCancelEditButtonsVisible;
             set => SetField(ref _areAcceptCancelEditButtonsVisible, value);
-        }
+        } 
+        #endregion
 
+        #region Commands
         public ICommand DeleteCommand { get; set; }
         public ICommand CancelDeleteCommand { get; set; }
         public ICommand AcceptDeleteCommand { get; set; }
         public ICommand EditCommand { get; set; }
         public ICommand CancelEditCommand { get; set; }
-        public ICommand AcceptEditCommand { get; set; }
+        public ICommand AcceptEditCommand { get; set; } 
+        public ICommand AddNewTaskGroupCommand { get; set; }
+        #endregion
 
         public ProjectPageViewModel()
         {
@@ -88,8 +107,9 @@ namespace TaskManagerWPF.ViewModel.Pages
             EditCommand = new ViewModelCommand(ExecuteEditCommand, CanExecuteEditCommand);
             CancelEditCommand = new ViewModelCommand(ExecuteCancelEditCommand, CanExecuteCancelEditCommand);
             AcceptEditCommand = new ViewModelCommand(ExecuteAcceptEditCommand, CanExecuteAcceptEditCommand);
+            AddNewTaskGroupCommand = new ViewModelCommand(ExecuteAddNewTaskGroupCommand);
         }
-
+        
         public async Task LoadProjects(int projectId)
         {
             ProjectId = projectId;
@@ -101,11 +121,12 @@ namespace TaskManagerWPF.ViewModel.Pages
 
             var projectWithAllData = await HttpClientService.DeserializeResponse<ProjectWithAllData>(response);
 
-            ProjectName = new (projectWithAllData.ProjectName);
-            ProjectDescription = new (projectWithAllData.ProjectDescription);
-            ProjectTaskGroupsViewModel = new ProjectTaskGroupsViewModel(projectWithAllData.ProjectTaskGroups);
+            ProjectName = new string(projectWithAllData.ProjectName);
+            ProjectDescription = new string(projectWithAllData.ProjectDescription);
+            ProjectTaskGroupsViewModel = new ProjectTaskGroupsViewModel(ProjectId, projectWithAllData.ProjectTaskGroups);
         }
 
+        #region Commands CanExecuteAction methods
         private bool CanExecuteAcceptEditCommand(object obj)
         {
             return AreAcceptCancelEditButtonsVisible;
@@ -130,10 +151,37 @@ namespace TaskManagerWPF.ViewModel.Pages
         {
             return IsDeleteButtonVisible;
         }
+        #endregion
 
-        private void ExecuteAcceptEditCommand(object obj)
+        #region Commands ExecuteAction methods
+        private async void ExecuteAddNewTaskGroupCommand(object obj)
         {
-            // do things with project data
+            await AddNewTaskGroup();
+        }
+        private async void ExecuteAcceptEditCommand(object obj)
+        {
+            var httpClientService = App.AppHost!.Services.GetRequiredService<HttpClientService>();
+            var route = $"/project/{ProjectId}";
+
+            var newProjectData = new ProjectWithAllData
+            {
+                ProjectUserId = UserDataAccess.UserDataModel.UserId,
+                ProjectId = ProjectId,
+                ProjectName = ProjectName,
+                ProjectDescription = ProjectDescription,
+                ProjectStartDate = DateTime.UtcNow,
+                ProjectFinishDate = DateTime.Now.AddDays(30),
+                ProjectCompletionStatus = false
+            };
+
+            var response = await httpClientService.PutAsync(newProjectData, route);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                MessageBox.Show($"Couldn't edit project {ProjectName}");
+                ExecuteCancelEditCommand(null);
+                return;
+            }
 
             AreAcceptCancelEditButtonsVisible = false;
             IsEditButtonVisible = true;
@@ -156,8 +204,10 @@ namespace TaskManagerWPF.ViewModel.Pages
             IsEditButtonVisible = false;
         }
 
-        private void ExecuteAcceptDeleteCommand(object obj)
+        private async void ExecuteAcceptDeleteCommand(object obj)
         {
+            await DeleteProjectById(ProjectId);
+
             AreAcceptCancelDeleteButtonsVisible = false;
             IsDeleteButtonVisible = true;
         }
@@ -172,6 +222,63 @@ namespace TaskManagerWPF.ViewModel.Pages
         {
             AreAcceptCancelDeleteButtonsVisible = true;
             IsDeleteButtonVisible = false;
+        } 
+        #endregion
+
+        private async Task DeleteProjectById(int projectId)
+        {
+            await ParentViewModel.DeleteProjectById(projectId);
+        }
+
+        private async Task AddNewTaskGroup()
+        {
+            var httpClientService = App.AppHost!.Services.GetRequiredService<HttpClientService>();
+
+            // Adding new task to project
+            var newTaskGroup = new TaskGroupWithAllData(
+                0,
+                "Task group name",
+                "Task group description"
+                );
+            var route = $"/project/{ProjectId}/taskGroup";
+            var response = await httpClientService.PostAsync(newTaskGroup, route);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                MessageBox.Show("Cannot add new task group");
+                return;
+            }
+
+            var postedTaskGroup = await HttpClientService.DeserializeResponse<TaskGroupWithAllData>(response);
+
+            // Adding new task to added task group
+            var newTask = new TaskWithAllData
+            {
+                TaskTaskGroupId = postedTaskGroup.TaskGroupId,
+                TaskName = "Task name",
+                TaskDescription = "Task description",
+                TaskStartDate = DateTime.Now,
+                TaskFinishDate = DateTime.Now.AddDays(30),
+                TaskCompletionStatus = false
+            };
+            route = $"/taskGroup/{postedTaskGroup.TaskGroupId}/task";
+            response = await httpClientService.PostAsync(newTask, route);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                MessageBox.Show("Cannot add base task to a new task group");
+                return;
+            }
+
+            var postedTask = await HttpClientService.DeserializeResponse<TaskWithAllData>(response);
+
+            postedTaskGroup.TaskGroupTasks = new List<TaskWithAllData>
+            {
+                postedTask
+            };
+
+            // Finally adding all data to viewModel data
+            ProjectTaskGroupsViewModel.AddNewTaskGroup(postedTaskGroup);
         }
     }
 }

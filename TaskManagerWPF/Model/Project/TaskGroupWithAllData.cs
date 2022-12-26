@@ -15,6 +15,9 @@ public class TaskGroupWithAllData
         TaskGroupDescription = taskGroupDescription;
     }
 
+    [JsonProperty("task_group_project_id")]
+    public int TaskGroupProjectId { get; set; }
+
     [JsonProperty("task_group_id")]
     public int TaskGroupId { get; set; }
 

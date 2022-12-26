@@ -81,7 +81,12 @@ static void ConfigureMapping(IServiceCollection services)
 
 static void ConfigureDbContext(IServiceCollection services)
 {
-    services.AddDbContext<TaskManagerDBContext>();
+    services.AddScoped<Microsoft.EntityFrameworkCore.DbContext, TaskManagerDBContext>();
+
+    services.AddDbContext<TaskManagerDBContext>(opt =>
+    {
+        opt.EnableSensitiveDataLogging();
+    });
     services.AddControllers().AddJsonOptions(x =>
     {
         x.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());

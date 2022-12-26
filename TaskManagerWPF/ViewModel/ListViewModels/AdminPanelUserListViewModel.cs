@@ -1,13 +1,16 @@
-﻿using System.CodeDom.Compiler;
+﻿using System.Windows;
 using System.Windows.Input;
-using System.Windows.Media.Imaging;
+using Microsoft.Extensions.DependencyInjection;
 using TaskManagerWPF.Model.User;
+using TaskManagerWPF.Services.Web;
 using TaskManagerWPF.ViewModel.Base;
 
 namespace TaskManagerWPF.ViewModel.ListViewModels;
 
 public class AdminPanelUserListViewModel : ViewModelBase
 {
+    private UsersListViewModel _parentViewModel;
+
     #region DataProperties
     private int _userId;
     private string _userName = null!;
@@ -81,8 +84,19 @@ public class AdminPanelUserListViewModel : ViewModelBase
     {
         return AreAcceptCancelButtonsVisible;
     }
-    private void ExecuteAcceptDeleteUser(object obj)
+    private async void ExecuteAcceptDeleteUser(object obj)
     {
+        var httpClientService = App.AppHost!.Services.GetRequiredService<HttpClientService>();
+        var route = $"/user/{(int) obj}";
+
+        var response = await httpClientService.DeleteAsync(route);
+
+        if (!response.IsSuccessStatusCode)
+        {
+            MessageBox.Show($"Couldn't delete user {UserId}");
+        }
+
+        _parentViewModel.DeleteUserById((int) obj);
         AreAcceptCancelButtonsVisible = false;
         IsDeleteButtonVisible = true;
     }
@@ -97,8 +111,10 @@ public class AdminPanelUserListViewModel : ViewModelBase
     }
     #endregion
 
-    public AdminPanelUserListViewModel(UserWithAllData user)
+    public AdminPanelUserListViewModel(UsersListViewModel parentViewModel, UserWithAllData user)
     {
+        _parentViewModel = parentViewModel;
+
         _userId = user.UserId;
         _userName = new string(user.UserName);
         _email = new string(user.UserEmail);

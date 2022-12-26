@@ -25,7 +25,11 @@ namespace TaskManagerWPF.View.Pages
             if (sender is not NavButton {Name: "OpenProjectButton"} clickedButton) return;
 
             var projectId = (int)clickedButton.CommandParameter;
-            NavigationService!.Navigate(new ProjectPage(projectId));
+            NavigationService!.Navigate(
+                new ProjectPage(
+                        DataContext as ProjectsViewModel ?? throw new InvalidOperationException(),
+                        projectId
+                    ));
         }
     }
 }

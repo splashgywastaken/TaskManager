@@ -9,8 +9,8 @@ using TaskManager.Entities;
 
 public class TaskGroupService : ITaskGroupService
 {
-    private readonly TaskManagerDBContext _context = null!;
-    private readonly IMapper _mapper = null!;
+    private readonly TaskManagerDBContext _context;
+    private readonly IMapper _mapper;
 
     public TaskGroupService(TaskManagerDBContext context, IMapper mapper)
     {

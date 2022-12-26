@@ -1,9 +1,7 @@
 ﻿using System.Collections.Generic;
 using Microsoft.Extensions.DependencyInjection;
-using System.Windows.Input;
 using TaskManagerWPF.Model.User;
 using TaskManagerWPF.Services.Web;
-using TaskManagerWPF.View.Windows;
 using TaskManagerWPF.ViewModel.Base;
 using TaskManagerWPF.ViewModel.ListViewModels;
 
