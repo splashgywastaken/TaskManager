@@ -9,6 +9,8 @@ public class UserWithAllData
         UserName = userName;
     }
 
+    public UserWithAllData() { }
+
     [JsonProperty("user_id")]
     public int UserId { get; set; }
     [JsonProperty("user_name")]
@@ -19,5 +21,5 @@ public class UserWithAllData
     public int UserAchievementsScore { get; set; }
 
     [JsonProperty("user_role")] 
-    public string UserRole { get; set; }
+    public string UserRole { get; set; } = null!;
 }

@@ -225,6 +225,9 @@ public class TaskGroupViewModel : ViewModelBase
 
         var response = await httpClientService.PostAsync(newTask, route);
 
+        var newTaskDeserialized = await HttpClientService.DeserializeResponse<TaskWithAllData>(response);
+        newTask.TaskId = newTaskDeserialized.TaskId;
+
         if (!response.IsSuccessStatusCode)
         {
             MessageBox.Show($"Cannot add task to taskGroup {TaskGroupId}");

@@ -28,6 +28,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Model\Enums\" />
     <Folder Include="Model\PostModels\" />
   </ItemGroup>
 

@@ -409,12 +409,16 @@
                 x:Name="TaskGroupListView"
                 ItemsSource="{Binding TaskGroups}" d:ItemsSource="{d:SampleData ItemCount=5}"
                 ScrollViewer.CanContentScroll="False"
-                ScrollViewer.VerticalScrollBarVisibility="Visible">
+                ScrollViewer.VerticalScrollBarVisibility="Visible"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Top">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
                         <Border
                             Padding="6"
-                            Style="{DynamicResource PrettyBorderStyle}">
+                            Style="{DynamicResource PrettyBorderStyle}"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Top">
                             <Grid x:Name="TaskListGrid"
                                   Width="380">
                                 <Grid.RowDefinitions>
@@ -966,7 +970,7 @@
                                                                     </Button>
                                                                 </Grid>
                                                             </Grid>
-                                                            <!--End of edit button elements-->
+                                                            <!--End of 1 button elements-->
 
                                                             <!--Delete button elements-->
                                                             <Grid
@@ -1103,6 +1107,7 @@
                 <ListView.ItemsPanel>
                     <ItemsPanelTemplate>
                         <StackPanel Orientation="Horizontal"
+                                    VerticalAlignment="Top"
                                     CanHorizontallyScroll="True"
                                     CanVerticallyScroll="False"/>
                     </ItemsPanelTemplate>

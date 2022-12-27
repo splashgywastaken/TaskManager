@@ -11,13 +11,13 @@ public class AdminPanelWindowViewModel : ViewModelBase
 {
     private bool _isViewVisible = true;
     private UsersListViewModel _userListViewModel = null!;
-
+    
     public bool IsViewVisible
     {
         get => _isViewVisible;
         set => SetField(ref _isViewVisible, value);
     }
-
+    
     public UsersListViewModel UserListViewModel
     {
         get => _userListViewModel;

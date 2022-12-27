@@ -48,4 +48,10 @@
         <Setter Property="FontSize" Value="14"/>
         <Setter Property="FontWeight" Value="Medium"/>
     </Style>
+
+    <Style x:Key="MiniMainComboBoxFontStyle" TargetType="ComboBox">
+        <Setter Property="FontFamily" Value="Montserrat"/>
+        <Setter Property="FontSize" Value="14"/>
+        <Setter Property="FontWeight" Value="Medium"/>
+    </Style>
 </ResourceDictionary>
